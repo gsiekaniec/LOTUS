@@ -1,2 +1,1 @@
 # g-LOTUS
-g-LOTUS (genomic LOngitudinal TUmor Study) is a software to process tumor data longitudinally with two or more points to better understand the tumor progression.  The input data must be a file containing the variants (.vcf) processed following the GATK best practice and annotated with Funcotator. Annotations made by other software than Funcotator are not taken into account for the moment but will surely be added in the future.
