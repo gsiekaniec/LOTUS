@@ -13,3 +13,9 @@ Required python package to run LOTUS :
 ``` 
 python lotus.py -h
 ```
+
+To run tests:
+
+``` 
+python -m py.test tests
+```
