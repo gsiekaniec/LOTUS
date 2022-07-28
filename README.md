@@ -9,3 +9,7 @@ Required python package to run LOTUS :
   - openpyxml
   - pytest
 ----
+
+``` 
+python lotus.py -h
+```
