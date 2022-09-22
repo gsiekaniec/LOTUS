@@ -1,6 +1,10 @@
-# g-LOTUS
+
+<p align="center">
+  <img width="500" height="500" src="img/g-LOTUS.svg">
+</p>
 
 ----
+
 Required python package to run LOTUS :
   - SigProfiler
   - biopython
