@@ -4,20 +4,20 @@
 import sys
 sys.path.append('../')
 import os
-import logging
 from pathlib import Path
 import pytest
 from python_scripts.filter import fail_filters, line_without_fail, get_values, create_new_records, tumor_sample_header_logging
 from copy import deepcopy
+
+logger = logging.getLogger('app')
 
 
 ###############################
 # tumor sample header logging #
 ###############################
 
-logger = logging.getLogger('This is not a logger')
-line_no_tumor_sample = 'No tumor sample'
-line_with_tumor_sample = '##tumor_sample=dark_vador_cell'
+line_no_tumor = "not a tumor sample name"
+line_with_tumor = "##tumor_sample=dark_vador_cell"
 
 ###############
 # Fail filter #
@@ -91,16 +91,6 @@ not_ok_record2 = deepcopy(not_ok_record)
 ################################################################################################################
 ################################################# Tests ########################################################
 ################################################################################################################
-
-###############################
-# tumor sample header logging #
-###############################
-
-def test_tumor_sample_header_ok():
-	assert tumor_sample_header_logging(line_with_tumor_sample, logger)
-
-def test_tumor_sample_header_not_ok():
-        assert not tumor_sample_header_logging(line_no_tumor_sample, logger)
 
 
 ######################
