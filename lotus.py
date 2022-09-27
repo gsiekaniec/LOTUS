@@ -3,18 +3,20 @@
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #   LOTUS : LOngitudinal TUmors Study
-#   Authors: G. Siekaniec
+#   Authors: G. Siekaniec, W. Gouraud
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 import os 
 os.environ['MPLCONFIGDIR'] = os.getcwd() + "/matplot_configs/"
 import argparse 
 import matplotlib
+import logging
 matplotlib.use('agg')
 import python_scripts.filter
-import python_scripts.summary
+import python_scripts.summarise
 import python_scripts.compare
 import python_scripts.merge
+
 
 
 __version__ = '0.0.1'
@@ -33,7 +35,7 @@ lotus_ascii = r'''
           .       ..   .      ..  .           .. .      .   ..       .
            .         ...        . .           ...       ....         .
            ..          .         ..           .         ..          .
- .    ..... ..         .           .         .          ..         .  ....    ..
+ .    ..... ..         .           .         .          ..         .  ....   ..
   .          ...       .            .       .           .        ..          .
    ..             ..   ..            .     .            .    ..             .
      .               .. .            ..   .            ....               ..
@@ -55,12 +57,19 @@ lotus_ascii = r'''
                         |___/ 
 '''
 
-ascii_summary= r'''                  ___ _   _ _ __ ___  _ __ ___   __ _ _ __ _   _ 
-                 / __| | | | '_ ` _ \| '_ ` _ \ / _` | '__| | | |
-                 \__ \ |_| | | | | | | | | | | | (_| | |  | |_| |
-                 |___/\__,_|_| |_| |_|_| |_| |_|\__,_|_|   \__, |
-                                                            __/ |
-                                                           |___/ 
+ascii_help= r'''
+
+-----------------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------------
+'''
+
+ascii_summarise = r'''                                                         _
+                                                        (_)         
+                ___ _   _ _ __ ___  _ __ ___   __ _ _ __ _ ___  ___ 
+               / __| | | | '_ ` _ \| '_ ` _ \ / _` | '__| / __|/ _ \
+               \__ \ |_| | | | | | | | | | | | (_| | |  | \__ \  __/
+               |___/\__,_|_| |_| |_|_| |_| |_|\__,_|_|  |_|___/\___|                                                         
 
 -----------------------------------------------------------------------------------
 
@@ -79,6 +88,17 @@ ascii_filter= r'''                                 __ _ _ _
 -----------------------------------------------------------------------------------
 '''
 
+ascii_compare= r'''                     ___ ___  _ __ ___  _ __   __ _ _ __ ___ 
+                    / __/ _ \| '_ ` _ \| '_ \ / _` | '__/ _ \
+                   | (_| (_) | | | | | | |_) | (_| | | |  __/
+                    \___\___/|_| |_| |_| .__/ \__,_|_|  \___|
+                                       | |                   
+                                       |_|                  
+
+-----------------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------------
+'''
 
 if __name__ == '__main__':
 
@@ -91,8 +111,10 @@ if __name__ == '__main__':
     parser._optionals.title = 'Global arguments'
     parser.add_argument('--version', action='version',
         version=f'LOTUS v{__version__}',
-        help='Display LOTUS version'
-    )
+        help='Display LOTUS version')
+    parser.add_argument('--log', '-l', dest='log', metavar='LOG_FILE',
+    default='LOTUS.log',
+    help='Log file name.')
     
     #Subparser
     
@@ -110,50 +132,84 @@ if __name__ == '__main__':
     help='Result vcf file from Mutect2, FilterMutectCalls or Funcotator output.'
     )
 
-    optional_filter.add_argument('--output', '-o', dest='out', metavar='OUT_FILE' , 
-    default='filtered.vcf',
-    help='Filtered vcf file.')
+    optional_filter.add_argument('--output', '-o', dest='out', metavar='OUT_FILE', 
+    default='output.filtered.vcf',
+    help='Filtered vcf file. Default = "output.filtered.vcf".')
 
-    parser_filter.set_defaults(parser_filter=True, parser_summary=False, parser_compare=False, parser_merge=False)
+    optional_filter.add_argument('--working-method', '-wm', dest='working_method', metavar='WORKING_METHOD' ,
+    default='InMemory', choices=['InMemory', 'Direct'],
+    help='"InMemory" (default) loads the vcf file in memory into a list (more speed but higher memory consumption) or "Direct" reads and modifies the vcf file on the fly (slow speed but low memory consumption).')
 
-    #Summary parser
+    optional_filter.add_argument('--MBQ', dest='mbq', metavar='MBQ',
+    default=20, type=int,
+    help='Min median base variant quality for variant. Default = 20.')
+   
+    optional_filter.add_argument('--DP', dest='dp', metavar='DP',
+    default=10, type=int,
+    help='Min variant coverage. Default = 10.')    
 
-    parser_summary = subparsers.add_parser('summary', help='Allows to extract a lot of statistics from a vcf file.')
+    optional_filter.add_argument('--AF', dest='af', metavar='AF',
+    default=0.1, type=float,
+    help='Min fractions of variant in the tumor. Default = 0,1.')
+
+    optional_filter.add_argument('--AD', dest='ad', metavar='AD',
+    default=5, type=int,
+    help='Min variant depths. Default = 5.')
+
+    optional_filter.add_argument('--POPAF', dest='popaf', metavar='POPAF',
+    default=0.00001, type=float,
+    help='Max population (often GnomAD) variant frequencies. Default = 0,00001.')
+
+    parser_filter.set_defaults(parser_filter=True, parser_summarise=False, parser_compare=False, parser_merge=False)
+
+    #Summarise parser
+
+    parser_summarise = subparsers.add_parser('summarise', help='Allows to extract a lot of statistics from a vcf file.')
     
-    required_summary = parser_summary.add_argument_group('Required argument')
-    optional_summary = parser_summary.add_argument_group('Optional argument')
+    required_summarise = parser_summarise.add_argument_group('Required argument')
+    optional_summarise = parser_summarise.add_argument_group('Optional argument')
     
-    required_summary.add_argument('--vcf', '-v', dest='vcf', metavar='IN_FILE', 
-    required=True, 
-    help='Vcf file from Mutect2, FilterMutectCalls or Funcotator output.'
+    optional_summarise.add_argument('--vcf', '-v', dest='vcf', metavar='IN_FILE', 
+    default=None, 
+    help='Vcf file from filter output (.filtered.vcf).'
     )
 
-    required_summary.add_argument('--genome', '-g', dest='genome', metavar='GENOME_FILE', type=str,
+    required_summarise.add_argument('--vcf_pass', '-vp', dest='vcf_pass', metavar='IN_FILE2',
+    required=True,
+    help='Vcf file containing variants that pass filter (.filtered.pass.vcf).'
+    )
+
+    required_summarise.add_argument('--genome', '-g', dest='genome', metavar='GENOME_FILE', type=str,
     required=True,
     help='Genome fasta file (allowed extensions : .fasta, .fa, .fan) or pickle (.pk, .pickle) file created after the first run.'
     )
 
-    optional_summary.add_argument('--statistics', '-s', dest='stats', metavar='OUTPUT_STATS', 
+    optional_summarise.add_argument('--statistics', '-s', dest='stats', metavar='OUTPUT_STATS', 
     default='stats.txt', 
-    help='Output statistics file.'
+    help='Output statistics file. Default = "stats.txt".'
     )
 
-    optional_summary.add_argument('--genes', '-genes', dest='genes', metavar='OUTPUT_GENES',
+    optional_summarise.add_argument('--genes', '-genes', dest='genes', metavar='OUTPUT_GENES',
     default='genes.txt',
-    help='Output file containing genes impacted by variants.'
+    help='Output file containing genes impacted by variants. Default = "genes.txt".'
     )
 
-    optional_summary.add_argument('--profil', '-p', dest='profil',  metavar='OUTPUT_PROFIL', 
-    default='profil.svg', 
-    help='SVG file that shows the mutations profile of the vcf file.'
-    )
- 
-    optional_summary.add_argument('--pass-only', '-pass', dest='pass_only',
-    action='store_true', 
-    help='Vcf contain only variant that pass filters. If False, also count the number of variants that do not pass the germline, PON and germline+PON filters and the total number of variants.  If true, consider all variants of the vcf file as passing the filters.'
+    optional_summarise.add_argument('--profile', '-p', dest='profile',  metavar='OUTPUT_PROFILE', 
+    default='profile.svg', 
+    help='SVG file that shows the mutations profile of the vcf file. Default = "profil.svg".'
     )
 
-    parser_summary.set_defaults(parser_filter=False, parser_summary=True, parser_compare=False, parser_merge=False)
+    optional_summarise.add_argument('--indel', '-i', dest='indel',  metavar='OUTPUT_INDEL',
+    default='indel.svg',
+    help='SVG file that shows the indel mutations size of the vcf file. Default = "indel.svg".'
+    )
+
+    optional_summarise.add_argument('--enrichment', dest='enrichment',
+    action='store_true',
+    help='Did the GO enrichment analysis on the genes list using ToppGene and Panther and returns the biological processes (works if the APIs are not down). Default = False.'
+    )
+
+    parser_summarise.set_defaults(parser_filter=False, parser_summarise=True, parser_compare=False, parser_merge=False)
 
     #Compare parser
 
@@ -187,11 +243,11 @@ if __name__ == '__main__':
     help='SVG file that shows the comparison between mutations profiles of the two vcf file.'
     )    
 
-    parser_compare.set_defaults(parser_filter=False, parser_summary=False, parser_compare=True, parser_merge=False)
+    parser_compare.set_defaults(parser_filter=False, parser_summarise=False, parser_compare=True, parser_merge=False)
 
     #Merge parser
 
-    parser_merge = subparsers.add_parser('merge', help='Merge ')
+    parser_merge = subparsers.add_parser('merge', help='Merge')
     
     required_merge = parser_merge.add_argument_group('Required argument')
     optional_merge = parser_merge.add_argument_group('Optional argument')
@@ -205,24 +261,42 @@ if __name__ == '__main__':
     help='Output repertory.'
     )
     
-    parser_compare.set_defaults(parser_filter=False, parser_summary=False, parser_compare=False, parser_merge=True)
-
+    parser_merge.set_defaults(parser_filter=False, parser_summarise=False, parser_compare=False, parser_merge=True)
 
 
     #End parser#######
 
     args = parser.parse_args()
+
+    # Logger configuration    
+
+    logger = logging.getLogger('g-LOTUS main')
+    logger.setLevel(logging.DEBUG)
     
-    if args != argparse.Namespace(): 
+    fh = logging.FileHandler(args.log)
+    fh.setLevel(logging.DEBUG)
+    
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    fh.setFormatter(formatter)    
+
+    logger.addHandler(fh)
+
+    logger.info(f'---------------- g-LOTUS v{__version__} ----------------')
+
+    if args != argparse.Namespace(log=args.log):
         if args.parser_filter:
             print(ascii_filter)
             python_scripts.filter.main(args)
-        elif args.parser_summary:
-            print(ascii_summary)
-            python_scripts.summary.main(args)
+        elif args.parser_summarise:
+            print(ascii_summarise)
+            python_scripts.summarise.main(args)
         elif args.parser_compare:
+            print(ascii_compare)
             python_scripts.compare.main(args)
         elif args.parser_merge:
             python_scripts.merge.main(args)
+        logger.info(f'---------------- g-LOTUS closes ----------------')
     else :
         parser.print_help()
+        print(ascii_help)
+        logger.info(f'---------------- g-LOTUS help ----------------')
