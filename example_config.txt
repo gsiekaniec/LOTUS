@@ -1,0 +1,31 @@
+###VCF files
+## Filtered.vcf files (from g-LOTUS filter)
+
+/path/to/file1.filtered.vcf
+/path/to/file2.filtered.vcf
+/path/to/file3.filtered.vcf
+
+## Corresponding Pass.vcf files in the same order (from g-LOTUS filter)
+
+/path/to/file1.pass.vcf
+/path/to/file2.pass.vcf
+/path/to/file3.pass.vcf
+
+###TSV files
+## snp profile tsv (same order than vcf files)
+
+/path/to/profile1.tsv
+/path/to/profile2.tsv
+/path/to/profile3.tsv
+
+## insertion count tsv (None if no file)
+
+/path/to/insertion1.tsv
+None
+/path/to/insertion3.tsv
+
+## deletion count tsv (None if no file)
+
+/path/to/deletion1.tsv
+/path/to/deletion2.tsv
+None
