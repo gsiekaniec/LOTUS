@@ -16,7 +16,6 @@ import warnings
 import pandas as pd
 from python_scripts.check_files import verif_input_vcf, verif_output 
 from python_scripts.enrichment_api import extract_biological_process
-from python_scripts.read_vcf import read_vcf
 import matplotlib.pyplot as plt
 
 TRANSLATE = {'A>C': 'T>G', 'A>G': 'T>C', 'A>T': 'T>A', 'C>A': 'C>A', 'C>G': 'C>G', 'C>T': 'C>T',
@@ -98,7 +97,7 @@ def create_ordered_dataframe(d):
 	return df
 
 
-def graph_snp(d, name, vcf_name, logger):
+def graph_snp(d, name, logger):
 	'''
         Creation of the profile graph 
         Input : a dictionnary containing the count for all kind of SNP (d), the output file name and the logger
@@ -109,8 +108,7 @@ def graph_snp(d, name, vcf_name, logger):
 	logger.info(f'Draw profile in {name}')
 
 	df = create_ordered_dataframe(d)
-	df.columns = [str(Path(vcf_name).stem)]
-	
+
 	#color for graph
 
 	white_96 = ['white']*96
@@ -159,13 +157,8 @@ def graph_snp(d, name, vcf_name, logger):
 	plt.savefig(name)
 	plt.close()
 
-	print(f'Save profile values in {Path(name).with_suffix(".tsv")}...')
-	logger.info(f'Save profile values in {Path(name).with_suffix(".tsv")}')
 
-	df.to_csv(Path(name).with_suffix(".tsv"), sep='\t')
-
-
-def graph_indel(deletion, insertion, name, vcf_name, logger):
+def graph_indel(deletion, insertion, name, logger):
 	'''
 	Creation of the indel size graph
 	Input : two dictionnaries containing the count for insertion/deletion of different size, the output file name and the logger
@@ -254,22 +247,6 @@ def graph_indel(deletion, insertion, name, vcf_name, logger):
 	plt.close()	
 
 
-	print(f'Save indel counts in {Path(name).with_suffix(".tsv")}...')
-	logger.info(f'Save indel counts in {Path(name).with_suffix(".tsv")}')
-
-	if delet and insert:
-		df_del.columns = [str(Path(vcf_name).stem)]
-		df_ins.columns = [str(Path(vcf_name).stem)]
-		df_del.to_csv(Path(name).with_suffix(".deletion.tsv"), sep='\t')
-		df_ins.to_csv(Path(name).with_suffix(".insertion.tsv"), sep='\t')
-	elif delet:
-		df_del.columns = [str(Path(vcf_name).stem)]
-		df_del.to_csv(Path(name).with_suffix(".deletion.tsv"), sep='\t')
-	elif insert:
-		df_ins.columns = [str(Path(vcf_name).stem)]
-		df_ins.to_csv(Path(name).with_suffix(".insertion.tsv"), sep='\t')
-
-
 def is_fasta(filename : str) -> bool:
 	'''
 	Is the file a fasta file?
@@ -351,6 +328,31 @@ def get_genome_dict(genome_file, logger):
 	return genome
 
 
+def read_vcf(vcf_file):
+	'''
+	Create a generator to read the vcf file
+	Input : path to the vcf file
+	Output : generator returning a dictionnary containing the index position or the strip and split line
+	'''
+
+	idx = {}
+	with open(vcf_file, 'r', encoding='latin-1') as vcf:
+		for line in vcf:
+			if line != '':
+				if line [0] != '#':
+					yield (line.strip().split('\t'))
+				elif line.startswith('#') and not line.startswith('##'):
+					line = line.lstrip('#').split('\t')
+					idx['idx_chr'] = line.index('CHROM')
+					idx['idx_pos'] = line.index('POS')
+					idx['idx_ref'] = line.index('REF')
+					idx['idx_alts'] = line.index('ALT')
+					idx['idx_filt'] = line.index('FILTER')
+					idx['idx_info'] = line.index('INFO')
+					idx['idx_format'] = line.index('FORMAT')
+					idx['idx_values'] = idx['idx_format']+1
+					yield (idx)
+
 
 def add_snp (snp_count, ref, alt, triplet):
 	'''
@@ -423,9 +425,8 @@ def variants_count(vcf_file, vcf_file_pass, genome, logger):
 	f = open(vcf_file_pass, 'r', encoding='latin1')
 	nb_lines_pass = len(list(dropwhile(lambda x: x[0]=='#', (line for line in f))))
 	f.close()
-	if vcf_file:
-		f = open(vcf_file, 'r', encoding='latin1')
-		nb_lines = len(list(dropwhile(lambda x: x[0]=='#', (line for line in f))))
+	f = open(vcf_file, 'r', encoding='latin1')
+	nb_lines = len(list(dropwhile(lambda x: x[0]=='#', (line for line in f))))
 	f.close()
 
 	####################
@@ -666,8 +667,8 @@ def summary(vcf_file : str, vcf_file_pass : str, genome_file : str, out_stats : 
 	#################
 	# Create snp mutation types plot and indel size plot
 
-	graph_snp(snp_count_pct, out_profile, vcf_file_pass, logger)
-	if not graph_indel(counter_deletion_size, counter_insertion_size, out_indel, vcf_file_pass, logger):
+	graph_snp(snp_count_pct, out_profile, logger)
+	if not graph_indel(counter_deletion_size, counter_insertion_size, out_indel, logger):
 		logger.warning(f'No figures will be plotted !')
 
 
