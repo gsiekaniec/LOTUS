@@ -15,8 +15,6 @@ matplotlib.use('agg')
 import python_scripts.filter
 import python_scripts.summarise
 import python_scripts.compare
-import python_scripts.merge
-
 
 
 __version__ = '0.0.1'
@@ -116,11 +114,13 @@ if __name__ == '__main__':
     default='LOTUS.log',
     help='Log file name.')
     
-    #Subparser
+    ###########
+    #Subparser#
     
     subparsers = parser.add_subparsers(help='Functions')
     
-    #Filter parser
+    ###############
+    #Filter parser#
     
     parser_filter = subparsers.add_parser('filter',help='Simple filter on the vcf file from Mutect2, Funcotator... using multiple informations to keep only trustworthy somatic variants.')
     
@@ -160,9 +160,10 @@ if __name__ == '__main__':
     default=0.00001, type=float,
     help='Max population (often GnomAD) variant frequencies. Default = 0,00001.')
 
-    parser_filter.set_defaults(parser_filter=True, parser_summarise=False, parser_compare=False, parser_merge=False)
+    parser_filter.set_defaults(parser_filter=True, parser_summarise=False, parser_compare=False)
 
-    #Summarise parser
+    ##################
+    #Summarise parser#
 
     parser_summarise = subparsers.add_parser('summarise', help='Allows to extract a lot of statistics from a vcf file.')
     
@@ -209,9 +210,10 @@ if __name__ == '__main__':
     help='Did the GO enrichment analysis on the genes list using ToppGene and Panther and returns the biological processes (works if the APIs are not down). Default = False.'
     )
 
-    parser_summarise.set_defaults(parser_filter=False, parser_summarise=True, parser_compare=False, parser_merge=False)
+    parser_summarise.set_defaults(parser_filter=False, parser_summarise=True, parser_compare=False)
 
-    #Compare parser
+    ################
+    #Compare parser#
 
     parser_compare = subparsers.add_parser('compare', help='Compare two vcf files longitudinally (vcf1 = first in time)')
     
@@ -243,25 +245,7 @@ if __name__ == '__main__':
     help='SVG file that shows the comparison between mutations profiles of the two vcf file.'
     )    
 
-    parser_compare.set_defaults(parser_filter=False, parser_summarise=False, parser_compare=True, parser_merge=False)
-
-    #Merge parser
-
-    parser_merge = subparsers.add_parser('merge', help='Merge')
-    
-    required_merge = parser_merge.add_argument_group('Required argument')
-    optional_merge = parser_merge.add_argument_group('Optional argument')
-    
-    required_merge.add_argument('--repertory', '-r', dest='repertory',  metavar='COMPARISON_REPERTORY', 
-    required=True,          
-    help='Repertory containing multiple stats from comparison between biopsy. Merged patients results to search for biological process affected by the mutated genes.') 
-    
-    optional_merge.add_argument('--output_repertory', '-out', dest='out', 
-    default='.', 
-    help='Output repertory.'
-    )
-    
-    parser_merge.set_defaults(parser_filter=False, parser_summarise=False, parser_compare=False, parser_merge=True)
+    parser_compare.set_defaults(parser_filter=False, parser_summarise=False, parser_compare=True)
 
 
     #End parser#######
@@ -293,8 +277,6 @@ if __name__ == '__main__':
         elif args.parser_compare:
             print(ascii_compare)
             python_scripts.compare.main(args)
-        elif args.parser_merge:
-            python_scripts.merge.main(args)
         logger.info(f'---------------- g-LOTUS closes ----------------')
     else :
         parser.print_help()

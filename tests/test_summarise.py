@@ -13,7 +13,7 @@ import numpy as np
 import pytest
 from collections import Counter
 from pathlib import Path
-from python_scripts.summarise import create_snp_dict, create_dataframe_from_gene, create_ordered_dataframe, graph_snp, graph_indel, is_fasta, is_pickle, get_genome_dict, read_vcf, add_snp, size_indel, variants_count, is_snp, is_dnp, is_tnp, is_np, is_deletion, is_insertion, write_stats, write_impacted_genes
+from python_scripts.summarise import create_snp_dict, create_dataframe_from_gene, create_ordered_dataframe, graph_snp, graph_indel, is_fasta, is_pickle, get_genome_dict, add_snp, size_indel, variants_count, is_snp, is_dnp, is_tnp, is_np, is_deletion, is_insertion, write_stats, write_impacted_genes
 
 
 ###################
@@ -57,6 +57,7 @@ complete_profile_dictionary = {'T>G': {'ATA': 0.0, 'ATT': 0.0, 'ATC': 0.0, 'ATG'
 		}
 snp_plot_name = str(uuid.uuid4())+'.svg'
 logger = logging.getLogger('Logger de la muerte')
+vcf_name = 'Goodvcf'
 
 ###############
 # graph indel #
@@ -90,15 +91,6 @@ with open(pickle_ok, 'wb') as out_pk:
 	pickle.dump(dict_pickle, out_pk)
 pickle_empty = str(uuid.uuid4())+'.pk'
 Path(pickle_empty).touch()
-
-############
-# read vcf #
-############
-
-false_vcf = str(uuid.uuid4())+'.vcf'
-with open(false_vcf, 'w') as out_vcf:
-	out_vcf.write('##fileformat=VCFv4.2\n##FILTER=<ID=FAIL,Description=\"Fail the site if all alleles fail but for different reasons.\">\n#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT\tEXAMPLE\nchr1\t5\t.\tA\tT\t.\tPASS\tAS_FilterStatus=SITE;AS_SB_TABLE=17,31|57,57;DP=182;ECNT=1;FUNCOTATION=[CADM3|hg38|chr9|39609857|39609857|MISSENSE||INSERTION|G|G|GC|false|false];GERMQ=49;MBQ=35,33;MFRL=168,162;MMQ=60,60;MPOS=27;POPAF=7.30;ROQ=93;RPA=3,4;RU=C;STR;STRQ=93;TLOD=234.51;LOTUS_FILTER=PASS\tGT:AD:AF:DP:F1R2:F2R1:FAD:SB\t0/1:48,114:0.669:162:12,35:13,27:42,86:17,31,57,57')
-vcf_generator = (i for i in [{'idx_chr':0,'idx_pos':1,'idx_ref':3,'idx_alts':4,'idx_filt':6,'idx_info':7,'idx_format':8,'idx_values':9},['chr1','5','.','A','T','.','PASS','AS_FilterStatus=SITE;AS_SB_TABLE=17,31|57,57;DP=182;ECNT=1;FUNCOTATION=[CADM3|hg38|chr9|39609857|39609857|MISSENSE||INSERTION|G|G|GC|false|false];GERMQ=49;MBQ=35,33;MFRL=168,162;MMQ=60,60;MPOS=27;POPAF=7.30;ROQ=93;RPA=3,4;RU=C;STR;STRQ=93;TLOD=234.51;LOTUS_FILTER=PASS','GT:AD:AF:DP:F1R2:F2R1:FAD:SB','0/1:48,114:0.669:162:12,35:13,27:42,86:17,31,57,57']])
 
 ###########
 # add snp #
@@ -136,6 +128,9 @@ insertion3 = 'ATTTGCTG'
 # variants count #
 ##################
 
+false_vcf = str(uuid.uuid4())+'.vcf'
+with open(false_vcf, 'w') as out_vcf:
+	out_vcf.write('##fileformat=VCFv4.2\n##FILTER=<ID=FAIL,Description=\"Fail the site if all alleles fail but for different reasons.\">\n#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT\tEXAMPLE\nchr1\t5\t.\tA\tT\t.\tPASS\tAS_FilterStatus=SITE;AS_SB_TABLE=17,31|57,57;DP=182;ECNT=1;FUNCOTATION=[CADM3|hg38|chr9|39609857|39609857|MISSENSE||INSERTION|G|G|GC|false|false];GERMQ=49;MBQ=35,33;MFRL=168,162;MMQ=60,60;MPOS=27;POPAF=7.30;ROQ=93;RPA=3,4;RU=C;STR;STRQ=93;TLOD=234.51;LOTUS_FILTER=PASS\tGT:AD:AF:DP:F1R2:F2R1:FAD:SB\t0/1:48,114:0.669:162:12,35:13,27:42,86:17,31,57,57')	
 expected_result = (Counter(), Counter(), {'T>C': {'ATA': 0.0, 'ATT': 0.0, 'ATC': 0.0, 'ATG': 0.0, 'TTA': 0.0, 'TTT': 0.0, 'TTC': 0.0, 'TTG': 0.0, 'CTA': 0.0, 'CTT': 0.0, 'CTC': 0.0, 'CTG': 0.0, 'GTA': 0.0, 'GTT': 0.0, 'GTC': 0.0, 'GTG': 0.0}, 'C>A': {'ACA': 0.0, 'ACT': 0.0, 'ACC': 0.0, 'ACG': 0.0, 'TCA': 0.0, 'TCT': 0.0, 'TCC': 0.0, 'TCG': 0.0, 'CCA': 0.0, 'CCT': 0.0, 'CCC': 0.0, 'CCG': 0.0, 'GCA': 0.0, 'GCT': 0.0, 'GCC': 0.0, 'GCG': 0.0}, 'C>G': {'ACA': 0.0, 'ACT': 0.0, 'ACC': 0.0, 'ACG': 0.0, 'TCA': 0.0, 'TCT': 0.0, 'TCC': 0.0, 'TCG': 0.0, 'CCA': 0.0, 'CCT': 0.0, 'CCC': 0.0, 'CCG': 0.0, 'GCA': 0.0, 'GCT': 0.0, 'GCC': 0.0, 'GCG': 0.0}, 'C>T': {'ACA': 0.0, 'ACT': 0.0, 'ACC': 0.0, 'ACG': 0.0, 'TCA': 0.0, 'TCT': 0.0, 'TCC': 0.0, 'TCG': 0.0, 'CCA': 0.0, 'CCT': 0.0, 'CCC': 0.0, 'CCG': 0.0, 'GCA': 0.0, 'GCT': 0.0, 'GCC': 0.0, 'GCG': 0.0}, 'T>G': {'ATA': 0.0, 'ATT': 0.0, 'ATC': 0.0, 'ATG': 0.0, 'TTA': 0.0, 'TTT': 0.0, 'TTC': 0.0, 'TTG': 0.0, 'CTA': 0.0, 'CTT': 0.0, 'CTC': 0.0, 'CTG': 0.0, 'GTA': 0.0, 'GTT': 0.0, 'GTC': 0.0, 'GTG': 0.0}, 'T>A': {'ATA': 0.0, 'ATT': 0.0, 'ATC': 0.0, 'ATG': 0.0, 'TTA': 0.0, 'TTT': 0.0, 'TTC': 0.0, 'TTG': 0.0, 'CTA': 1.0, 'CTT': 0.0, 'CTC': 0.0, 'CTG': 0.0, 'GTA': 0.0, 'GTT': 0.0, 'GTC': 0.0, 'GTG': 0.0}}, {'CADM3': [1, [1, 0, 0, 0, 0, 0], 'chr1', ['A'], [['T']], [5]]}, {'PASS': 1, 'SNP': [1, {'CADM3'}], 'DNP': [0, set()], 'TNP': [0, set()], 'NP': [0, set()], 'INSERTION': [0, set()], 'DELETION': [0, set()]})
 
 ########
@@ -199,31 +194,41 @@ def test_create_ordered_dataframe():
 #############
 
 def test_graph_snp():
-	graph_snp(complete_profile_dictionary, snp_plot_name , logger)	
+	graph_snp(complete_profile_dictionary, snp_plot_name, vcf_name, logger)
 	assert Path(snp_plot_name).exists()
-	os.remove(snp_plot_name)	
+	assert Path(snp_plot_name).with_suffix('.tsv').exists()
+	os.remove(snp_plot_name)
+	os.remove(Path(snp_plot_name).with_suffix('.tsv'))
 
 ###############
 # graph indel #
 ###############
 
 def test_graph_indel():
-	graph_indel(deletion_counter, insertion_counter, indel_plot_name, logger)
+	graph_indel(deletion_counter, insertion_counter, indel_plot_name, vcf_name, logger)
 	assert Path(indel_plot_name).exists()
+	assert Path(indel_plot_name).with_suffix('.deletion.tsv').exists()
+	assert Path(indel_plot_name).with_suffix('.insertion.tsv').exists()
 	os.remove(indel_plot_name)
+	os.remove(Path(indel_plot_name).with_suffix('.deletion.tsv'))
+	os.remove(Path(indel_plot_name).with_suffix('.insertion.tsv'))
 
 def test_graph_insertion_only():
-	graph_indel(empty_counter, insertion_counter, insertion_plot_name, logger)
+	graph_indel(empty_counter, insertion_counter, insertion_plot_name, vcf_name, logger)
 	assert Path(insertion_plot_name).exists()
+	assert Path(insertion_plot_name).with_suffix('.insertion.tsv').exists()
 	os.remove(insertion_plot_name)
+	os.remove(Path(insertion_plot_name).with_suffix('.insertion.tsv'))
 
 def test_graph_deletion_only():
-	graph_indel(deletion_counter, empty_counter, deletion_plot_name, logger)
+	graph_indel(deletion_counter, empty_counter, deletion_plot_name, vcf_name, logger)
 	assert Path(deletion_plot_name).exists()
+	assert Path(deletion_plot_name).with_suffix('.deletion.tsv').exists()
 	os.remove(deletion_plot_name)
+	os.remove(Path(deletion_plot_name).with_suffix('.deletion.tsv'))
 
 def test_graph_no_count():
-        assert graph_indel(empty_counter, empty_counter, indel_plot_name, logger) == None
+        assert graph_indel(empty_counter, empty_counter, indel_plot_name, vcf_name, logger) == None
 
 ############
 # is fasta #
@@ -243,7 +248,7 @@ def test_is_fasta_not_ok():
 	assert not is_fasta(fasta_not_fasta)
 
 def test_is_fasta_empty():
-	assert is_fasta(empty_fasta) == False
+	assert not is_fasta(empty_fasta)
 	os.remove(empty_fasta)
 
 #############
@@ -285,12 +290,6 @@ def test_get_genome_dict_not_fasta_or_pickle():
 		get_genome_dict(fasta_not_fasta, logger)
 	os.remove(fasta_not_fasta)	
 
-############
-# read vcf #
-############
-
-def test_read_vcf():
-	assert list(read_vcf(false_vcf)) == list(vcf_generator)
 
 ###########
 # add snp #
