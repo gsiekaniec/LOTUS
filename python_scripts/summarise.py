@@ -685,7 +685,7 @@ def main(args):
 
 	# Logger configuration
 
-	logger = logging.getLogger('g-LOTUS summary')
+	logger = logging.getLogger('g-LOTUS summarise')
 	logger.setLevel(logging.DEBUG)
 
 	fh = logging.FileHandler(args.log)

@@ -196,7 +196,7 @@ if __name__ == '__main__':
     )
 
     optional_summarise.add_argument('--profile', '-p', dest='profile',  metavar='OUTPUT_PROFILE', 
-    default='profile.svg', 
+    default='profile.svg',
     help='SVG file that shows the mutations profile of the vcf file. Default = "profil.svg".'
     )
 
@@ -220,19 +220,9 @@ if __name__ == '__main__':
     required_compare = parser_compare.add_argument_group('Required argument')
     optional_compare = parser_compare.add_argument_group('Optional argument')
     
-    required_compare.add_argument('--vcf1', '-v1', dest='vcf1', 
-    required=True, 
-    help='Vcf file from Mutect2, FilterMutectCalls or Funcotator output corresponding to the first biopsy.'
-    )
-
-    required_compare.add_argument('--vcf2', '-v2', dest='vcf2',
+    required_compare.add_argument('--config', '-c', dest='config', metavar='CONFIG_FILE',
     required=True,
-    help='Vcf file from Mutect2, FilterMutectCalls or Funcotator output corresponding to the second biopsy.'
-    )
-
-    optional_compare.add_argument('--functional', '-f', dest='functional', metavar='FUNCTIONAL',
-    default=True, 
-    help='Consider only mutations that may have a functional impact.'
+    help='Configuration file containing path to vcf file (filtered.vcf and pass.vcf file from g-LOTUS filter) and tsv files for indel and snp from g-LOTUS summarise. Example available on github: https://github.com/gsiekaniec/g-LOTUS/blob/main/example_config.txt'
     )
 
     optional_compare.add_argument('--output', '-o', dest='out', metavar='OUTPUT', 
@@ -243,7 +233,17 @@ if __name__ == '__main__':
     optional_compare.add_argument('--profil', '-p', dest='profil', metavar='PROFIL',
     default='profil_comparison.svg',
     help='SVG file that shows the comparison between mutations profiles of the two vcf file.'
-    )    
+    )
+
+    optional_compare.add_argument('--indel', '-i', dest='indel',  metavar='OUTPUT_INDEL',
+    default='indel.svg',
+    help='SVG file that shows the indel mutations size of the vcf file. Default = "indel.svg".'
+    )
+
+    optional_compare.add_argument('--enrichment', dest='enrichment',
+    action='store_true',
+    help='Did the GO enrichment analysis on the genes list using ToppGene and Panther and returns the biological processes (works if the APIs are not down). Default = False.'
+    )
 
     parser_compare.set_defaults(parser_filter=False, parser_summarise=False, parser_compare=True)
 

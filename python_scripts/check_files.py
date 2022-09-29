@@ -48,3 +48,37 @@ def verif_output (output : str):
                         if not access(output, W_OK) :
                                 raise ValueError(f'File {output} is not available in writing !')
 
+
+def verif_input_config (config : str):
+	'''
+	Test if the config file and file it contains exists and are ok 
+	'''
+	config_path = Path(config)
+	if config_path.exists():
+		if config_path.stat().st_size > 0:
+			if access(config, R_OK) :
+				with open(config ,'r') as f:
+					try:
+						line1 = int(f.readline().strip())
+					except ValueError:
+						raise ValueError(f'Config file {config} does\'t start with the number of samples!')
+					#if line1.startswith('###VCF files') or line1.startswith('### VCF files') :
+					#	pass
+					#else:
+					#	raise ValueError(f'File {vcf} is not a vcf file or the header ##fileformat=VCF doesn\'t exist !')
+			else :
+				raise ValueError(f'Config file {config} is not available for reading !')
+		else:
+			raise ValueError(f'Config file {config} is empty !')
+	else:
+		raise ValueError(f'Config file {config} doesn\'t exists !')
+
+
+
+
+
+
+
+
+
+
