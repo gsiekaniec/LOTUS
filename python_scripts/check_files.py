@@ -6,27 +6,19 @@ from os import access, R_OK, W_OK
 
 
 def verif_input_vcf (vcf : str):
-        '''
-        Test if vcf file exist and have a correct format else raise error
-        '''
-        path = Path(vcf)
-        if path.exists():
-                if path.stat().st_size > 0:
-                        if access(vcf, R_OK) :
-                                if vcf.upper().endswith('.VCF'):
-                                        with open(vcf ,'r') as f:
-                                                if f.readline().startswith('##fileformat=VCF'):
-                                                        pass
-                                                else:
-                                                        raise ValueError(f'File {vcf} is not a vcf file or the header ##fileformat=VCF doesn\'t exist !')
-                                else:
-                                        raise ValueError(f'Extension of file {vcf} is not .vcf !')
-                        else :
-                                raise ValueError(f'File {vcf} is not available for reading !')
-                else:
-                        raise ValueError(f'File {vcf} is empty !')
-        else:
-                raise ValueError(f'File {vcf} doesn\'t exists !')
+	'''
+	Test if vcf file exist and have a correct format else raise error
+	'''
+	verif_input(vcf)
+	path = Path(vcf) 
+	if vcf.upper().endswith('.VCF'):
+		with open(vcf ,'r') as f:
+			if f.readline().startswith('##fileformat=VCF'):
+				pass
+			else:
+				raise ValueError(f'File {vcf} is not a vcf file or the header ##fileformat=VCF doesn\'t exist !')
+	else:
+		raise ValueError(f'Extension of file {vcf} is not .vcf !')
 
 
 def verif_output (output : str):
@@ -48,30 +40,83 @@ def verif_output (output : str):
                         if not access(output, W_OK) :
                                 raise ValueError(f'File {output} is not available in writing !')
 
+def verif_input (file : str):	
+	'''
+	Basic test on input files
+	'''
+	path = Path(file)
+	if path.exists():
+		if path.stat().st_size > 0:
+			if access(file, R_OK) :
+				pass
+			else :
+				raise ValueError(f'File {file} is not available for reading !')
+		else:
+			raise ValueError(f'File {file} is empty !')
+	else:
+		raise ValueError(f'File {file} doesn\'t exists !')
+
+
 
 def verif_input_config (config : str):
 	'''
 	Test if the config file and file it contains exists and are ok 
 	'''
+	verif_input(config)
 	config_path = Path(config)
-	if config_path.exists():
-		if config_path.stat().st_size > 0:
-			if access(config, R_OK) :
-				with open(config ,'r') as f:
-					try:
-						line1 = int(f.readline().strip())
-					except ValueError:
-						raise ValueError(f'Config file {config} does\'t start with the number of samples!')
-					#if line1.startswith('###VCF files') or line1.startswith('### VCF files') :
-					#	pass
-					#else:
-					#	raise ValueError(f'File {vcf} is not a vcf file or the header ##fileformat=VCF doesn\'t exist !')
-			else :
-				raise ValueError(f'Config file {config} is not available for reading !')
-		else:
-			raise ValueError(f'Config file {config} is empty !')
-	else:
-		raise ValueError(f'Config file {config} doesn\'t exists !')
+	list_to_fill = None
+	vcf_filtered = []
+	vcf_pass = []
+	snp = []
+	insertion = []
+	deletion = []
+	with open(config ,'r') as f:
+		try:
+			nb_sample = int(f.readline().strip())
+		except ValueError:
+			raise ValueError(f'Config file {config} does\'t start with the number of samples!')
+		for line in f:
+			line = line.strip()
+			if line != '':
+				if line[0] != '#':
+					if line[0] == '-':
+						if '- filtered:' in line:
+							list_to_fill = 'filtered'
+						elif '- pass:' in line:
+							list_to_fill = 'pass'
+						elif '- profile:' in line:
+							list_to_fill = 'profile'
+						elif '- insertion:' in line:
+							list_to_fill = 'insertion'
+						elif '- deletion:' in line:
+							list_to_fill = 'deletion'
+					if line[0] != '-':
+						if list_to_fill == 'filtered':
+							verif_input_vcf(line)
+							vcf_filtered.append(line)
+						elif list_to_fill == 'pass':
+							verif_input_vcf(line)
+							vcf_pass.append(line)
+						elif list_to_fill == 'profile':
+							verif_input(line)
+							snp.append(line)
+						elif list_to_fill == 'insertion':
+							verif_input(line)
+							insertion.append(line)
+						elif list_to_fill == 'deletion':			
+							verif_input(line)							
+							deletion.append(line)
+	if len(vcf_filtered) != nb_sample: 
+		raise ValueError(f'Wrong number of filtered vcf files in config file {config} !')
+	elif len(vcf_pass) != nb_sample:
+		raise ValueError(f'Wrong number of pass vcf files in config file {config} !')
+	elif len(snp) != nb_sample:
+		raise ValueError(f'Wrong number of snp profile tsv files in config file {config} !')
+	elif len(insertion) != nb_sample:
+		raise ValueError(f'Wrong number of insertion count tsv files in config file {config} !')
+	elif len(deletion) != nb_sample:
+		raise ValueError(f'Wrong number of deletion count tsv files in config file {config} !')
+	return vcf_filtered, vcf_pass, snp, insertion, deletion
 
 
 

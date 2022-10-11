@@ -9,7 +9,7 @@ from copy import deepcopy
 from itertools import takewhile
 from tqdm import tqdm
 from python_scripts.check_files import verif_input_vcf, verif_output
-
+from python_scripts.path_modification import true_stem
 
 def line_without_fail(record, to_suppr : str, intIndex : dict, strLotusFilterCode : str, strFilterPassKey : str, strFilterPassOk : str):
 	'''
@@ -34,7 +34,7 @@ def line_without_fail(record, to_suppr : str, intIndex : dict, strLotusFilterCod
 
 	# Suppresion of the useless modification
 
-	informations = [[id, value] for id, value in [tuple(info.split('=')) for info in record[intIndex['Info']].split(';')]]
+	informations = [[info.split('=')[0], info.split('=')[1]] if (len(info.split('=')) == 2) else tuple([info.split('=')[0],'']) for info in [info for info in record[intIndex['Info']].split(';')]]
 
 	for j, information in enumerate(informations):
 		id, info = information
@@ -224,13 +224,15 @@ def create_new_records(record, strFieldSplit, intIndex, InfoFieldsToProcess, str
 			else:
 				filters_failed += str(i)+':PASS'+','
 		filters_failed = filters_failed.rstrip(',')
+
 		# Add a new item (new filters) to Info field
 		record[intIndex['Info']] = record[intIndex['Info']]+str(';')+strFilterPassKey+str(filters_failed)
+
 		if filters_failed != '':
 			if not recOriginalFilter:
 				# Add the 'Lotus' filter item in Filter field
 				record[intIndex['Filter']] = strLotusFilterCode
-			else:
+			else:	
 				record[intIndex['Filter']] = record[intIndex['Filter']]+';'+strLotusFilterCode
 
 		if not recOriginalFilter and not 'DP' in filters_failed:
@@ -261,7 +263,8 @@ def filter(vcf_file : str, logger : str, output : str, working_method : str):
 	working_method : 2 possibilities : 'InMemory' (more speed but higher memory consumption) or 'Direct' (slow speed but low memory consumption)
 	'''
 
-	output2 = Path(output).with_suffix('.pass.vcf')
+	output = Path(true_stem(output)).with_suffix('.filtered.vcf')
+	output2 = Path(true_stem(output)).with_suffix('.pass.vcf')
 	print(f'Read file :\t{vcf_file}\nWrite in {output} and {output2}\n')
 	
 
@@ -527,12 +530,14 @@ def main(args):
 		logger.error('- Problem with output file -')
 		exit(1)
 
+	# Start
 
 	logger.info('**************************************************************************************************************')
 	logger.info('*** g-LOTUS filtering module ***')
-	logger.info('Start filtering !')
+	logger.info('* Start filtering *')
 	logger.info(f'Working directory (vcf files folder) : {working_directory}') 
 	logger.info(f'Current directory : {Path().absolute()}')
 
 	filter(vcf_file , logger, output, working_method)
 
+        # End

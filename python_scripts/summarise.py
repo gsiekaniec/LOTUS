@@ -723,18 +723,17 @@ def main(args):
 
 	try:
 		logger.info('Verification of outputs file')
-		#verif_output(out_stats)
-		#verif_output(out_genes)
+		verif_output(out_stats)
+		verif_output(out_genes)
 		if not out_profile.endswith('.svg'):
                 	out_profile = Path(out_profile).with_suffix('.svg')
-		#verif_output(out_profile)
+		verif_output(out_profile)
 		if not out_indel.endswith('.svg'):
 			out_indel = Path(out_indel).with_suffix('.svg')
-		#verif output(out_indel)
+		verif_output(out_indel)
 		if enrichment:
-			pass
-			#verif_output(Path(vcf_file_pass).stem.replace('.','_')+'_ToppGene_enrichment.xlsx')
-			#verif_output(Path(vcf_file_pass).stem.replace('.','_')+'_Panther_enrichment.xlsx')
+			verif_output(Path(vcf_file_pass).stem.replace('.','_')+'_ToppGene_enrichment.xlsx')
+			verif_output(Path(vcf_file_pass).stem.replace('.','_')+'_Panther_enrichment.xlsx')
 		logger.info('- Outputs file ok -')
 	except ValueError:
 		print ('Problem with one or more output files: ', sys.exc_info()[0])
@@ -744,7 +743,7 @@ def main(args):
 	# Start
 
 	logger.info('**************************************************************************************************************')
-	logger.info('*** g-LOTUS summary module ***')
+	logger.info('*** g-LOTUS summarise module ***')
 	logger.info('* Start summarizing *')
 	logger.info(f'Working directory (vcf files folder) : {working_directory}')
 	logger.info(f'Current directory : {Path().absolute()}')

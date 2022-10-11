@@ -226,23 +226,28 @@ if __name__ == '__main__':
     )
 
     optional_compare.add_argument('--output', '-o', dest='out', metavar='OUTPUT', 
-    default='stats_comparison.xlsx', 
-    help='Excel file containing the genes specific to the first or second biopsy.'
+    default='genes.xlsx', 
+    help='Excel file containing the genes specific to the first or second biopsy. Default = "genes.xlsx" wich give "{vcf1}_{vcf2}_genes.tsv/.xlsx".'
     )
     
-    optional_compare.add_argument('--profil', '-p', dest='profil', metavar='PROFIL',
-    default='profil_comparison.svg',
-    help='SVG file that shows the comparison between mutations profiles of the two vcf file.'
+    optional_compare.add_argument('--profile', '-p', dest='profile', metavar='PROFILE',
+    default='profile.svg',
+    help='SVG file that shows the comparison between mutations profiles of the two vcf file. Default = "profile.svg" wich give "{vcf1}_{vcf2}_profile.svg".'
     )
 
     optional_compare.add_argument('--indel', '-i', dest='indel',  metavar='OUTPUT_INDEL',
     default='indel.svg',
-    help='SVG file that shows the indel mutations size of the vcf file. Default = "indel.svg".'
+    help='SVG file that shows the indel mutations size of the vcf file. Default = "indel.svg" wich give "{vcf1}_{vcf2}_indel.svg".'
     )
 
     optional_compare.add_argument('--enrichment', dest='enrichment',
     action='store_true',
     help='Did the GO enrichment analysis on the genes list using ToppGene and Panther and returns the biological processes (works if the APIs are not down). Default = False.'
+    )
+
+    optional_compare.add_argument('--statistics', '-s', dest='stats', metavar='OUTPUT_STATS',
+    default='stats.txt',
+    help='Output statistics file. Default = "stats.txt" wich give "{vcf1}_{vcf2}_stats.txt".'
     )
 
     parser_compare.set_defaults(parser_filter=False, parser_summarise=False, parser_compare=True)
