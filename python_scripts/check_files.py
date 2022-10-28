@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import pandas as pd
 from pathlib import Path
 from os import access, R_OK, W_OK
 
@@ -56,6 +57,35 @@ def verif_input (file : str):
 	else:
 		raise ValueError(f'File {file} doesn\'t exists !')
 
+def verif_input_xlsx (file : str):
+	try:
+		pd.read_excel(file, index_col=0)
+		return True
+	except ValueError:
+		return False
+
+def verif_input_tsv (file : str):
+	try:
+		pd.read_csv(file, sep='\t')
+		return True
+	except ValueError:
+		return False
+
+def verif_input_config_merge (config : str):
+	with open(config, 'r') as f:
+		for line in f:
+			line = line.strip()
+			line = line.split(',')[0]
+			if line != '':
+				verif_input(line)
+				result_xlsx = verif_input_xlsx(line)
+				result_tsv = verif_input_tsv(line)
+				if result_xlsx:
+					pass
+				elif result_tsv:
+					pass
+				else:
+					raise ValueError(f'File {line} is not a tsv or excel file !')
 
 
 def verif_input_config (config : str):

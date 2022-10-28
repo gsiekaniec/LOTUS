@@ -70,7 +70,7 @@ def line_without_fail(record, to_suppr : str, intIndex : dict, strLotusFilterCod
 	return True
 	
 
-def fail_filters(info : {}, AD : [], AF : [], nb_alt : int):
+def fail_filters(info : {}, AD : [], AF : [], nb_alt : int, filter_mbq: int = 20, filter_dp: int = 10, filter_af: float = 0.1, filter_ad: int = 5, filter_popaf: float = 0.0001):
 	'''
 	Do variant(s) at a position passes the filters ?
 	Input : info, AD and AF fields and the number of variants
@@ -87,11 +87,11 @@ def fail_filters(info : {}, AD : [], AF : [], nb_alt : int):
 
 	# Minimum allele sequencing depth
 	for i, ad in enumerate(AD[1:]):
-		if int(ad) < 5:
+		if int(ad) < filter_ad:
 			fail[i].add('AD')
 	# Minimum allele frequency
 	for i, af in enumerate(AF):
-		if float(af) < 0.1:
+		if float(af) < filter_af:
 			fail[i].add('AF')
 
 	for id, elmt in info.items():
@@ -99,10 +99,10 @@ def fail_filters(info : {}, AD : [], AF : [], nb_alt : int):
 		# global sequencing depth
 		if id == 'DP':
 			if type(elmt) == type([]):
-				if int(elmt[0]) < 10:
+				if int(elmt[0]) < filter_dp:
 					fail['all'].add('DP')
 			else:
-				if int(elmt) < 10:
+				if int(elmt) < filter_dp:
 					fail['all'].add('DP')
 		# median fragment length by allele
 		if id == 'MFRL':
@@ -112,13 +112,13 @@ def fail_filters(info : {}, AD : [], AF : [], nb_alt : int):
 		# median base quality by allele
 		if id == 'MBQ':
 			for i, mbq in enumerate(elmt[1:]):
-				if float(mbq) < 20:
+				if float(mbq) < filter_mbq:
 					fail[i].add('MBQ')
 		# population allele frequencies
 		if id == 'POPAF':
 			for i, popaf in enumerate(elmt):
 				popaf = 10**(-float(popaf))
-				if float(popaf) >= 0.00005:
+				if float(popaf) >= filter_popaf:
 					fail[i].add('POPAF')
 		# only allele with a potential functional effect (not silent)
 		if id == 'FUNCOTATION':
@@ -189,7 +189,7 @@ def get_values (record : str, strFieldSplit : dict, intIndex : dict, InfoFieldsT
 	return (recInfo, recFormat, recValues, recAD, recAF, recOriginalFilter)
 
 
-def create_new_records(record, strFieldSplit, intIndex, InfoFieldsToProcess, strCRLF):
+def create_new_records(record, strFieldSplit, intIndex, InfoFieldsToProcess, strCRLF, filter_mbq = 20, filter_dp = 10, filter_af = 0.1, filter_ad = 5, filter_popaf = 0.00001):
 	'''
 	Creation of new records containing new g-Lotus filter or without variants that dont pass filters  
         Input : record and dictionnary needed to find and split line fields
@@ -200,7 +200,7 @@ def create_new_records(record, strFieldSplit, intIndex, InfoFieldsToProcess, str
 
 	# #####################
 	# Treatment of failure
-	fail = fail_filters(recInfo, recAD, recAF, len(record[intIndex['Alt']].split(','))) #False if the variant does not pass the filters and the name of the filter that does not pass otherwise
+	fail = fail_filters(recInfo, recAD, recAF, len(record[intIndex['Alt']].split(',')), filter_mbq, filter_dp, filter_af, filter_ad, filter_popaf) #False if the variant does not pass the filters and the name of the filter that does not pass otherwise
 
 	# ####################
 	# Rebuilt and storage of filtered data
@@ -254,7 +254,7 @@ def create_new_records(record, strFieldSplit, intIndex, InfoFieldsToProcess, str
 	return blnPass, newRecord, newRecord2
 
 
-def filter(vcf_file : str, logger : str, output : str, working_method : str):
+def filter(vcf_file : str, logger : str, output : str, working_method : str, filter_mbq : int, filter_dp : int, filter_af : float, filter_ad : int, filter_popaf : float):
 	'''
 	Filters out variants:
 	Input : vcf file
@@ -276,224 +276,223 @@ def filter(vcf_file : str, logger : str, output : str, working_method : str):
 	# ######################################################################################
 	# Opening the file, and read it line by line, store it in a list for further treatments
 
-	try:
-		with open(vcf_file, mode='r', encoding='latin-1', errors='backslashreplace') as obFileInput:		 #read in latin-1 because some char from funcotator anotation are not in utf-8
 
-			n = 0				# total number of lines in the VCF
-			n_header = 0			# number of header lines from the VCF
+	with open(vcf_file, mode='r', encoding='latin-1', errors='backslashreplace') as obFileInput:		 #read in latin-1 because some char from funcotator anotation are not in utf-8
 
-			if working_method == 'InMemory':
-				lstInput1=[]	# The original data
-				lstInput1 = obFileInput.readlines()
-				n = len(lstInput1)
-				n_header = len(list(takewhile(lambda x: x[0]=='#', lstInput1)))
-	
-			elif working_method == 'Direct':
-				# read the open file in r mode for counting lines, then close and reopen it
-				n = sum(1 for _ in obFileInput)
-				obFileInput.seek(0,0)
-				n_header = len(list(takewhile(lambda x: x[0]=='#', (line for line in obFileInput))))
-				obFileInput.seek(0,0)
+		n = 0				# total number of lines in the VCF
+		n_header = 0			# number of header lines from the VCF
 
-			print(f'Number of lines to read : {n}\nNumber of header lines : {n_header}')
-			logger.info(f'Input file contains : {str(n)} lines ({n_header} header and {n-n_header} data)')
-			
+		if working_method == 'InMemory':
+			lstInput1=[]	# The original data
+			lstInput1 = obFileInput.readlines()
+			n = len(lstInput1)
+			n_header = len(list(takewhile(lambda x: x[0]=='#', lstInput1)))
 
-			# ####################################################
-			# Opening for writing outputs
-			obFileOuput1 = open(output,'w', encoding='latin-1')		# the modified data -> with all variants and a new complementary filter
-			obFileOuput2 = open(output2,'w', encoding='latin-1')		# the modified data -> without variants that don't pass filters
+		elif working_method == 'Direct':
+			# read the open file in r mode for counting lines, then close and reopen it
+			n = sum(1 for _ in obFileInput)
+			obFileInput.seek(0,0)
+			n_header = len(list(takewhile(lambda x: x[0]=='#', (line for line in obFileInput))))
+			obFileInput.seek(0,0)
+
+		print(f'Number of lines to read : {n}\nNumber of header lines : {n_header}')
+		logger.info(f'Input file contains : {str(n)} lines ({n_header} header and {n-n_header} data)')
 
 
-			# Criteria for header (only 6 (intlenghtCrit) char long for searching frame)
-			intlenghtCrit = 6
-			strHeaderFilter = '##FILT'				# To locate filter fields
-			strHeaderInfo = '##INFO'				# To locate info fields
+		# ####################################################
+		# Opening for writing outputs
+		obFileOuput1 = open(output,'w', encoding='latin-1')		# the modified data -> with all variants and a new complementary filter
+		obFileOuput2 = open(output2,'w', encoding='latin-1')		# the modified data -> without variants that don't pass filters
 
-			# New lines to add in header
-			strNewFilter = '##FILTER=<ID=LOTUS_filter,Description="Mutation does not pass g-LOTUS filters">'
-			strNewInfo = '##INFO=<ID=OTHER_FILTER,Number=A,Type=String,Description="Other filter that dont pass.">'
-			
-			# Line ending
-			strCRLF = '\n'
 
-			# Counters
-			intCountHeaderIns = 0					# Inserted header lines counter
-			intCountHeaderMod = 0					# Modified header lines counter
-			count = 0						# Total lines counter
+		# Criteria for header (only 6 (intlenghtCrit) char long for searching frame)
+		intlenghtCrit = 6
+		strHeaderFilter = '##FILT'				# To locate filter fields
+		strHeaderInfo = '##INFO'				# To locate info fields
 
-			id_column = ''						# Saved the id of colunm for later
+		# New lines to add in header
+		strNewFilter = '##FILTER=<ID=LOTUS_filter,Description="Mutation does not pass g-LOTUS filters">'
+		strNewInfo = '##INFO=<ID=OTHER_FILTER,Number=A,Type=String,Description="Other filter that dont pass.">'
 
-			# Presetting variable for reading
-			sample_id = []
-			if working_method=='InMemory':
-				strLinePrevious = lstInput1[0]
-			elif working_method == 'Direct':
-				strLinePrevious = '#'
+		# Line ending
+		strCRLF = '\n'
 
-			# searching through the header
+		# Counters
+		intCountHeaderIns = 0					# Inserted header lines counter
+		intCountHeaderMod = 0					# Modified header lines counter
+		count = 0						# Total lines counter
 
-			if working_method=='InMemory':
-				print('Header treatment')
-				id_column = lstInput1[n_header-1].lstrip('#')
-				lstSave = deepcopy(lstInput1)
-				for i in tqdm(range(n_header)):
-					x = lstSave[i]
-					# 1. Search for a specific information without affecting data integrity
-					sample_id.append(tumor_sample_header_logging(x, logger))
-					# 2. Search for the end of a theme : to insert a line at the end of the theme
-					strLinePreviousStart = strLinePrevious[0:intlenghtCrit]			
-					if x[0:intlenghtCrit] != strLinePreviousStart:
-						if strLinePreviousStart == strHeaderFilter:
-							lstInput1 = lstInput1[0:i+intCountHeaderIns]+[strNewFilter+strCRLF]+lstInput1[i+intCountHeaderIns:]
-							intCountHeaderIns +=1
-						elif strLinePreviousStart == strHeaderInfo:
-							lstInput1 = lstInput1[0:i+intCountHeaderIns]+[strNewInfo+strCRLF]+lstInput1[i+intCountHeaderIns:]
-							intCountHeaderIns +=1
-					strLinePrevious = x
-				del lstSave
+		id_column = ''						# Saved the id of colunm for later
 
-			elif working_method=='Direct':
+		# Presetting variable for reading
+		sample_id = []
+		if working_method=='InMemory':
+			strLinePrevious = lstInput1[0]
+		elif working_method == 'Direct':
+			strLinePrevious = '#'
+
+		# searching through the header
+
+		if working_method=='InMemory':
+			print('Header treatment')
+			id_column = lstInput1[n_header-1].lstrip('#')
+			lstSave = deepcopy(lstInput1)
+			for i in tqdm(range(n_header)):
+				x = lstSave[i]
+				# 1. Search for a specific information without affecting data integrity
+				sample_id.append(tumor_sample_header_logging(x, logger))
+				# 2. Search for the end of a theme : to insert a line at the end of the theme
+				strLinePreviousStart = strLinePrevious[0:intlenghtCrit]
+				if x[0:intlenghtCrit] != strLinePreviousStart:
+					if strLinePreviousStart == strHeaderFilter:
+						lstInput1 = lstInput1[0:i+intCountHeaderIns]+[strNewFilter+strCRLF]+lstInput1[i+intCountHeaderIns:]
+						intCountHeaderIns +=1
+					elif strLinePreviousStart == strHeaderInfo:
+						lstInput1 = lstInput1[0:i+intCountHeaderIns]+[strNewInfo+strCRLF]+lstInput1[i+intCountHeaderIns:]
+						intCountHeaderIns +=1
+				strLinePrevious = x
+			del lstSave
+
+		elif working_method=='Direct':
+			x = obFileInput.readline().strip()
+			print ('Header treatment')
+			pbar = tqdm(total=n_header)
+			while x[0] == '#':
+				# 1 Write unmodified lines
+				if strLinePrevious != '#':
+					obFileOuput1.write(str(strLinePrevious+strCRLF))                # Simple copy of the actual value
+					obFileOuput2.write(str(strLinePrevious+strCRLF))
+				# 2. Search for a specific information without affecting data integrity
+				sample_id.append(tumor_sample_header_logging(x, logger))
+				# 3. Search for the end of a theme : to insert a line at the end of the theme
+				strLinePreviousStart = strLinePrevious[0:intlenghtCrit]
+				if x[0:intlenghtCrit] != strLinePreviousStart:
+					if strLinePreviousStart == strHeaderFilter:
+						obFileOuput1.write(str(strNewFilter+strCRLF))
+						obFileOuput2.write(str(strNewFilter+strCRLF))
+						intCountHeaderIns +=1
+					elif strLinePreviousStart == strHeaderInfo :
+						obFileOuput1.write(str(strNewInfo+strCRLF))
+						obFileOuput2.write(str(strNewInfo+strCRLF))
+						intCountHeaderIns +=1
+					if x[0] == '#' and x[1] != '#':
+						intDataStartPos=obFileInput.tell()
+						id_column = x.lstrip('#')
+						obFileOuput1.write(str(x+strCRLF))
+						obFileOuput2.write(str(x+strCRLF))
+				strLinePrevious = x
+				count += 1
+				pbar.update(1)
 				x = obFileInput.readline().strip()
-				print ('Header treatment')
-				pbar = tqdm(total=n_header)
-				while x[0] == '#':
-					# 1 Write unmodified lines	
-					if strLinePrevious != '#':
-						obFileOuput1.write(str(strLinePrevious+strCRLF))                # Simple copy of the actual value
-						obFileOuput2.write(str(strLinePrevious+strCRLF))
-					# 2. Search for a specific information without affecting data integrity
-					sample_id.append(tumor_sample_header_logging(x, logger))
-					# 3. Search for the end of a theme : to insert a line at the end of the theme
-					strLinePreviousStart = strLinePrevious[0:intlenghtCrit]
-					if x[0:intlenghtCrit] != strLinePreviousStart:
-						if strLinePreviousStart == strHeaderFilter:
-							obFileOuput1.write(str(strNewFilter+strCRLF))
-							obFileOuput2.write(str(strNewFilter+strCRLF))
-							intCountHeaderIns +=1
-						elif strLinePreviousStart == strHeaderInfo :						
-							obFileOuput1.write(str(strNewInfo+strCRLF))
-							obFileOuput2.write(str(strNewInfo+strCRLF))
-							intCountHeaderIns +=1
-						if x[0] == '#' and x[1] != '#':
-							intDataStartPos=obFileInput.tell()
-							id_column = x.lstrip('#')
-							obFileOuput1.write(str(x+strCRLF))
-							obFileOuput2.write(str(x+strCRLF))						
-					strLinePrevious = x
-					count += 1
-					pbar.update(1)
-					x = obFileInput.readline().strip()
-				pbar.close()
-			if not any(sample_id):
-				logger.warning('No sample id !')
-			logger.info(f'{intCountHeaderIns} line(s) added to header')
-			logger.info(f'Actual number of header line is {n_header+intCountHeaderIns} ({n_header} before)')
-			n_header = n_header+intCountHeaderIns
-			
-					
-			# Criteria for data
-			# To know how to split each sub-fields of datas
-			strFieldSplit = {1 : '\t', 'Info1' : ';', 'Info2' : '=', 'Funcota' : ',', 'Format1' : ':', 'Format2' : ','}
+			pbar.close()
+		if not any(sample_id):
+			logger.warning('No sample id !')
+		logger.info(f'{intCountHeaderIns} line(s) added to header')
+		logger.info(f'Actual number of header line is {n_header+intCountHeaderIns} ({n_header} before)')
+		n_header = n_header+intCountHeaderIns
 
-			# index for fields
-			intIndex = {'Chr' : id_column.split(strFieldSplit[1]).index('CHROM'), 'Alt' : id_column.split(strFieldSplit[1]).index('ALT'), 'Filter' : id_column.split(strFieldSplit[1]).index('FILTER'), 'Info' : id_column.split(strFieldSplit[1]).index('INFO'), 'Format' : id_column.split(strFieldSplit[1]).index('FORMAT')}
-			intIndex['Values'] = intIndex['Format']+1
 
-			InfoFieldsToProcess = {'DP', 'MFRL', 'MBQ', 'POPAF', 'FUNCOTATION'}
+		# Criteria for data
+		# To know how to split each sub-fields of datas
+		strFieldSplit = {1 : '\t', 'Info1' : ';', 'Info2' : '=', 'Funcota' : ',', 'Format1' : ':', 'Format2' : ','}
 
-			# Counter for new files
-			intCountData = 0
-			intCountPass = 0
+		# index for fields
+		intIndex = {'Chr' : id_column.split(strFieldSplit[1]).index('CHROM'), 'Alt' : id_column.split(strFieldSplit[1]).index('ALT'), 'Filter' : id_column.split(strFieldSplit[1]).index('FILTER'), 'Info' : id_column.split(strFieldSplit[1]).index('INFO'), 'Format' : id_column.split(strFieldSplit[1]).index('FORMAT')}
+		intIndex['Values'] = intIndex['Format']+1
 
-			# ###################################################
-                        # Analyze and extract genotype results, line by line
+		InfoFieldsToProcess = {'DP', 'MFRL', 'MBQ', 'POPAF', 'FUNCOTATION'}
 
-			if working_method=='InMemory':
-				lstInput2 = deepcopy(lstInput1)
-				for id_line, x in enumerate(lstInput1[n_header:]):
-					record = x.strip().split(strFieldSplit[1])
+		# Counter for new files
+		intCountData = 0
+		intCountPass = 0
 
-					blnPass, newRecord, newRecord2 = create_new_records(record, strFieldSplit, intIndex, InfoFieldsToProcess, strCRLF)					
+		# ###################################################
+		# Analyze and extract genotype results, line by line
 
-					lstInput1[n_header+id_line]=str(newRecord)
-					intCountData +=1
-					if (blnPass):
-						lstInput2[n_header+id_line]=str(newRecord2)
-						blnPass = False		# reset to default
-						intCountPass +=1
-					else:
-						lstInput2[n_header+id_line]=None
+		if working_method=='InMemory':
+			lstInput2 = deepcopy(lstInput1)
+			for id_line, x in enumerate(lstInput1[n_header:]):
+				record = x.strip().split(strFieldSplit[1])
 
-			elif working_method=='Direct':
-				obFileInput.seek(intDataStartPos)
+				blnPass, newRecord, newRecord2 = create_new_records(record, strFieldSplit, intIndex, InfoFieldsToProcess, strCRLF, filter_mbq, filter_dp, filter_af, filter_ad, filter_popaf)
+
+				lstInput1[n_header+id_line]=str(newRecord)
+				intCountData +=1
+				if (blnPass):
+					lstInput2[n_header+id_line]=str(newRecord2)
+					blnPass = False		# reset to default
+					intCountPass +=1
+				else:
+					lstInput2[n_header+id_line]=None
+
+		elif working_method=='Direct':
+			obFileInput.seek(intDataStartPos)
+			x = obFileInput.readline().strip()
+			count = 1
+			print(f'Saving {str(output)} and {str(output2)} on disk', flush=True)
+			pbar = tqdm(total=n-(n_header-intCountHeaderIns))
+			while x != '':
+				record = x.split(strFieldSplit[1])
+
+				blnPass, newRecord, newRecord2 = create_new_records(record, strFieldSplit, intIndex, InfoFieldsToProcess, strCRLF, filter_mbq, filter_dp, filter_af, filter_ad, filter_popaf)
+
+				obFileOuput1.write(newRecord)
+				intCountData +=1
+				if (blnPass):
+					obFileOuput2.write(newRecord2)
+					blnPass = False         # reset to default
+					intCountPass +=1
+
 				x = obFileInput.readline().strip()
-				count = 1
-				print(f'Saving {str(output)} and {str(output2)} on disk', flush=True)
-				pbar = tqdm(total=n-(n_header-intCountHeaderIns))
-				while x != '':
-					record = x.split(strFieldSplit[1])
-				
-					blnPass, newRecord, newRecord2 = create_new_records(record, strFieldSplit, intIndex, InfoFieldsToProcess, strCRLF)
-				
-					obFileOuput1.write(newRecord)
-					intCountData +=1
-					if (blnPass):
-						obFileOuput2.write(newRecord2)
-						blnPass = False         # reset to default
-						intCountPass +=1
-					
-					x = obFileInput.readline().strip()
-					count += 1
-					pbar.update(1)
-				pbar.close()
-			
-			if working_method == 'InMemory':				
-				print(f'Saving {str(output)} and {str(output2)} on disk', flush=True)
-				for count, record in enumerate(tqdm(lstInput1)):
-					obFileOuput1.write(record)
-					if lstInput2[count]:
-						obFileOuput2.write(lstInput2[count])
-					count += 1
+				count += 1
+				pbar.update(1)
+			pbar.close()
 
-			print(f'Number of lines containing variants : {str(intCountData)}')
-			print(f'Number of lines flagged as PASS : {str(intCountPass)}')
-			
-			logger.info(f'Number of lines for input header :\t{str(n_header)}')
-			logger.info(f'Number of lines for output header :\t{str(n_header)} of which {str(n_header-intCountHeaderIns)} lines added and {str(intCountHeaderIns)} line modified')
-			logger.info(f'Number of variants flagged as PASS :\t{str(intCountPass)}')
-			
+		if working_method == 'InMemory':
+			print(f'Saving {str(output)} and {str(output2)} on disk', flush=True)
+			for count, record in enumerate(tqdm(lstInput1)):
+				obFileOuput1.write(record)
+				if lstInput2[count]:
+					obFileOuput2.write(lstInput2[count])
+				count += 1
 
-			# ##############################################
-			# Close the 2 destination files
-			obFileOuput1.close()
-			obFileOuput2.close()
-			del obFileOuput1
-			del obFileOuput2
-			if working_method == 'InMemory':
-				del lstInput1
-				del lstInput2
+		print(f'Number of lines containing variants : {str(intCountData)}')
+		print(f'Number of lines flagged as PASS : {str(intCountPass)}')
+
+		logger.info(f'Number of lines for input header :\t{str(n_header)}')
+		logger.info(f'Number of lines for output header :\t{str(n_header)} of which {str(n_header-intCountHeaderIns)} lines added and {str(intCountHeaderIns)} line modified')
+		logger.info(f'Number of variants flagged as PASS :\t{str(intCountPass)}')
 
 
-			logger.info(f' -> file {str(output)} :\t{str(n_header+intCountData)} total lines of which {str(intCountData)} genotype data lines')
-			logger.info(f' -> file {str(output2)} :\t{str(n_header+intCountPass)} total lines of which {str(intCountPass)} genotype data lines')
-			logger.info(f'* End of filtering *')
-			logger.info('**************************************************************************************************************')
+		# ##############################################
+		# Close the 2 destination files
+		obFileOuput1.close()
+		obFileOuput2.close()
+		del obFileOuput1
+		del obFileOuput2
+		if working_method == 'InMemory':
+			del lstInput1
+			del lstInput2
+
+
+		logger.info(f' -> file {str(output)} :\t{str(n_header+intCountData)} total lines of which {str(intCountData)} genotype data lines')
+		logger.info(f' -> file {str(output2)} :\t{str(n_header+intCountPass)} total lines of which {str(intCountPass)} genotype data lines')
+		logger.info(f'* End of filtering *')
+		logger.info('**************************************************************************************************************')
 
 
 
-	except IOError:
-		print ('Error raised : could not read file: '+str(vcf_file)+'. Please check your parameters or filename.', sep='')
-
-	except:
-		print ('Unexpected error:', sys.exc_info()[0])
-		raise 
 
 
 def main(args):
 
 	vcf_file = args.vcf
 	output = args.out
+	filter_mbq = args.mbq
+	filter_dp = args.dp
+	filter_af = args.af
+	filter_ad = args.ad
+	filter_popaf = args.popaf
 
 	working_method = args.working_method	# working_method = 'InMemory' (more speed but higher memory consumption) or 'Direct' (slow speed but low memory consumption)
 	working_directory = Path(vcf_file).parent.absolute()
@@ -518,7 +517,7 @@ def main(args):
 		verif_input_vcf(vcf_file)
 		logger.info('- Vcf file ok -')
 	except ValueError:
-		print ('Problem with vcf file {vcf_file}:', sys.exc_info()[0])
+		print (f'Problem with vcf file {vcf_file}:', sys.exc_info())
 		logger.error('- Problem with vcf file -')
 		exit(1)
 	try:
@@ -526,7 +525,7 @@ def main(args):
 		verif_output(output)
 		logger.info('- Output file ok -')
 	except ValueError:
-		print ('Problem with output file {output}:', sys.exc_info()[0])
+		print (f'Problem with output file {output}:', sys.exc_info())
 		logger.error('- Problem with output file -')
 		exit(1)
 
@@ -534,10 +533,11 @@ def main(args):
 
 	logger.info('**************************************************************************************************************')
 	logger.info('*** g-LOTUS filtering module ***')
+	logger.info(f'**cmd line : python lotus.py filter -v {str(vcf_file)} -o {output} -wm {working_method} --DP {filter_dp} --MBQ {filter_mbq} --AF {filter_af} --AD {filter_ad} --POPAF {filter_popaf} **')
 	logger.info('* Start filtering *')
 	logger.info(f'Working directory (vcf files folder) : {working_directory}') 
 	logger.info(f'Current directory : {Path().absolute()}')
 
-	filter(vcf_file , logger, output, working_method)
-
-        # End
+	filter(vcf_file , logger, output, working_method, filter_mbq, filter_dp, filter_af, filter_ad, filter_popaf)
+	
+	# End

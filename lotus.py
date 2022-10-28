@@ -15,6 +15,7 @@ matplotlib.use('agg')
 import python_scripts.filter
 import python_scripts.summarise
 import python_scripts.compare
+import python_scripts.merge
 
 
 __version__ = '0.0.1'
@@ -98,6 +99,19 @@ ascii_compare= r'''                     ___ ___  _ __ ___  _ __   __ _ _ __ ___
 -----------------------------------------------------------------------------------
 '''
 
+ascii_merge= r'''                           _ __ ___   ___ _ __ __ _  ___ 
+                          | '_ ` _ \ / _ \ '__/ _` |/ _ \
+                          | | | | | |  __/ | | (_| |  __/
+                          |_| |_| |_|\___|_|  \__, |\___|
+                                               __/ |     
+                                              |___/
+
+-----------------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------------
+'''
+
+
 if __name__ == '__main__':
 
     print(lotus_ascii)
@@ -160,7 +174,7 @@ if __name__ == '__main__':
     default=0.00001, type=float,
     help='Max population (often GnomAD) variant frequencies. Default = 0,00001.')
 
-    parser_filter.set_defaults(parser_filter=True, parser_summarise=False, parser_compare=False)
+    parser_filter.set_defaults(parser_filter=True, parser_summarise=False, parser_compare=False, parser_merge=False)
 
     ##################
     #Summarise parser#
@@ -210,7 +224,7 @@ if __name__ == '__main__':
     help='Did the GO enrichment analysis on the genes list using ToppGene and Panther and returns the biological processes (works if the APIs are not down). Default = False.'
     )
 
-    parser_summarise.set_defaults(parser_filter=False, parser_summarise=True, parser_compare=False)
+    parser_summarise.set_defaults(parser_filter=False, parser_summarise=True, parser_compare=False, parser_merge=False)
 
     ################
     #Compare parser#
@@ -250,7 +264,55 @@ if __name__ == '__main__':
     help='Output statistics file. Default = "stats.txt" wich give "{vcf1}_{vcf2}_stats.txt".'
     )
 
-    parser_compare.set_defaults(parser_filter=False, parser_summarise=False, parser_compare=True)
+    parser_compare.set_defaults(parser_filter=False, parser_summarise=False, parser_compare=True, parser_merge=False)
+
+    #Merge parser
+
+    parser_merge = subparsers.add_parser('merge', help='Merging patient results to find the genes that best explain cancer progression.')
+
+    required_merge = parser_merge.add_argument_group('Required argument')
+    optional_merge = parser_merge.add_argument_group('Optional argument')
+
+    required_merge.add_argument('--configuration', '-c', dest='conf',  metavar='CONFIGURATION_FILE',
+    required=True,
+    help='Configuration file. Merged patients results.')
+
+    optional_merge.add_argument('--output', '-o', dest='output', metavar='OUTPUT',
+    default='union.xlsx',
+    help='Output file name. Default = union.xlsx.'
+    )
+
+    optional_merge.add_argument('--upset', '-u', dest='upset', metavar='UPSET_OUTPUT',
+    default='upset_plot.svg',
+    help='Output name for upset plot.  Default = upset_plot.svg.'
+    )
+
+    optional_merge.add_argument('--weakness_threshold', '-wt', dest='threshold', metavar='WEAKNESS_THRESHOLD',
+    default=101, type=int,
+    help='Mean weakness threshold to save take a gene into account. Default = 101.'
+    )
+	
+    optional_merge.add_argument('--min_subset_size', '-minsb', dest='min_subset_size', metavar='MIN_SUBSET_SIZE',
+    default=1, type=int,
+    help='Minimum size of a subset (nb of genes by subset) to be shown in the UpSetPlot. All subsets with a size smaller than this threshold will be omitted from plotting. Default = 1.'
+    )
+
+    optional_merge.add_argument('--max_subset_size', '-maxsb', dest='max_subset_size', metavar='MAX_SUBSET_SIZE',
+    default=0, type=int,
+    help='Maximum size of a subset (nb of genes by subset) to be shown in the UpSetPlot. All subsets with a size greater than this threshold will be omitted from plotting. Default = 0 (take the maximum possible value).'
+    )
+
+    optional_merge.add_argument('--min_degree', '-mind', dest='min_degree', metavar='MIN_DEGREE',
+    default=1, type=int,
+    help='Minimum degree of a subset (nb of patients) to be shown in the UpSetPlot. Default = 1.'
+    )
+
+    optional_merge.add_argument('--max_degree', '-maxd', dest='max_degree', metavar='MAX_DEGREE',
+    default=0, type=int,
+    help='Maximum degree of a subset (nb of patients) to be shown in the UpSetPlot. Default = 0 (take the maximum possible value).'
+    )
+
+    parser_merge.set_defaults(parser_filter=False, parser_summarise=False, parser_compare=False, parser_merge=True)
 
 
     #End parser#######
@@ -282,6 +344,9 @@ if __name__ == '__main__':
         elif args.parser_compare:
             print(ascii_compare)
             python_scripts.compare.main(args)
+        elif args.parser_merge:
+            print(ascii_merge)
+            python_scripts.merge.main(args)
         logger.info(f'---------------- g-LOTUS closes ----------------')
     else :
         parser.print_help()

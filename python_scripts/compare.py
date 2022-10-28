@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import logging
+import sys
 import pandas as pd
 import numpy as np
 from tqdm import tqdm
@@ -15,7 +16,9 @@ from python_scripts.path_modification import true_stem
 
 def get_variants(file, variants_save):
 	'''
-
+	Take a vcf file and return all its variants in a set (or a dictionnary with the index fields)
+	Input : vcf file and empty set to save variants
+	Output : set containing the variants
 	'''
 	for line in read_vcf(file):
 		if type(line) == type({}):
@@ -30,9 +33,10 @@ def get_variants(file, variants_save):
 	return variants_save
 
 
-def add_to_genes(genes, gene, type):
+def add_to_genes(genes : dict, gene : str, type : str):
 	'''
-	
+	Add 1 to a gene in the genes dictionary according to its type
+        Input : genes dictionary, gene name, type of the gene ('weak' or 'strong')
 	'''
 	if not gene in genes.keys():
 		genes[gene]={}
@@ -43,7 +47,9 @@ def add_to_genes(genes, gene, type):
 
 def modify_variants_pass_and_get_genes(file1, file2, variants, weak, strong, logger):
 	'''
-	
+	Get the pass variants lines from a vcf and add the variant type ('weak'/'strong'/'common') + get the count of types weak and strong for every gene 
+	Input : vcf file 1 to modify, vcf file 2 (just used for the name), set of specific variants from file 1, set of weak variants from file 1, set of strong variants from file 1 and the logger
+	Output : dictionary containing genes and their number of weak and strong variants (specific to vcf file 1)
 	'''
 	outfile = true_stem(file1)+'_compare_to_'+true_stem(file2)+'.pass.vcf'
 	genes = {}
@@ -58,7 +64,7 @@ def modify_variants_pass_and_get_genes(file1, file2, variants, weak, strong, log
 					gene = list(zip(*infos))[1][idx_funcotation].split('|')[0].lstrip('[')
 				variant_type = []
 				for i, alt in enumerate(line[intfield['idx_alts']]):
-					variant = (line[intfield['idx_chr']],line[intfield['idx_pos']],line[intfield['idx_ref']],alt)
+					variant = (line[intfield['idx_chr']], line[intfield['idx_pos']], line[intfield['idx_ref']], alt)
 					if variant in weak:
 						variant_type.append('weak')
 						add_to_genes(genes, gene, 'weak')
@@ -67,15 +73,17 @@ def modify_variants_pass_and_get_genes(file1, file2, variants, weak, strong, log
 						add_to_genes(genes, gene, 'strong')
 					else:
 						variant_type.append('common')
-				line[intfield['idx_info']] = line[intfield['idx_info']]+';VARIANT_TYPE='+','.join(variant_type)
+				line[intfield['idx_info']] = line[intfield['idx_info']]+';VARIANT_TYPE='+','.join(variant_type)		#Add the variant type to the vcf Info field
 				o.write("\t".join(line)+'\n')
 	return genes
 
 
 def create_graph_snp(df_snp, df_snp2, outname, logger):
 	'''
-	
+	Snp count plot creation
+        Input : snp profile of file 1, snp profile of file 2, output name for the plot and the logger
 	'''
+
 	#Colors
 	white_96 = ['white']*96
 	color_6 = ['darkblue', 'blue', 'lightblue', 'darkgreen', 'green', 'lightgreen']
@@ -93,10 +101,10 @@ def create_graph_snp(df_snp, df_snp2, outname, logger):
 	height = [float(i) for i in df_snp.iloc[:,2]-df_snp2.iloc[:,2]]
 	height2 = [float(i) for i in df_snp.iloc[:,2]]
 	height3 = [float(-i) for i in df_snp2.iloc[:,2]]
-	group = []
-	for index, row in df_snp.iterrows():
-		if row[0] not in group:
-			group.append(row[0])
+	group = ['C>A', 'C>G', 'C>T', 'T>A', 'T>C', 'T>G']
+	#for index, row in df_snp.iterrows():
+	#	if row[0] not in group:
+	#		group.append(row[0])
 	x_pos = np.arange(len(bars))
 
 	#Create bars
@@ -113,6 +121,7 @@ def create_graph_snp(df_snp, df_snp2, outname, logger):
 	ax1.set_ylabel(f'Difference between the percentages of each mutation-type')	
 	ax2 = ax1.twiny()
 	newpos = [8, 24, 40, 56, 72, 88]
+
 	ax2.set_xticks(newpos)
 	ax2.set_xticklabels(group)
 	ax2.xaxis.set_ticks_position('bottom')  # set the position of the second x-axis to bottom
@@ -138,8 +147,10 @@ def create_graph_snp(df_snp, df_snp2, outname, logger):
 
 def graph_snp(snp_profile_files, out_profile, logger):
 	'''
-	
+	Create the snp profile plot for each snp profile file (if exist)
+	Input : snp profile files, snp profile files, output name for the plot and the logger	
 	'''
+
 	print('Save profile comparison graph...')
 	pbar_snp = tqdm(total=len(snp_profile_files)-1)
 	for num in range(1,len(snp_profile_files)):
@@ -152,8 +163,10 @@ def graph_snp(snp_profile_files, out_profile, logger):
 
 def create_graph_indel(deletion1, deletion2, insertion1, insertion2, outname, logger):
 	'''
-
+	Create the indel count comparison plot
+        Input : Insertion count file 1, Insertion count file 2, Deletion count file 1, Deletion count file 2, output name for the plot and the logger
 	'''
+
 	insert = True
 	delet = True
 	if (deletion1 == None or deletion2 == None) and (insertion1 == None or insertion2 == None):
@@ -197,9 +210,9 @@ def create_graph_indel(deletion1, deletion2, insertion1, insertion2, outname, lo
 	if delet and insert:
 		maximum = max([max(bars_ins1)+1, max(bars_ins2)+1, max(bars_del1)+1, max(bars_del2)+1])
 	elif delet:
-		maximum = max([max(bars_ins1)+1, max(bars_ins2)+1])
-	elif not delet:
 		maximum = max([max(bars_del1)+1, max(bars_del2)+1])
+	elif not delet:
+		maximum = max([max(bars_ins1)+1, max(bars_ins2)+1])
 	x1 = [0]+[i+1 for i in range(maximum)]	
 	x2 = [0]+[i+1 for i in range(maximum)]	
 
@@ -218,7 +231,7 @@ def create_graph_indel(deletion1, deletion2, insertion1, insertion2, outname, lo
 		x1 = sorted(list(set(bars_del1).union(set(bars_ins1))))
 		x2 = sorted(list(set(bars_ins2).union(set(bars_del2))))
 	elif not insert:
-		plt.bar([float(i) for i in bars_del1], height_del, color = 'k', width = width, edgecolor = 'k', label='Deletion_'+name_del1)
+		plt.bar([float(i) for i in bars_del1], height_del1, color = 'k', width = width, edgecolor = 'k', label='Deletion_'+name_del1)
 		plt.bar([float(i) for i in bars_del2], height_del2, color = 'k', width = width, edgecolor = 'k', label='Deletion_'+name_del2)
 		outname = true_stem(outname)+'_'+true_stem(name_del1)+'.svg'
 		x1 = bars_del1
@@ -268,7 +281,8 @@ def create_graph_indel(deletion1, deletion2, insertion1, insertion2, outname, lo
 
 def graph_indel(insertions_count_files, deletions_count_files, out_indel, logger):
 	'''
-
+	Create the indel count comparison plot for each indel count file (if exist) 
+	Input : Insertion count files, Deletion count files, output name for the plot and the logger 
 	'''
 	if len(insertions_count_files) != len(deletions_count_files):
 		logger.error(f'Not the same number of insertions and deletions count files. No graph will be produced !')
@@ -281,26 +295,32 @@ def graph_indel(insertions_count_files, deletions_count_files, out_indel, logger
 		pbar_indel.update(1)
 	pbar_indel.close()
 
-def compare_vcf(vcf_pass_files, vcf_filtered_files, enrichment, logger):
+
+def compare_vcf(vcf_pass_files : list, vcf_filtered_files : list, enrichment : bool, logger):
 	'''
-	
+	Compare each vcf files with the n-1 vcf file (starting from the second file)
+	Input : vcf files (pass and filtered from the filter module), boolean to know if GOEA need to be done and the logger
 	'''
+
 	print('Save genes lists from comparisons...')
 	pbar_compare = tqdm(total=len(vcf_pass_files)-1)
-	for num in range(1,len(vcf_pass_files)):
+	for num in range(1,len(vcf_pass_files)):					# Comparison file by file starting from the second with is n-1
+
 		logger.info(f'Start comparing {true_stem(vcf_pass_files[num-1])} and {true_stem(vcf_pass_files[num])} !')
+
+		# Get variants for all vcf files
 
 		variants_pass_save = set()
 		variants_pass_save2 = set()
 		variants_filtered_save = set()
 		variants_filtered_save2 = set()
-			
 		variants_pass_save = get_variants(vcf_pass_files[num-1], variants_pass_save)		
 		variants_pass_save2 = get_variants(vcf_pass_files[num], variants_pass_save2)
-		
 		variants_filtered_save = get_variants(vcf_filtered_files[num-1], variants_filtered_save)
 		variants_filtered_save2 = get_variants(vcf_filtered_files[num], variants_filtered_save2)
 		
+		# Get variants sets specific to each file and separate this sets in weak and strong variants using the filtered file from the other vcf
+
 		croissant1 = variants_pass_save-variants_pass_save2
 		croissant2 = variants_pass_save2-variants_pass_save
 		strong1 = croissant1-variants_filtered_save2
@@ -308,7 +328,9 @@ def compare_vcf(vcf_pass_files, vcf_filtered_files, enrichment, logger):
 		weak1 = croissant1.intersection(variants_filtered_save2)
 		weak2 = croissant2.intersection(variants_filtered_save)
 
-		dfGenes = pd.DataFrame(columns=['gene', '%weakness', 'charge', str(true_stem(vcf_pass_files[num-1])), str(true_stem(vcf_pass_files[num]))])		
+		# Creation of the dataframe containing impacted gene and creation of the new vcf files containing the genes type ('strong'/'weak'/'common')  
+
+		dfGenes = pd.DataFrame(columns=['Gene symbol', 'Variant weakness (in %)', 'Tumor burden (symmetrical difference)', str(true_stem(vcf_pass_files[num-1])), str(true_stem(vcf_pass_files[num]))])		
 		weakness_list = []
 		charge_list = []
 		tumor1_list = []
@@ -320,29 +342,28 @@ def compare_vcf(vcf_pass_files, vcf_filtered_files, enrichment, logger):
 		for gene in genes_list:
 			
 			if gene in genes1.keys() and gene in genes2.keys():
-				weakness_list.append(((genes1[gene]['weak']+genes2[gene]['weak'])/(genes1[gene]['weak']+genes2[gene]['weak']+genes1[gene]['strong']+genes2[gene]['strong']))*100)
+				weakness_list.append(round(((genes1[gene]['weak']+genes2[gene]['weak'])/(genes1[gene]['weak']+genes2[gene]['weak']+genes1[gene]['strong']+genes2[gene]['strong']))*100,2))
 				charge_list.append(genes1[gene]['weak']+genes2[gene]['weak']+genes1[gene]['strong']+genes2[gene]['strong'])
 				tumor1_list.append(genes1[gene]['weak']+genes1[gene]['strong'])
 				tumor2_list.append(genes2[gene]['weak']+genes2[gene]['strong'])	
 			elif gene in genes1.keys():
-				weakness_list.append((genes1[gene]['weak']/(genes1[gene]['weak']+genes1[gene]['strong']))*100)
+				weakness_list.append(round((genes1[gene]['weak']/(genes1[gene]['weak']+genes1[gene]['strong']))*100,2))
 				charge_list.append(genes1[gene]['weak']+genes1[gene]['strong'])
 				tumor1_list.append(genes1[gene]['weak']+genes1[gene]['strong'])
 				tumor2_list.append(0)
 			elif gene in genes2.keys():
-				weakness_list.append((genes2[gene]['weak']/(genes2[gene]['weak']+genes2[gene]['strong']))*100)
+				weakness_list.append(round((genes2[gene]['weak']/(genes2[gene]['weak']+genes2[gene]['strong']))*100,2))
 				charge_list.append(genes2[gene]['weak']+genes2[gene]['strong'])
 				tumor1_list.append(0)
 				tumor2_list.append(genes2[gene]['weak']+genes2[gene]['strong'])
-		dfGenes['gene']=genes_list
-		dfGenes['%weakness']=weakness_list
-		dfGenes['charge']=charge_list
+		dfGenes['Gene symbol']=genes_list
+		dfGenes['Variant weakness (in %)']=weakness_list
+		dfGenes['Tumor burden (symmetrical difference)']=charge_list
 		dfGenes[str(true_stem(vcf_pass_files[num-1]))]=tumor1_list
 		dfGenes[str(true_stem(vcf_pass_files[num]))]=tumor2_list
 		
-		dfGenes = dfGenes.sort_values(by=['charge', '%weakness', 'gene'], ascending = [False, True, True])		
-
-		dfGenes = dfGenes.set_index('gene')		
+		dfGenes = dfGenes.sort_values(by=['Tumor burden (symmetrical difference)', 'Variant weakness (in %)', 'Gene symbol'], ascending = [False, True, True])		
+		dfGenes = dfGenes.set_index('Gene symbol')		
 
 		path_gene_list_out = str(true_stem(vcf_pass_files[num-1]))+'_'+str(true_stem(vcf_pass_files[num]))+'_genes_list.tsv'
 		
@@ -359,6 +380,7 @@ def compare_vcf(vcf_pass_files, vcf_filtered_files, enrichment, logger):
 			extract_biological_process(genes_list, toppgene_name, panther_name, logger)
 		pbar_compare.update(1)
 	pbar_compare.close()
+
 
 def main(args):
 
@@ -388,7 +410,7 @@ def main(args):
 		vcf_filtered_files, vcf_pass_files, snp_profile_files, insertions_count_files, deletions_count_files = verif_input_config(args.config)
 		logger.info('- Inputs file ok -')
 	except ValueError:
-		print ('Problem with config file: ', sys.exc_info()[0])
+		print ('Problem with config file: ', sys.exc_info()[1])
 		logger.error('- Problem with config file -')
 		exit(1)
 
@@ -399,16 +421,16 @@ def main(args):
 		for i in range(1,len(vcf_filtered_files)):
 			file_one = true_stem(vcf_filtered_files[i-1])
 			file_two = true_stem(vcf_filtered_files[i])
-				
+
 			out_stats = Path(file_one+'_'+file_two+'_'+out_stats).with_suffix('.txt')
 			#verif_output(out_stats)
-		
+
 			out_profile = Path(true_stem(out_profile)+'_'+file_one+'_'+file_two).with_suffix('.svg')
 			#verif_output(out_profile)
 
 			out_indel = Path(true_stem(out_indel)+'_'+file_one+'_'+file_two).with_suffix('.svg')
 			#verif_output(out_indel)	
-		
+
 			out_gene = file_one+'_'+file_two+'_genes_list.xlsx'
 			#verif_output(out_gene)
 			out_gene = file_one+'_'+file_two+'_genes_list.tsv'
@@ -428,7 +450,7 @@ def main(args):
 		logger.info('- Outputs file ok -')
 
 	except ValueError:
-		print ('Problem with one or more output files: ', sys.exc_info()[0])
+		print ('Problem with one or more output files: ', sys.exc_info()[1])
 		logger.error('- Problem with output files -')
 		exit(1)
 

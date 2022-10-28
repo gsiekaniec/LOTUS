@@ -174,6 +174,3 @@ def test_fail_filter_silent():
 	assert fail_filters(silent_1, AD_ok_1, AF_ok_1, 1) and fail_filters(silent_2, AD_ok_2, AF_ok_2, 2)
 
 
-
-
-
