@@ -18,7 +18,7 @@
   - [uuid](https://docs.python.org/3/library/uuid.html)
   - [warnings](https://docs.python.org/3/library/warnings.html)
   
-  :file_folder: Required python package to run g-LOTUS:
+:file_folder: Required python package to run g-LOTUS:
   
   - [matplotlib](https://matplotlib.org/)
   - [more_itertool](https://more-itertools.readthedocs.io/en/stable/)
