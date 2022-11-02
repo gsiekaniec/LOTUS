@@ -9,7 +9,8 @@ from tqdm import tqdm
 import matplotlib.pyplot as plt
 from pathlib import Path
 from python_scripts.check_files import verif_input_vcf, verif_output, verif_input_config
-from python_scripts.enrichment_api import extract_biological_process
+from python_scripts.ToppGene_api import ToppGene_GEOA
+from python_scripts.Panther_api import Panther_GEOA
 from python_scripts.read_vcf import read_vcf
 from python_scripts.path_modification import true_stem
 
@@ -65,6 +66,7 @@ def modify_variants_pass_and_get_genes(file1, file2, variants, weak, strong, log
 				variant_type = []
 				for i, alt in enumerate(line[intfield['idx_alts']]):
 					variant = (line[intfield['idx_chr']], line[intfield['idx_pos']], line[intfield['idx_ref']], alt)
+					# Add variant type to the info field
 					if variant in weak:
 						variant_type.append('weak')
 						add_to_genes(genes, gene, 'weak')
@@ -73,6 +75,7 @@ def modify_variants_pass_and_get_genes(file1, file2, variants, weak, strong, log
 						add_to_genes(genes, gene, 'strong')
 					else:
 						variant_type.append('common')
+				# Recreate and write the vcf line
 				line[intfield['idx_info']] = line[intfield['idx_info']]+';VARIANT_TYPE='+','.join(variant_type)		#Add the variant type to the vcf Info field
 				o.write("\t".join(line)+'\n')
 	return genes
@@ -102,9 +105,6 @@ def create_graph_snp(df_snp, df_snp2, outname, logger):
 	height2 = [float(i) for i in df_snp.iloc[:,2]]
 	height3 = [float(-i) for i in df_snp2.iloc[:,2]]
 	group = ['C>A', 'C>G', 'C>T', 'T>A', 'T>C', 'T>G']
-	#for index, row in df_snp.iterrows():
-	#	if row[0] not in group:
-	#		group.append(row[0])
 	x_pos = np.arange(len(bars))
 
 	#Create bars
@@ -169,15 +169,15 @@ def create_graph_indel(deletion1, deletion2, insertion1, insertion2, outname, lo
 
 	insert = True
 	delet = True
-	if (deletion1 == None or deletion2 == None) and (insertion1 == None or insertion2 == None):
+	if (deletion1 == None or deletion2 == None) and (insertion1 == None or insertion2 == None):			# no insertion nor deltion counts file
 		print('Warning ! No indel files ! No graphs will be created !')
 		logger.warning(f'No indel files ! No graphs will be created !')
 		return None
-	elif insertion1 == None or insertion2 == None:
+	elif insertion1 == None or insertion2 == None:									# insertion counts file does not exist
 		print('Warning ! No insertion file !')
 		logger.warning(f'No insertion file !')
 		insert = False
-	elif deletion1 == None or deletion2 == None:
+	elif deletion1 == None or deletion2 == None:									# deltion counts file does not exist
 		print('Warning ! No deletion file !')
 		logger.warning(f'No deletion file !')
 		delet = False
@@ -221,6 +221,8 @@ def create_graph_indel(deletion1, deletion2, insertion1, insertion2, outname, lo
 	plt.figure(figsize=(15, 10))
 	ax1 = plt.subplot(1,1,1)
 	ax2 = ax1.twiny()
+
+	# create plot according to deletion and insertion counts
 
 	if delet and insert:
 		plt.bar([float(i)+(width*0.65) for i in bars_ins1], height_ins1, color = 'r', width = width, edgecolor = 'r', label='Insertion_'+true_stem(name_ins1))
@@ -377,7 +379,8 @@ def compare_vcf(vcf_pass_files : list, vcf_filtered_files : list, enrichment : b
 		if enrichment:
 			toppgene_name = str(true_stem(vcf_pass_files[num-1]))+'_compare_to_'+str(true_stem(vcf_pass_files[num]))+'_ToppGene_enrichment'
 			panther_name =  str(true_stem(vcf_pass_files[num-1]))+'_compare_to_'+str(true_stem(vcf_pass_files[num]))+'_Panther_enrichment'
-			extract_biological_process(genes_list, toppgene_name, panther_name, logger)
+			ToppGene_GEOA(genes_list, toppgene_name, logger)
+			Panther_GEOA(genes_list, panther_name, logger)
 		pbar_compare.update(1)
 	pbar_compare.close()
 
@@ -458,6 +461,10 @@ def main(args):
 
 	logger.info('********************************************************************************************************************')
 	logger.info('*** g-LOTUS compare module ***')
+	if enrichment:
+		logger.info(f'** cmd line : python lotus.py compare -c {str(args.config)} -o {str(out_gene)} -p {str(out_profile)} -i {str(out_indel)} -s {str(out_stats)} --enrichment **')
+	else:
+		logger.info(f'** cmd line : python lotus.py compare -c {str(args.config)} -o {str(out_gene)} -p {str(out_profile)} -i {str(out_indel)} -s {str(out_stats)} **')
 	logger.info('* Start comparing *')
 	logger.info(f'Current directory : {Path().absolute()}')
 	

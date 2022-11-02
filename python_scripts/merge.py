@@ -14,7 +14,8 @@ from copy import deepcopy
 from more_itertools import powerset, unique_everseen
 from upsetplot import from_memberships
 from python_scripts.check_files import verif_output, verif_input_config_merge, verif_input_xlsx, verif_input_tsv
-from python_scripts.enrichment_api import extract_biological_process
+from python_scripts.ToppGene_api import ToppGene_GEOA
+from python_scripts.Panther_api import Panther_GEOA
 from python_scripts.read_vcf import read_vcf
 from python_scripts.path_modification import true_stem
 from upsetplot import from_memberships
@@ -109,8 +110,6 @@ def merge_results(it_files, category, output, upset_output, weakness_threshold, 
 
 
 def create_upsetplot(data, category, upset_output, names, min_subset_size, max_subset_size, min_degree, max_degree, weakness_threshold, logger):
-
-	print(data, category, upset_output, names, min_subset_size, max_subset_size, min_degree, max_degree, weakness_threshold)
 
 	if max_subset_size == 0:
 		max_subset_size = max([len(v) for v in data.values()])
@@ -222,7 +221,7 @@ def main(args):
 
 	logger.info('**************************************************************************************************************')
 	logger.info('*** g-LOTUS merging module ***')
-	logger.info(f'**cmd line : python lotus.py merge -c {str(config)} -o {output}**')
+	logger.info(f'** cmd line : python lotus.py merge -c {str(config)} -o {str(output)} -u {str(upset_output)} -wt {str(weakness_threshold)} -minsb {str(min_subset_size_upset_plot)} -maxsb {str(max_subset_size_upset_plot)} -mind {str(min_degree)} -maxd {str(max_degree)} **')
 	logger.info('* Start merging *')
 	logger.info(f'Working directory (config file folder) : {working_directory}')
 	logger.info(f'Current directory : {Path().absolute()}')

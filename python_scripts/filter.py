@@ -533,7 +533,7 @@ def main(args):
 
 	logger.info('**************************************************************************************************************')
 	logger.info('*** g-LOTUS filtering module ***')
-	logger.info(f'**cmd line : python lotus.py filter -v {str(vcf_file)} -o {output} -wm {working_method} --DP {filter_dp} --MBQ {filter_mbq} --AF {filter_af} --AD {filter_ad} --POPAF {filter_popaf} **')
+	logger.info(f'** cmd line : python lotus.py filter -v {str(vcf_file)} -o {output} -wm {working_method} --DP {filter_dp} --MBQ {filter_mbq} --AF {filter_af} --AD {filter_ad} --POPAF {filter_popaf} **')
 	logger.info('* Start filtering *')
 	logger.info(f'Working directory (vcf files folder) : {working_directory}') 
 	logger.info(f'Current directory : {Path().absolute()}')

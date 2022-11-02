@@ -15,7 +15,8 @@ from copy import deepcopy
 import warnings
 import pandas as pd
 from python_scripts.check_files import verif_input_vcf, verif_output 
-from python_scripts.enrichment_api import extract_biological_process
+from python_scripts.ToppGene_api import ToppGene_GEOA
+from python_scripts.Panther_api import Panther_GEOA
 from python_scripts.read_vcf import read_vcf
 import matplotlib.pyplot as plt
 
@@ -661,7 +662,8 @@ def summary(vcf_file : str, vcf_file_pass : str, genome_file : str, out_stats : 
 	if enrichment:
 		toppgene_name = Path(vcf_file_pass).stem.replace('.','_')+'_ToppGene_enrichment'
 		panther_name =  Path(vcf_file_pass).stem.replace('.','_')+'_Panther_enrichment'
-		extract_biological_process(genes_list, toppgene_name, panther_name, logger)
+		ToppGene_GEOA(genes_list, toppgene_name, logger)
+		Panther_GEOA(genes_list, panther_name, logger)
 
 	#################
 	# Create snp mutation types plot and indel size plot
@@ -744,6 +746,10 @@ def main(args):
 
 	logger.info('**************************************************************************************************************')
 	logger.info('*** g-LOTUS summarise module ***')
+	if enrichment:
+		logger.info(f'** cmd line : python lotus.py summarise -v {str(vcf_file)} -vp {str(vcf_file_pass)} -g {str(genome_file)} -s {str(out_stats)} -genes {str(out_genes)} -p {str(out_profile)} -i {str(out_indel)} --enrichment **')
+	else:
+		logger.info(f'** cmd line : python lotus.py summarise -v {str(vcf_file)} -vp {str(vcf_file_pass)} -g {str(genome_file)} -s {str(out_stats)} -genes {str(out_genes)} -p {str(out_profile)} -i {str(out_indel)} **')	
 	logger.info('* Start summarizing *')
 	logger.info(f'Working directory (vcf files folder) : {working_directory}')
 	logger.info(f'Current directory : {Path().absolute()}')
