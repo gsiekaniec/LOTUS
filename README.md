@@ -15,6 +15,7 @@
   - [pathlib](https://docs.python.org/3/library/pathlib.html)
   - [pickle](https://docs.python.org/3/library/pickle.html)
   - [sys](https://docs.python.org/3/library/sys.html)
+  - [uuid](https://docs.python.org/3/library/uuid.html)
   - [warnings](https://docs.python.org/3/library/warnings.html)
   
   :file_folder: Required python package to run g-LOTUS:
