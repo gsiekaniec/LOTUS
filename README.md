@@ -35,7 +35,7 @@
 
 # g-LOTUS informations
 
-g-LOTUS is composed of the following four modules to process vcf files in GATK output (annotated with Funcotator):
+g-LOTUS is composed of the following four modules to process vcf files from GATK output (annotated with Funcotator):
 
 <p align="center">
   <a href="https://github.com/gsiekaniec/g-LOTUS/blob/main/README.md#filter">
