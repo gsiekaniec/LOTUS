@@ -55,7 +55,7 @@ g-LOTUS is composed of the following four modules to process vcf files from GATK
 
 ----
 
-## Preliminary steps
+## 🧬 Preliminary steps
 
 If we start from a basic fastq file, before using g-LOTUS many steps are necessary to go from **fastq** (sequences) to **annotated vcf** (variants). <br>
 For that there are many ways to proceed, we advise here to use the [GATK best practices](https://gatk.broadinstitute.org/hc/en-us/articles/360035894731-Somatic-short-variant-discovery-SNVs-Indels-)[^1]. :warning: In particular, g-LOTUS can currently only handle VCF annotations from GATK's Funcotator software.  
@@ -68,7 +68,7 @@ For that there are many ways to proceed, we advise here to use the [GATK best pr
 
 ----
 
-## Filter
+## 🧬 Filter
 
 Simple filter on the vcf file from Funcotator using multiple informations to keep only trustworthy somatic variants.
 
@@ -89,7 +89,7 @@ Simple filter on the vcf file from Funcotator using multiple informations to kee
 
 ----
 
-## Summarise
+## 🧬 Summarise
 
 Allows to extract a lot of statistics from a vcf file.
 
@@ -110,7 +110,7 @@ Allows to extract a lot of statistics from a vcf file.
 
 ----
 
-## Compare
+## 🧬 Compare
 
 Compare multiple vcf files longitudinally.
 
@@ -128,7 +128,7 @@ Compare multiple vcf files longitudinally.
 
 ----
 
-## Merge
+## 🧬 Merge
 
 Merging results to find the genes impacted in all patient.
 
