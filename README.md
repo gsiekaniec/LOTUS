@@ -72,6 +72,10 @@ For that there are many ways to proceed, we advise here to use the [GATK best pr
 
 Simple filter on the vcf file from Funcotator using multiple informations to keep only trustworthy somatic variants.
 
+<p align="center">
+  <img width="450" src="img/filter.png">
+</p>
+
 <details><summary>Parameters</summary>
 
 | Parameters | Description | Default |
