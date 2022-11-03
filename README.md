@@ -5,7 +5,9 @@
 
 ----
 
-:file_folder: [Python Standard Library](https://docs.python.org/3/library/) used:
+# Python packages
+
+:file_folder: Packages from the [Python Standard Library](https://docs.python.org/3/library/) used:
 
   - [collections](https://docs.python.org/3/library/collections.html)
   - [copy](https://docs.python.org/3/library/copy.html)
@@ -18,7 +20,7 @@
   - [uuid](https://docs.python.org/3/library/uuid.html)
   - [warnings](https://docs.python.org/3/library/warnings.html)
   
-:file_folder: Required python package to run g-LOTUS:
+:file_folder: Required python packages to run g-LOTUS:
   
   - [matplotlib](https://matplotlib.org/)
   - [more_itertool](https://more-itertools.readthedocs.io/en/stable/)
@@ -31,9 +33,41 @@
   
 ----
 
-``` 
-python lotus.py -h
-```
+# g-LOTUS informations
+
+g-LOTUS is composed of the following four modules to process vcf files in GATK output (annotated with Funcotator):
+
+<p align="center">
+  <img width="200" height="50" src="img/filter.png">
+  <img width="200" height="50" src="img/summarise.png">
+  <img width="200" height="50" src="img/compare.png">
+  <img width="200" height="50" src="img/merge.png">
+</p>
+
+----
+
+## Filter
+
+
+----
+
+## Summarise
+
+
+
+----
+
+## Compare
+
+
+
+----
+
+## Merge
+
+----
+
+# Tests
 
 To run tests:
 
