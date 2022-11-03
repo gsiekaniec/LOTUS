@@ -54,7 +54,17 @@ g-LOTUS is composed of the following four modules to process vcf files in GATK o
 
 ----
 
+## Preliminary steps
+
+
+
+
+
+----
+
 ## Filter
+
+Simple filter on the vcf file from Funcotator using multiple informations to keep only trustworthy somatic variants.
 
 <details><summary>Parameters</summary>
 
@@ -75,6 +85,8 @@ g-LOTUS is composed of the following four modules to process vcf files in GATK o
 
 ## Summarise
 
+Allows to extract a lot of statistics from a vcf file.
+
 <details><summary>Parameters</summary>
 
 | Parameters | Description | Default |
@@ -94,6 +106,7 @@ g-LOTUS is composed of the following four modules to process vcf files in GATK o
 
 ## Compare
 
+Compare multiple vcf files longitudinally.
 
 <details><summary>Parameters</summary>
 
@@ -110,6 +123,8 @@ g-LOTUS is composed of the following four modules to process vcf files in GATK o
 ----
 
 ## Merge
+
+Merging results to find the genes impacted in all patient.
 
 <details><summary>Parameters</summary>
 
