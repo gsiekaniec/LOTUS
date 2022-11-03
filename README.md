@@ -56,6 +56,20 @@ g-LOTUS is composed of the following four modules to process vcf files in GATK o
 
 ## Filter
 
+<details><summary>Parameters</summary>
+
+| Parameters | Description | Default |
+|----------|:-------------:|:-------------:|
+| --vcf, -v | Result vcf file from Funcotator output |  |
+| --output, -o | Filtered vcf file. | output.filtered.vcf |
+| --working-method, -w | "InMemory" (default) loads the vcf file in memory into a list (more speed but higher memory consumption) or "Direct" reads and modifies the vcf file on the fly (slow speed but low memory consumption). | InMemory |
+| --MBQ | Minimum median base variant quality for variant. | 20 |
+| --DP | Minimum variant coverage. | 10 |
+| --AF | Minimum fractions of variant in the tumor. | 0.1 |
+| --AD | Minimum variant depths. | 5 |
+| --POPAF | Maximum population (often GnomAD) variant frequencies. | 0.00001 |
+
+</details>
 
 ----
 
