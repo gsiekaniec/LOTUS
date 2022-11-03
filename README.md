@@ -60,7 +60,7 @@ g-LOTUS is composed of the following four modules to process vcf files in GATK o
 
 | Parameters | Description | Default |
 |----------|:-------------:|:-------------:|
-| --vcf, -v | Result vcf file from Funcotator output |  |
+| --vcf, -v | Result vcf file from Funcotator output. |  |
 | --output, -o | Filtered vcf file. | output.filtered.vcf |
 | --working-method, -w | "InMemory" (default) loads the vcf file in memory into a list (more speed but higher memory consumption) or "Direct" reads and modifies the vcf file on the fly (slow speed but low memory consumption). | InMemory |
 | --MBQ | Minimum median base variant quality for variant. | 20 |
@@ -75,19 +75,60 @@ g-LOTUS is composed of the following four modules to process vcf files in GATK o
 
 ## Summarise
 
+<details><summary>Parameters</summary>
 
+| Parameters | Description | Default |
+|----------|:-------------:|:-------------:|
+| --vcf, -v | Vcf file containing variants that pass filter (*.filtered.pass.vcf). | None |
+| --vcf_pass, -vp | Vcf file containing variants that pass filter (*.filtered.pass.vcf). |  |
+| --genome, -g | Genome fasta file (allowed extensions : .fasta, .fa, .fan) or pickle (.pk, .pickle) file created after a first run. |  |
+| --statistics, -s | Output statistics file. | stats.txt |
+| --genes, -genes | Output file containing genes impacted by variants. | genes.txt |
+| --profile, p | SVG file that shows the mutations profile of the vcf file. | profil.svg |
+| --indel, -i | SVG file that shows the indel mutations size of the vcf file. | indel.svg |
+| --enrichment | Did the GO enrichment analysis on the genes list using ToppGene and Panther and returns the biological processes (works if the APIs are not down). | False |
+
+</details>
 
 ----
 
 ## Compare
 
 
+<details><summary>Parameters</summary>
+
+| Parameters | Description | Default |
+|----------|:-------------:|:-------------:|
+| --config, -c | Configuration file containing path to vcf file (filtered.vcf and pass.vcf file from g-LOTUS filter) and tsv files for indel and snp from g-LOTUS summarise. Example available [here](https://github.com/gsiekaniec/g-LOTUS/blob/main/example_config.txt). |  |
+| --output, -o | Excel file containing the genes specific to the first or second biopsy. | "genes.xlsx" wich give "{vcf1}_{vcf2}_genes.tsv/.xlsx". |
+| --profile, -p | SVG file that shows the comparison between mutations profiles of the two vcf file. | "profile.svg" wich give "{vcf1}_{vcf2}_profile.svg". |
+| --indel, -i | SVG file that shows the indel mutations size of the vcf file. | "indel.svg" wich give "{vcf1}_{vcf2}_indel.svg". |
+| --enrichment | Did the GO enrichment analysis on the genes list using ToppGene and Panther and returns the biological processes (works if the APIs are not down). | False |
+
+</details>
 
 ----
 
 ## Merge
 
+<details><summary>Parameters</summary>
+
+| Parameters | Description | Default |
+|----------|:-------------:|:-------------:|
+| --config, -c | Configuration file containing genes list from all patients. Merged patients results. |  |
+| --output, -o | Output file name. | union.xlsx |
+| --upset, -u | Output name for upset plot. | upset_plot.svg |
+| --weakness_threshold, -wt | Mean weakness threshold to save take a gene into account. | 100 |
+| --min_subset_size, -minsb | Minimum size of a subset (nb of genes by subset) to be shown in the UpSetPlot. All subsets with a size smaller than this threshold will be omitted from plotting. | 1 |
+| --max_subset_size, -maxsb | Maximum size of a subset (nb of genes by subset) to be shown in the UpSetPlot. All subsets with a size greater than this threshold will be omitted from plotting. | 0 |
+| --min_degree, -mind | Minimum degree of a subset (nb of patients) to be shown in the UpSetPlot. | 1 |
+| --max_degree, -maxd | Maximum degree of a subset (nb of patients) to be shown in the UpSetPlot. | 0 |
+  
+</details>
+
+
 ----
+
 
 # Tests
 
