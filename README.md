@@ -23,7 +23,7 @@
 :file_folder: Required python packages to run g-LOTUS:
   
   - [matplotlib](https://matplotlib.org/)
-  - [more_itertool](https://more-itertools.readthedocs.io/en/stable/)
+  - [more_itertools](https://more-itertools.readthedocs.io/en/stable/)
   - [numpy](https://numpy.org/)
   - [pandas](https://pandas.pydata.org/)
   - [pyfastx](https://pyfastx.readthedocs.io/en/latest/)
