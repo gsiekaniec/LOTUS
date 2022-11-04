@@ -83,7 +83,7 @@ Two output files: (1) the filtered.vcf file contains the variants of the origina
 | Parameters | Description | Default |
 |----------|:-------------:|:-------------:|
 | --vcf, -v | Result vcf file from Funcotator output. |  |
-| --output, -o | Filtered vcf file. | output.filtered.vcf |
+| --output, -o | Filtered vcf file. The Pass vcf file is also create using this output name. | output.filtered.vcf |
 | --working-method, -w | "InMemory" (default) loads the vcf file in memory into a list (more speed but higher memory consumption) or "Direct" reads and modifies the vcf file on the fly (slow speed but low memory consumption). | InMemory |
 | --MBQ | Minimum median base variant quality for variant. | 20 |
 | --DP | Minimum variant coverage. | 10 |
