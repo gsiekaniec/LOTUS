@@ -42,7 +42,7 @@ g-LOTUS is composed of the following four modules to process vcf files from GATK
   <a href="https://github.com/gsiekaniec/g-LOTUS/blob/main/README.md#filter">
     <img width="200" height="50" src="img/filter.png">
   </a>
-  <a href="https://github.com/gsiekaniec/g-LOTUS/blob/main/README.md#summarise">
+  <a href="https://github.com/gsiekaniec/g-LOTUS#-summarise">
     <img width="200" height="50" src="img/summarise.png">
   </a>
   <a href="https://github.com/gsiekaniec/g-LOTUS/blob/main/README.md#compare">
