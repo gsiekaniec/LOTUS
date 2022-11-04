@@ -39,16 +39,16 @@
 g-LOTUS is composed of the following four modules to process vcf files from GATK output (annotated with Funcotator):
 
 <p align="center">
-  <a href="https://github.com/gsiekaniec/g-LOTUS/blob/main/README.md#filter">
+  <a href="https://github.com/gsiekaniec/g-LOTUS#-filter">
     <img width="200" height="50" src="img/filter.png">
   </a>
   <a href="https://github.com/gsiekaniec/g-LOTUS#-summarise">
     <img width="200" height="50" src="img/summarise.png">
   </a>
-  <a href="https://github.com/gsiekaniec/g-LOTUS/blob/main/README.md#compare">
+  <a href="https://github.com/gsiekaniec/g-LOTUS#-compare">
     <img width="200" height="50" src="img/compare.png">
   </a>
-  <a href="https://github.com/gsiekaniec/g-LOTUS/blob/main/README.md#merge">
+  <a href="https://github.com/gsiekaniec/g-LOTUS#-merge">
     <img width="200" height="50" src="img/merge.png">
   </a>
 </p>
