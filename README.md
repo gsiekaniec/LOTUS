@@ -99,6 +99,10 @@ Two output files: (1) the filtered.vcf file contains the variants of the origina
 
 Allows to extract a lot of statistics from a vcf file.
 
+<p align="center">
+  <img width="350" src="img/summarise_step.png">
+</p>
+
 <details><summary>Parameters</summary>
 
 | Parameters | Description | Default |
@@ -119,6 +123,10 @@ Allows to extract a lot of statistics from a vcf file.
 ## 🧬 Compare
 
 Compare multiple vcf files longitudinally.
+
+<p align="center">
+  <img width="350" src="img/compare_step.png">
+</p>
 
 <details><summary>Parameters</summary>
 
