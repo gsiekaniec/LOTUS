@@ -146,6 +146,10 @@ Compare multiple vcf files longitudinally.
 
 Merging results to find the genes impacted in all patient.
 
+<p align="center">
+  <img width="350" src="img/merge_step.png">
+</p>
+
 <details><summary>Parameters</summary>
 
 | Parameters | Description | Default |
