@@ -160,7 +160,7 @@ genes_sample3.tsv
 
 Two output files: (1) the file union.tsv|.xlsx contains the list of common genes impacted for all samples. (2) The upset_plot.svg file which contains the upset plot[^2] indicating the number of common genes between the different sample sets.
 
-[^2] [A. Lex, N. Gehlenborg, H. Strobelt, R. Vuillemot and H. Pfister, "UpSet: Visualization of Intersecting Sets," in IEEE Transactions on Visualization and Computer Graphics, vol. 20, no. 12, pp. 1983-1992, 31 Dec. 2014, doi: 10.1109/TVCG.2014.2346248.](https://ieeexplore.ieee.org/document/6876017)
+[^2]: [A. Lex, N. Gehlenborg, H. Strobelt, R. Vuillemot and H. Pfister, "UpSet: Visualization of Intersecting Sets," in IEEE Transactions on Visualization and Computer Graphics, vol. 20, no. 12, pp. 1983-1992, 31 Dec. 2014, doi: 10.1109/TVCG.2014.2346248.](https://ieeexplore.ieee.org/document/6876017)
 
 <details><summary>Parameters</summary>
 
