@@ -150,6 +150,18 @@ Merging results to find the genes impacted in all patient.
   <img width="350" src="img/merge_step.png">
 </p>
 
+:warning: The configuration file contains the list of genes (1_2_genes.xlsx or 1_2_genes.xlsx from the compare step) for all samples, one file per line (either xlsx or tsv). For example:
+
+``` 
+genes_sample1.xlsx
+genes_sample2.tsv
+genes_sample3.tsv
+```
+
+Two output files: (1) the file union.tsv|.xlsx contains the list of common genes impacted for all samples. (2) The upset_plot.svg file which contains the upset plot[^2] indicating the number of common genes between the different sample sets.
+
+[^2] [A. Lex, N. Gehlenborg, H. Strobelt, R. Vuillemot and H. Pfister, "UpSet: Visualization of Intersecting Sets," in IEEE Transactions on Visualization and Computer Graphics, vol. 20, no. 12, pp. 1983-1992, 31 Dec. 2014, doi: 10.1109/TVCG.2014.2346248.](https://ieeexplore.ieee.org/document/6876017)
+
 <details><summary>Parameters</summary>
 
 | Parameters | Description | Default |
