@@ -168,8 +168,8 @@ Two output files: (1) the file union.tsv|.xlsx contains the list of common genes
 |----------|:-------------:|:-------------:|
 | --config, -c | Configuration file containing genes list from all patients. Merged patients results. |  |
 | --output, -o | Output file name. | union.xlsx |
-| --upset, -u | Output name for upset plot. | upset_plot.svg |
-| --weakness_threshold, -wt | Mean weakness threshold to save take a gene into account. | 100 |
+| --upset, -u | Output name for upset plot. The upset plot is not created if no name is given. | None |
+| --weakness_threshold, -w | Mean weakness threshold to take a gene into account. | 100 |
 | --min_subset_size, -minsb | Minimum size of a subset (nb of genes by subset) to be shown in the UpSetPlot. All subsets with a size smaller than this threshold will be omitted from plotting. | 1 |
 | --max_subset_size, -maxsb | Maximum size of a subset (nb of genes by subset) to be shown in the UpSetPlot. All subsets with a size greater than this threshold will be omitted from plotting. | 0 |
 | --min_degree, -mind | Minimum degree of a subset (nb of patients) to be shown in the UpSetPlot. | 1 |
