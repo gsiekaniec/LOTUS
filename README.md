@@ -125,7 +125,25 @@ Allows to extract a lot of statistics from a vcf file.
 Compare multiple vcf files longitudinally.
 
 <p align="center">
-  <img width="350" src="img/compare_step.png">
+  <img width="500" src="img/compare_step.png">
+</p>
+
+Compare introduces a new concept of weakness and weakness percentage.
+
+To make it simple, when comparing two vcf files coming from the same individual in a longitudinal way, we compare the variants of the two vcf. To do this, we use the files with the variants that pass the filters (g-LOTUS and GATK).
+
+In the case of g-LOTUS the files containing the variants that do not pass these filters are also used. We can then consider two types of variants: 
+  - (1) the so-called strong variants (*S* in the figure below) are those which are found in one of the two files but not in the variants which do not pass the filters in the other file.
+  - (2) the so-called weak variants (*W* in the figure below) are those that pass the filters in one of the two files but are also found in the filtered variants of the other file. These variants are said to be weak because their specificity at one of the two times is more likely to result from errors linked to filters that are too strict or to poor sequencing of the variant zone in one of the two samples for example. 
+  
+Finally, the common variants (*C* in the figure below) in the two filtered files are not taken into account because they are either germline variants, or variants that do not evolve over time and therefore theoretically have less impact on the progress of the disease.
+
+At the gene level, we can then calculate a percentage of weakness for the genes impacted by one or several weak or strong variants (see *%gene weakness* figure below).
+This percentage of weakness (from 100% if all variants are weak to 0% if all variants are strong) gives us additional information on the reliability of the impacted genes.
+
+
+<p align="center">
+  <img width="700" src="img/weakness.png">
 </p>
 
 <details><summary>Parameters</summary>
