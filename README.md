@@ -20,7 +20,7 @@
   - [uuid](https://docs.python.org/3/library/uuid.html)
   - [warnings](https://docs.python.org/3/library/warnings.html)
   
-:file_folder: Required python packages to run g-LOTUS:
+:file_folder: Required python packages to run LOTUS:
   
   - [matplotlib](https://matplotlib.org/)
   - [more_itertools](https://more-itertools.readthedocs.io/en/stable/)
@@ -30,25 +30,25 @@
   - [pytest](https://docs.pytest.org/en/7.2.x/)
   - [tqdm](https://tqdm.github.io/)
 
-<sub>:warning: These packages must be installed before you can use g-LOTUS.</sub>
+<sub>:warning: These packages must be installed before you can use LOTUS.</sub>
   
 ----
 
-# g-LOTUS informations
+# LOTUS informations
 
-g-LOTUS is composed of the following four modules to process vcf files from GATK output (annotated with Funcotator):
+LOTUS is composed of the following four modules to process vcf files from GATK output (annotated with Funcotator):
 
 <p align="center">
-  <a href="https://github.com/gsiekaniec/g-LOTUS#-filter">
+  <a href="https://github.com/gsiekaniec/LOTUS#-filter">
     <img width="200" height="50" src="img/filter.png">
   </a>
-  <a href="https://github.com/gsiekaniec/g-LOTUS#-summarise">
+  <a href="https://github.com/gsiekaniec/LOTUS#-summarise">
     <img width="200" height="50" src="img/summarise.png">
   </a>
-  <a href="https://github.com/gsiekaniec/g-LOTUS#-compare">
+  <a href="https://github.com/gsiekaniec/LOTUS#-compare">
     <img width="200" height="50" src="img/compare.png">
   </a>
-  <a href="https://github.com/gsiekaniec/g-LOTUS#-merge">
+  <a href="https://github.com/gsiekaniec/LOTUS#-merge">
     <img width="200" height="50" src="img/merge.png">
   </a>
 </p>
@@ -57,8 +57,8 @@ g-LOTUS is composed of the following four modules to process vcf files from GATK
 
 ## 🧬 Preliminary steps
 
-If we start from a basic fastq file, before using g-LOTUS many steps are necessary to go from **fastq** (sequences) to **annotated vcf** (variants). <br>
-For that there are many ways to proceed, we advise here to use the [GATK best practices](https://gatk.broadinstitute.org/hc/en-us/articles/360035894731-Somatic-short-variant-discovery-SNVs-Indels-)[^1]. :warning: In particular, g-LOTUS can currently only handle VCF annotations from GATK's Funcotator software.  
+If we start from a basic fastq file, before using LOTUS many steps are necessary to go from **fastq** (sequences) to **annotated vcf** (variants). <br>
+For that there are many ways to proceed, we advise here to use the [GATK best practices](https://gatk.broadinstitute.org/hc/en-us/articles/360035894731-Somatic-short-variant-discovery-SNVs-Indels-)[^1]. :warning: In particular, LOTUS can currently only handle VCF annotations from GATK's Funcotator software.  
 
 [^1]: [Van der Auwera GA, Carneiro M, Hartl C, Poplin R, del Angel G, Levy-Moonshine A, Jordan T, Shakir K, Roazen D, Thibault J, Banks E, Garimella K, Altshuler D, Gabriel S, DePristo M. (2013). From FastQ Data to High-Confidence Variant Calls: The Genome Analysis Toolkit Best Practices Pipeline. Curr Protoc Bioinformatics, 43:11.10.1-11.10.33. DOI: 10.1002/0471250953.bi1110s43.](https://currentprotocols.onlinelibrary.wiley.com/doi/10.1002/0471250953.bi1110s43)
 
@@ -130,9 +130,9 @@ Compare multiple vcf files longitudinally.
 
 Compare introduces a new concept of weakness and weakness percentage.
 
-To make it simple, when comparing two vcf files coming from the same individual in a longitudinal way, we compare the variants of the two vcf. To do this, we use the files with the variants that pass the filters (g-LOTUS and GATK).
+To make it simple, when comparing two vcf files coming from the same individual in a longitudinal way, we compare the variants of the two vcf. To do this, we use the files with the variants that pass the filters (LOTUS and GATK).
 
-In the case of g-LOTUS the files containing the variants that do not pass these filters are also used. We can then consider two types of variants: 
+In the case of LOTUS the files containing the variants that do not pass these filters are also used. We can then consider two types of variants: 
   - (1) the so-called strong variants (*S* in the figure below) are those which are found in one of the two files but not in the variants which do not pass the filters in the other file.
   - (2) the so-called weak variants (*W* in the figure below) are those that pass the filters in one of the two files but are also found in the filtered variants of the other file. These variants are said to be weak because their specificity at one of the two times is more likely to result from errors linked to filters that are too strict or to poor sequencing of the variant zone in one of the two samples for example. 
   
@@ -150,7 +150,7 @@ This percentage of weakness (from 100% if all variants are weak to 0% if all var
 
 | Parameters | Description | Default |
 |----------|:-------------:|:-------------:|
-| --config, -c | Configuration file containing path to vcf file (filtered.vcf and pass.vcf file from g-LOTUS filter) and tsv files for indel and snp from g-LOTUS summarise. Example available [here](https://github.com/gsiekaniec/g-LOTUS/blob/main/example_config.txt). |  |
+| --config, -c | Configuration file containing path to vcf file (filtered.vcf and pass.vcf file from LOTUS filter) and tsv files for indel and snp from LOTUS summarise. Example available [here](https://github.com/gsiekaniec/LOTUS/blob/main/example_config.txt). |  |
 | --output, -o | Excel file containing the genes specific to the first or second biopsy. | "genes.xlsx" wich give "{vcf1}_{vcf2}_genes.tsv/.xlsx". |
 | --profile, -p | SVG file that shows the comparison between mutations profiles of the two vcf file. | "profile.svg" wich give "{vcf1}_{vcf2}_profile.svg". |
 | --indel, -i | SVG file that shows the indel mutations size of the vcf file. | "indel.svg" wich give "{vcf1}_{vcf2}_indel.svg". |
