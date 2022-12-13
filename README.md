@@ -1,6 +1,6 @@
 
 <p align="center">
-  <img width="500" height="500" src="img/g-LOTUS.gif">
+  <img width="500" height="500" src="img/LOTUS.gif">
 </p>
 
 ----
