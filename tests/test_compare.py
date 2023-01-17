@@ -10,7 +10,7 @@ import logging
 import uuid
 from pathlib import Path
 import pytest
-from python_scripts.compare import get_variants, add_to_genes, modify_variants_pass_and_get_genes, create_graph_snp, create_graph_indel, compare_vcf
+from python_scripts.compare import get_variants, add_to_genes, modify_variants_pass_and_get_genes, create_graph_snp, create_graph_indel, compare_vcf, get_informations_for_genes
 from python_scripts.path_modification import true_stem
 
 
@@ -23,7 +23,7 @@ logger = logging.getLogger('This is not a logger')
 
 false_vcf = str(uuid.uuid4())+'.vcf'
 with open(false_vcf, 'w') as out_vcf:
-	out_vcf.write('##fileformat=VCFv4.2\n##FILTER=<ID=FAIL,Description=\"Fail the site if all alleles fail but for different reasons.\">\n#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT\tEXAMPLE\nchr1\t5\t.\tA\tT\t.\tPASS\tAS_FilterStatus=SITE;AS_SB_TABLE=17,31|57,57;DP=182;ECNT=1;FUNCOTATION=[CADM3|hg38|chr9|39609857|39609857|MISSENSE||INSERTION|G|G|GC|false|false];GERMQ=49;MBQ=35,33;MFRL=168,162;MMQ=60,60;MPOS=27;POPAF=7.30;ROQ=93;RPA=3,4;RU=C;STR;STRQ=93;TLOD=234.51;LOTUS_FILTER=PASS\tGT:AD:AF:DP:F1R2:F2R1:FAD:SB\t0/1:48,114:0.669:162:12,35:13,27:42,86:17,31,57,57')
+	out_vcf.write('##fileformat=VCFv4.2\n##FILTER=<ID=FAIL,Description=\"Fail the site if all alleles fail but for different reasons.\">\n#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT\tEXAMPLE\nchr1\t5\t.\tA\tT\t.\tPASS\tAS_FilterStatus=SITE;AS_SB_TABLE=17,31|57,57;DP=182;ECNT=1;FUNCOTATION=[CADM3|hg38|chr1|39609857|39609857|MISSENSE||INSERTION|G|G|GC|g.chr1:39609858G>C|ENST00000361971.10|+|20|3589|c.3468G>C|c.(3466-3468)gaG>gaC|p.E1156D|0.683291770573566|TCAGCCGCGAGGGGCCTGCCC];GERMQ=49;MBQ=35,33;MFRL=168,162;MMQ=60,60;MPOS=27;POPAF=7.30;ROQ=93;RPA=3,4;RU=C;STR;STRQ=93;TLOD=234.51;LOTUS_FILTER=PASS\tGT:AD:AF:DP:F1R2:F2R1:FAD:SB\t0/1:48,114:0.669:162:12,35:13,27:42,86:17,31,57,57')
 
 
 ################
@@ -41,8 +41,12 @@ type_not_ok = 'i\'m not a variant type'
 ######################################
 
 variants_ok =  {('chr1', '5', 'A', 'T')}
+strong = {}
 variants_2 = {('chr1', '5', 'A', 'T'), ('chr2', '7', 'G', 'C')}
-genes_from_vcf = {'CADM3': {'weak': 1, 'strong': 0}}
+genes_from_vcf = {'CADM3': {'weak': 1, 'strong': 0, 'chr': 'chr1', 'gene_pos': ('ENSG00000162706', 'chr1', (159171609, 159203313)), 'mc': ['c.3468G>C'], 'mg': ['g.chr1:39609858G>C'], 'mp': ['p.E1156D']}}
+gene_name_dico = {'CADM3' : [('ENSG00000162706', 'chr1', (159171609, 159203313))]}
+gene_id_dico = {'ENSG00000162706' : [('CADM3', 'chr1', (159171609, 159203313))]}
+transcript_dico = {'ENST000000000' : [('CADM3', 'chr1', (159171609, 159203313))]}
 
 
 ####################
@@ -79,10 +83,23 @@ with open(del2 ,'w') as o:
 	o.write('\tsample2\n1\t2\n2\t3\n5\t4\n')
 
 
+##############################
+# get informations for genes #
+##############################
+
+small_info_file = str(uuid.uuid4())+'.xlsx'
+dt = np.dtype([('Ordre', int), ('Gene_Symbol unique', np.unicode_, 16),('1 Info', np.unicode_, 16),('2 Info', np.unicode_, 16)])
+xlsx_df = pd.DataFrame(np.array([(1, 'ATA', 'info ATA', 'info ATA 2'), (2, 'BOB', 'info BOB', 'info BOB 2')], dtype=dt), columns=['Ordre', 'Gene_Symbol unique', '1 Info', '2 Info'])
+xlsx_df = xlsx_df.set_index('Ordre')
+xlsx_df.to_excel(small_info_file)
+dt2 = np.dtype([('Gene_Symbol unique', np.unicode_, 16),('1', np.unicode_, 16),('2', np.unicode_, 16)])
+xlsx_df2 = pd.DataFrame(np.array([('ATA', 'info ATA', 'info ATA 2'), ('BOB', 'info BOB', 'info BOB 2')], dtype=dt2), columns=['Gene_Symbol unique', '1', '2'])
+xlsx_df2 = xlsx_df2.set_index('Gene_Symbol unique')
+
+
 ################################################################################################################
 ################################################# Tests ########################################################
 ################################################################################################################
-
 
 
 ################
@@ -99,12 +116,12 @@ def test_get_variants():
 ################
 
 def test_add_to_genes():
-	add_to_genes(genes, one_gene, type_ok)
-	assert genes == {'BRCA1' : {'strong': 0, 'weak': 1}}
-	add_to_genes(genes, one_gene, type_ok)
-	assert genes == {'BRCA1' : {'strong': 0, 'weak': 2}}
+	add_to_genes(genes, one_gene, type_ok, "chr1", (10,15), "g.chr1:13C>T", "c.9C>T", "p.R5P")
+	assert genes == {'BRCA1' : {'strong': 0, 'weak': 1, 'chr' : 'chr1', 'gene_pos' : (10,15), 'mg' : ["g.chr1:13C>T"], 'mc' : ["c.9C>T"], 'mp' : ["p.R5P"]}}
+	add_to_genes(genes, one_gene, type_ok, "chr1", (10,15), "g.chr1:13C>T", "c.9C>T", "p.R5P")
+	assert genes == {'BRCA1' : {'strong': 0, 'weak': 2, 'chr' : 'chr1', 'gene_pos' : (10,15), 'mg' : ["g.chr1:13C>T", "g.chr1:13C>T"], 'mc' : ["c.9C>T", "c.9C>T"], 'mp' : ["p.R5P", "p.R5P"]}}
 	with pytest.raises(KeyError, match=type_not_ok):
-		add_to_genes(genes, one_gene, type_not_ok)
+		add_to_genes(genes, one_gene, type_not_ok, "chr1", (10,15), "g.chr1:13C>T", "c.9C>T", "p.R5P")
 
 
 ######################################
@@ -113,10 +130,10 @@ def test_add_to_genes():
 
 def test_modify_variants_pass_and_get_genes():
 	outfile = true_stem(false_vcf)+'_compare_to_'+true_stem('file2')+'.pass.vcf'
-	assert modify_variants_pass_and_get_genes(false_vcf, 'file2', variants_2, variants_ok, {}, logger) == genes_from_vcf
+	assert modify_variants_pass_and_get_genes(false_vcf, 'file2', variants_2, variants_ok , strong, gene_name_dico, gene_id_dico, transcript_dico, '.', logger) == genes_from_vcf
 	assert Path(outfile).exists()
 	os.remove(outfile)
-	os.remove(false_vcf)	
+	os.remove(false_vcf)
 
 	
 ####################
@@ -140,15 +157,15 @@ def test_create_graph_indel():
 	os.remove(out_indel_graph)
 	
 	create_graph_indel(del1, del2, ins1, None, out_insertion_only, logger)
-	assert Path(true_stem(out_insertion_only)+'_sample1.svg').exists()
-	os.remove(true_stem(out_insertion_only)+'_sample1.svg')
+	assert Path(out_insertion_only).exists()
+	os.remove(out_insertion_only)
 
 	create_graph_indel(del1, None, ins1, ins2, out_deletion_only, logger)
-	assert Path(true_stem(out_deletion_only)+'_sample1.svg').exists()
-	os.remove(true_stem(out_deletion_only)+'_sample1.svg')
+	assert Path(out_deletion_only).exists()
+	os.remove(out_deletion_only)
 
 	create_graph_indel(del1, None, ins1, None, out_no_indel_graph, logger)
-	assert not Path(true_stem(out_no_indel_graph)+'_sample1.svg').exists()
+	assert not Path(out_no_indel_graph).exists()
 
 	os.remove(ins1)
 	os.remove(ins2)
@@ -156,8 +173,13 @@ def test_create_graph_indel():
 	os.remove(del2)
 
 
+##############################
+# get informations for genes #
+##############################
 
-
+def test_get_informations_for_genes():
+	assert ((get_informations_for_genes(small_info_file , logger) == xlsx_df2).all().all())
+	os.remove(small_info_file)
 
 
 

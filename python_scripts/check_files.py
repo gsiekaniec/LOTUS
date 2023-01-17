@@ -41,7 +41,8 @@ def verif_output (output : str):
                         if not access(output, W_OK) :
                                 raise ValueError(f'File {output} is not available in writing !')
 
-def verif_input (file : str):	
+
+def verif_input(file : str):	
 	'''
 	Basic test on input files
 	'''
@@ -57,6 +58,7 @@ def verif_input (file : str):
 	else:
 		raise ValueError(f'File {file} doesn\'t exists !')
 
+
 def verif_input_xlsx (file : str):
 	try:
 		pd.read_excel(file, index_col=0)
@@ -64,12 +66,14 @@ def verif_input_xlsx (file : str):
 	except ValueError:
 		return False
 
+
 def verif_input_tsv (file : str):
 	try:
 		pd.read_csv(file, sep='\t')
 		return True
 	except ValueError:
 		return False
+
 
 def verif_input_config_merge (config : str):
 	with open(config, 'r') as f:
@@ -147,6 +151,30 @@ def verif_input_config (config : str):
 	elif len(deletion) != nb_sample:
 		raise ValueError(f'Wrong number of deletion count tsv files in config file {config} !')
 	return vcf_filtered, vcf_pass, snp, insertion, deletion
+
+
+def verif_supplementary_information_file(file : str, current_dir : str):
+	'''
+	Test if the g-LOTUS file containing supplementary informations on genes from external databases exists and are ok
+	'''
+	for file_path in Path(current_dir).glob('**/'+str(file)):
+		file = file_path
+		verif_input(file)
+
+	return file
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

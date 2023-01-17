@@ -15,8 +15,8 @@ from copy import deepcopy
 import warnings
 import pandas as pd
 from python_scripts.check_files import verif_input_vcf, verif_output 
-from python_scripts.ToppGene_api import ToppGene_GEOA
-from python_scripts.Panther_api import Panther_GEOA
+from python_scripts.toppgene_api import ToppGene_GEOA
+from python_scripts.panther_api import Panther_GEOA
 from python_scripts.read_vcf import read_vcf
 import matplotlib.pyplot as plt
 
@@ -225,7 +225,7 @@ def graph_indel(deletion, insertion, name, vcf_name, logger):
 		plt.bar([float(i) for i in r_ins], height_ins, color = 'r', width = width, edgecolor = 'r', label='Insertion')
 			
 
-	plt.xticks(x)
+	plt.xticks(x, fontsize=9)
 	plt.yticks()
 
 	if  maximum > 10:
@@ -241,9 +241,9 @@ def graph_indel(deletion, insertion, name, vcf_name, logger):
 		s = maxsize/plt.gcf().dpi*maximum+2*m
 		margin = m/plt.gcf().get_size_inches()[0]
 		plt.gcf().subplots_adjust(left=margin, right=1.-margin)
-		plt.gcf().set_size_inches(s, plt.gcf().get_size_inches()[1])
+		plt.gcf().set_size_inches(s*1.5, plt.gcf().get_size_inches()[1])
 
-		plot_margin = 0.25
+		plot_margin = 1
 		x0, x1, y0, y1 = plt.axis()
 		plt.axis((x0 - plot_margin, x1 + plot_margin*2, y0, y1))
 
@@ -329,16 +329,18 @@ def get_genome_dict(genome_file, logger):
 	print(f'Check input genome file {genome_file}...')
 	logger.info(f'Check input genome file {genome_file}')
 	if is_fasta(genome_file):
-		print('Create the pickle genome dictionary...')
 		genome = {}
 		path = Path(genome_file).with_suffix('.pk')
+		fa = pyfastx.Fastx(genome_file)
+		print("chr", "length")
+		for name,seq,comment in fa:
+			genome[name] = seq
+			print(name, len(seq))
+
 		if not path.exists():
-			with open(Path(genome_file).with_suffix('.pk'), 'wb') as out_pickle:	
-				fa = pyfastx.Fastx(genome_file)
-				print("chr", "length")
-				for name,seq,comment in fa:
-					print(name, seq)
-					genome[name] = seq
+			print(f'Create the pickle genome dictionary in {path}')
+			logger.info(f'Create the pickle genome dictionary in {path}')
+			with open(path, 'wb') as out_pickle:
 				pk.dump(genome, out_pickle)
 		else:
 			print(f'File {path} already exists !')
@@ -349,6 +351,7 @@ def get_genome_dict(genome_file, logger):
 			genome = pk.load(f)
 	else: 
 		raise ValueError(f'{genome_file} is not a fasta or a pickle file !')
+
 	return genome
 
 
@@ -660,8 +663,8 @@ def summary(vcf_file : str, vcf_file_pass : str, genome_file : str, out_stats : 
 	################################################
 	# Biological process enrichment using the genes list with the ToppGene and Panther API
 	if enrichment:
-		toppgene_name = Path(vcf_file_pass).stem.replace('.','_')+'_ToppGene_enrichment'
-		panther_name =  Path(vcf_file_pass).stem.replace('.','_')+'_Panther_enrichment'
+		toppgene_name = str(Path(out_genes).resolve().parent)+'/'+str(Path(vcf_file_pass).stem.replace('.','_'))+'_ToppGene_enrichment'
+		panther_name =  str(Path(out_genes).resolve().parent)+'/'+str(Path(vcf_file_pass).stem.replace('.','_'))+'_Panther_enrichment'
 		ToppGene_GEOA(genes_list, toppgene_name, logger)
 		Panther_GEOA(genes_list, panther_name, logger)
 
@@ -687,7 +690,7 @@ def main(args):
 
 	# Logger configuration
 
-	logger = logging.getLogger('g-LOTUS summarise')
+	logger = logging.getLogger('LOTUS summarise')
 	logger.setLevel(logging.DEBUG)
 
 	fh = logging.FileHandler(args.log)
@@ -734,8 +737,8 @@ def main(args):
 			out_indel = Path(out_indel).with_suffix('.svg')
 		verif_output(out_indel)
 		if enrichment:
-			verif_output(Path(vcf_file_pass).stem.replace('.','_')+'_ToppGene_enrichment.xlsx')
-			verif_output(Path(vcf_file_pass).stem.replace('.','_')+'_Panther_enrichment.xlsx')
+			verif_output(str(Path(out_genes).resolve().parent)+'/'+str(Path(vcf_file_pass).stem.replace('.','_'))+'_ToppGene_enrichment.xlsx')
+			verif_output(str(Path(out_genes).resolve().parent)+'/'+str(Path(vcf_file_pass).stem.replace('.','_'))+'_Panther_enrichment.xlsx')
 		logger.info('- Outputs file ok -')
 	except ValueError:
 		print ('Problem with one or more output files: ', sys.exc_info()[0])
@@ -745,11 +748,12 @@ def main(args):
 	# Start
 
 	logger.info('**************************************************************************************************************')
-	logger.info('*** g-LOTUS summarise module ***')
+	logger.info('*** LOTUS summarise module ***')
+	no_argument = ''
 	if enrichment:
-		logger.info(f'** cmd line : python lotus.py summarise -v {str(vcf_file)} -vp {str(vcf_file_pass)} -g {str(genome_file)} -s {str(out_stats)} -genes {str(out_genes)} -p {str(out_profile)} -i {str(out_indel)} --enrichment **')
-	else:
-		logger.info(f'** cmd line : python lotus.py summarise -v {str(vcf_file)} -vp {str(vcf_file_pass)} -g {str(genome_file)} -s {str(out_stats)} -genes {str(out_genes)} -p {str(out_profile)} -i {str(out_indel)} **')	
+		no_argument+=' --enrichment'
+	logger.info(f'** cmd line : python lotus.py summarise -v {str(vcf_file)} -vp {str(vcf_file_pass)} -g {str(genome_file)} -s {str(out_stats)} -genes {str(out_genes)} -p {str(out_profile)} -i {str(out_indel)}'+str(no_argument)+' **')
+
 	logger.info('* Start summarizing *')
 	logger.info(f'Working directory (vcf files folder) : {working_directory}')
 	logger.info(f'Current directory : {Path().absolute()}')

@@ -9,7 +9,7 @@ from pathlib import Path
 import pandas as pd
 import numpy as np
 import pytest
-from python_scripts.check_files import verif_input_vcf, verif_output, verif_input, verif_input_xlsx, verif_input_tsv, verif_input_config_merge, verif_input_config
+from python_scripts.check_files import verif_input_vcf, verif_output, verif_input, verif_input_xlsx, verif_input_tsv, verif_input_config_merge, verif_input_config, verif_supplementary_information_file
 
 
 ###################
@@ -179,6 +179,17 @@ with open(config5, 'w') as o:
 config6 = str(uuid.uuid4())+'.txt'
 Path(config6).touch()
 
+
+########################################
+# Verif Supplementary Information File #
+########################################
+
+infos_file = 'LOTUS_external_files/Lotus_ExternalBases_202301.xlsx'
+wrong1 = str(uuid.uuid4())+'.xlsx'
+Path(wrong1).touch()
+wrong2 = str(uuid.uuid4())+'.xlsx'
+
+
 ################################################################################################################
 ################################################# Tests ########################################################
 ################################################################################################################
@@ -327,9 +338,14 @@ def test_verif_input_config():
 	os.remove(empty_file)	
 
 
+########################################
+# Verif Supplementary Information File #
+########################################
 
-
-
-
-
+def test_verif_supplementary_information_file():
+	#assert verif_input(wrong_infos_file) == None
+	with pytest.raises(ValueError, match='File '+wrong1+' is empty !'):
+		verif_supplementary_information_file(wrong1, '.')
+	verif_supplementary_information_file(wrong2, '.')
+	os.remove(wrong1)
 

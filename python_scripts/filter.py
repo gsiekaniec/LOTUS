@@ -70,7 +70,7 @@ def line_without_fail(record, to_suppr : str, intIndex : dict, strLotusFilterCod
 	return True
 	
 
-def fail_filters(info : {}, AD : [], AF : [], nb_alt : int, filter_mbq: int = 20, filter_dp: int = 10, filter_af: float = 0.1, filter_ad: int = 5, filter_popaf: float = 0.0001):
+def fail_filters(info : {}, AD : [], AF : [], nb_alt : int, filter_mbq: int = 20, filter_dp: int = 10, filter_af: float = 0.1, filter_ad: int = 5, filter_popaf: float = 0.0001, paired: bool = True):
 	'''
 	Do variant(s) at a position passes the filters ?
 	Input : info, AD and AF fields and the number of variants
@@ -105,10 +105,11 @@ def fail_filters(info : {}, AD : [], AF : [], nb_alt : int, filter_mbq: int = 20
 				if int(elmt) < filter_dp:
 					fail['all'].add('DP')
 		# median fragment length by allele
-		if id == 'MFRL':
-			for i, mfrl in enumerate(elmt[1:]):
-				if float(mfrl) == 0:
-					fail[i].add('MFRL')
+		if paired:
+			if id == 'MFRL':
+				for i, mfrl in enumerate(elmt[1:]):
+					if float(mfrl) == 0:
+						fail[i].add('MFRL')
 		# median base quality by allele
 		if id == 'MBQ':
 			for i, mbq in enumerate(elmt[1:]):
@@ -189,7 +190,7 @@ def get_values (record : str, strFieldSplit : dict, intIndex : dict, InfoFieldsT
 	return (recInfo, recFormat, recValues, recAD, recAF, recOriginalFilter)
 
 
-def create_new_records(record, strFieldSplit, intIndex, InfoFieldsToProcess, strCRLF, filter_mbq = 20, filter_dp = 10, filter_af = 0.1, filter_ad = 5, filter_popaf = 0.00001):
+def create_new_records(record, strFieldSplit, intIndex, InfoFieldsToProcess, strCRLF, filter_mbq = 20, filter_dp = 10, filter_af = 0.1, filter_ad = 5, filter_popaf = 0.00001, paired: bool = True):
 	'''
 	Creation of new records containing new g-Lotus filter or without variants that dont pass filters  
         Input : record and dictionnary needed to find and split line fields
@@ -200,7 +201,7 @@ def create_new_records(record, strFieldSplit, intIndex, InfoFieldsToProcess, str
 
 	# #####################
 	# Treatment of failure
-	fail = fail_filters(recInfo, recAD, recAF, len(record[intIndex['Alt']].split(',')), filter_mbq, filter_dp, filter_af, filter_ad, filter_popaf) #False if the variant does not pass the filters and the name of the filter that does not pass otherwise
+	fail = fail_filters(recInfo, recAD, recAF, len(record[intIndex['Alt']].split(',')), filter_mbq, filter_dp, filter_af, filter_ad, filter_popaf, paired) #False if the variant does not pass the filters and the name of the filter that does not pass otherwise
 
 	# ####################
 	# Rebuilt and storage of filtered data
@@ -254,7 +255,7 @@ def create_new_records(record, strFieldSplit, intIndex, InfoFieldsToProcess, str
 	return blnPass, newRecord, newRecord2
 
 
-def filter(vcf_file : str, logger : str, output : str, working_method : str, filter_mbq : int, filter_dp : int, filter_af : float, filter_ad : int, filter_popaf : float):
+def filter(vcf_file : str, logger : str, output : str, working_method : str, filter_mbq : int, filter_dp : int, filter_af : float, filter_ad : int, filter_popaf : float, paired : bool):
 	'''
 	Filters out variants:
 	Input : vcf file
@@ -263,10 +264,10 @@ def filter(vcf_file : str, logger : str, output : str, working_method : str, fil
 	working_method : 2 possibilities : 'InMemory' (more speed but higher memory consumption) or 'Direct' (slow speed but low memory consumption)
 	'''
 
-	output = Path(true_stem(output)).with_suffix('.filtered.vcf')
-	output2 = Path(true_stem(output)).with_suffix('.pass.vcf')
+	output = str(Path(output).resolve().parent)+'/'+str(Path(true_stem(output)).with_suffix('.filtered.vcf'))
+	output2 = str(Path(output).resolve().parent)+'/'+str(Path(true_stem(output)).with_suffix('.passed.vcf'))
 	print(f'Read file :\t{vcf_file}\nWrite in {output} and {output2}\n')
-	
+
 
 	# log data
 	logger.info(f'Working method chosen by user : {str(working_method)}')
@@ -414,7 +415,7 @@ def filter(vcf_file : str, logger : str, output : str, working_method : str, fil
 			for id_line, x in enumerate(lstInput1[n_header:]):
 				record = x.strip().split(strFieldSplit[1])
 
-				blnPass, newRecord, newRecord2 = create_new_records(record, strFieldSplit, intIndex, InfoFieldsToProcess, strCRLF, filter_mbq, filter_dp, filter_af, filter_ad, filter_popaf)
+				blnPass, newRecord, newRecord2 = create_new_records(record, strFieldSplit, intIndex, InfoFieldsToProcess, strCRLF, filter_mbq, filter_dp, filter_af, filter_ad, filter_popaf, paired)
 
 				lstInput1[n_header+id_line]=str(newRecord)
 				intCountData +=1
@@ -434,7 +435,7 @@ def filter(vcf_file : str, logger : str, output : str, working_method : str, fil
 			while x != '':
 				record = x.split(strFieldSplit[1])
 
-				blnPass, newRecord, newRecord2 = create_new_records(record, strFieldSplit, intIndex, InfoFieldsToProcess, strCRLF, filter_mbq, filter_dp, filter_af, filter_ad, filter_popaf)
+				blnPass, newRecord, newRecord2 = create_new_records(record, strFieldSplit, intIndex, InfoFieldsToProcess, strCRLF, filter_mbq, filter_dp, filter_af, filter_ad, filter_popaf, paired)
 
 				obFileOuput1.write(newRecord)
 				intCountData +=1
@@ -493,13 +494,14 @@ def main(args):
 	filter_af = args.af
 	filter_ad = args.ad
 	filter_popaf = args.popaf
+	paired = args.paired
 
 	working_method = args.working_method	# working_method = 'InMemory' (more speed but higher memory consumption) or 'Direct' (slow speed but low memory consumption)
 	working_directory = Path(vcf_file).parent.absolute()
 
 	# Logger configuration
 	
-	logger = logging.getLogger('g-LOTUS filter')
+	logger = logging.getLogger('LOTUS filter')
 	logger.setLevel(logging.DEBUG)
 
 	fh = logging.FileHandler(args.log)
@@ -532,12 +534,15 @@ def main(args):
 	# Start
 
 	logger.info('**************************************************************************************************************')
-	logger.info('*** g-LOTUS filtering module ***')
-	logger.info(f'** cmd line : python lotus.py filter -v {str(vcf_file)} -o {output} -wm {working_method} --DP {filter_dp} --MBQ {filter_mbq} --AF {filter_af} --AD {filter_ad} --POPAF {filter_popaf} **')
+	logger.info('*** LOTUS filtering module ***')
+	no_argument=''
+	if paired:
+		no_argument+=' --unpaired'
+	logger.info(f'** cmd line : python lotus.py filter -v {str(vcf_file)} -o {output} -wm {working_method} --DP {filter_dp} --MBQ {filter_mbq} --AF {filter_af} --AD {filter_ad} --POPAF {filter_popaf}'+str(no_argument)+' **')
 	logger.info('* Start filtering *')
-	logger.info(f'Working directory (vcf files folder) : {working_directory}') 
+	logger.info(f'Working directory (vcf files folder) : {working_directory}')
 	logger.info(f'Current directory : {Path().absolute()}')
 
-	filter(vcf_file , logger, output, working_method, filter_mbq, filter_dp, filter_af, filter_ad, filter_popaf)
-	
+	filter(vcf_file, logger, output, working_method, filter_mbq, filter_dp, filter_af, filter_ad, filter_popaf, paired)
+
 	# End

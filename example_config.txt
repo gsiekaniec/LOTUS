@@ -36,4 +36,3 @@ None
 /path/to/deletion1.tsv
 /path/to/deletion2.tsv
 None
-

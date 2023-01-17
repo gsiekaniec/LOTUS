@@ -10,7 +10,7 @@ import logging
 import uuid
 from pathlib import Path
 import pytest
-from python_scripts.merge import read_config, get_nb_files_and_file_names, create_upsetplot
+from python_scripts.merge import read_config, get_nb_files_and_file_names, create_upsetplot, get_informations_for_genes, add_variants_to_dictionnary
 from python_scripts.path_modification import true_stem
 
 
@@ -56,6 +56,32 @@ category_for_upsetplot =  [['sample1'], ['sample2'], ['sample3'], ['sample1', 's
 names_for_upsetplot = {'sample1', 'sample2', 'sample3'}
 
 
+##############################
+# get informations for genes #
+##############################
+
+small_info_file = str(uuid.uuid4())+'.xlsx'
+dt = np.dtype([('Ordre', int), ('Gene_Symbol unique', np.unicode_, 16),('1 Info', np.unicode_, 16),('2 Info', np.unicode_, 16)])
+xlsx_df = pd.DataFrame(np.array([(1, 'ATA', 'info ATA', 'info ATA 2'), (2, 'BOB', 'info BOB', 'info BOB 2')], dtype=dt), columns=['Ordre', 'Gene_Symbol unique', '1 Info', '2 Info'])
+xlsx_df = xlsx_df.set_index('Ordre')
+xlsx_df.to_excel(small_info_file)
+dt2 = np.dtype([('Gene_Symbol unique', np.unicode_, 16),('1', np.unicode_, 16),('2', np.unicode_, 16)])
+xlsx_df2 = pd.DataFrame(np.array([('ATA', 'info ATA', 'info ATA 2'), ('BOB', 'info BOB', 'info BOB 2')], dtype=dt2), columns=['Gene_Symbol unique', '1', '2'])
+xlsx_df2 = xlsx_df2.set_index('Gene_Symbol unique')
+
+
+###############################
+# add variants to dictionnary #
+###############################
+
+dictionnary = {'ALS2': {'chr': '', 'start': '', 'end': '', 'weakness': [], 'gb1': {}, 'cb1': {}, 'pb1': {}, 'gb2': {}, 'cb2': {}, 'pb2': {}, 'samples': []}}
+gene_name = 'ALS2'
+position = 10
+type = 'gb2'
+data = np.array(['chr2', 201700267, 201782112, 0.0, 1, 0, np.nan, np.nan, np.nan, 1, 'g.chr2:201741761G>T', 'c.2264C>A', 'p.S755*'])
+row = pd.Series(data, index=['Chromosome', 'Gene position start', 'Gene position end', 'Variant weakness (in %)', 'Tumor burden (symmetrical difference)', 'SAMPLE1', 'g.SAMPLE1', 'c.SAMPLE1', 'p.SAMPLE1', 'SAMPLE2', 'g.SAMPLE2', 'c.SAMPLE2', 'p.SAMPLE2'], name='ALS2')
+dictionnary2 = {'ALS2': {'chr': '', 'start': '', 'end': '', 'weakness': [], 'gb1': {}, 'cb1': {}, 'pb1': {}, 'gb2': {'g.chr2:201741761G>T': 1}, 'cb2': {}, 'pb2': {}, 'samples': []}}
+
 
 ################################################################################################################
 ################################################# Tests ########################################################
@@ -94,6 +120,19 @@ def test_create_upsetplot():
 	os.remove(upset_name)
 
 
+##############################
+# get informations for genes #
+##############################
+
+def test_get_informations_for_genes():
+        assert ((get_informations_for_genes(small_info_file , logger) == xlsx_df2).all().all())
+        os.remove(small_info_file)
 
 
+###############################
+# add variants to dictionnary #
+###############################
 
+def test_add_variants_to_dictionnary():
+	add_variants_to_dictionnary(dictionnary, gene_name, position, type, row)
+	assert dictionnary == dictionnary2
