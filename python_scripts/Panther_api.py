@@ -63,7 +63,8 @@ def Panther_GEOA(list_genes : list, panther_name : str, logger = None, pvalue = 
 						nb_unclassified_GO+=1
 
 			if logger:
-				logger.warning(f'{nb_unclassified_GO} unclassified gene onthology !')
+				if nb_unclassified_GO > 0:
+					logger.warning(f'{nb_unclassified_GO} unclassified gene onthology !')
 			df = pd.DataFrame.from_dict(d, orient='index',  columns=col)
 			df['Genes number'] = df['Genes number'].astype(int)
 			df = df.sort_values(by='Genes number', ascending=False)
