@@ -194,8 +194,6 @@ def sorted_nicely(l):
 
 def create_plot(cytobands_infos, curves_infos_b1, curves_infos_b2, curves_infos_sample, chromosomes_size, counts, plot_size, plot_name, title = '', logger = None):
 
-	print('curve1', curves_infos_b1, '\n curve2', curves_infos_b2, '\n curve_info', curves_infos_sample, '\n chromosomes size', chromosomes_size, counts, plot_size, plot_name, title, logger)
-
 	if not str(plot_name).endswith('.svg'):
 		plot_name = Path(plot_name).with_suffix('.svg')
 
@@ -303,7 +301,13 @@ def create_plot(cytobands_infos, curves_infos_b1, curves_infos_b2, curves_infos_
 	plt.title(title)
 
 	plt.savefig(plot_name, format='svg', bbox_inches='tight')
-	plt.show()
+	
+	if not str(plot_name).endswith('.png'):
+		plot_name = Path(plot_name).with_suffix('.png')
+	plt.savefig(plot_name, format='png', bbox_inches='tight')
+
+	plt.close()
+
 	if logger:
                 logger.info('- Done -')
 	print('Done.')

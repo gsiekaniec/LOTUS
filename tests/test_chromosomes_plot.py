@@ -169,4 +169,6 @@ def test_sorted_nicely():
 def test_create_chromosomes_plot():
 	create_chromosomes_plot(gene_positions, gene_positions2, gene_positions3, cytoband_file, chr_plot_name)	
 	assert Path(chr_plot_name).exists()
+	assert Path(chr_plot_name).with_suffix('.png').exists()
 	os.remove(chr_plot_name)
+	os.remove(Path(chr_plot_name).with_suffix('.png'))

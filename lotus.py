@@ -300,7 +300,7 @@ if __name__ == '__main__':
 
     optional_merge.add_argument('--cytoband', '-cyto', dest='cyto', metavar='CYTOBAND_FILE',
     default=None,
-    help='Human cytoband file for the corresponding genome version. This file can be download here : https://genome.ucsc.edu/cgi-bin/hgTables or in the LOTUS github (for hg38). Default = 50000.'
+    help='Human cytoband file for the corresponding genome version. This file can be download here : https://genome.ucsc.edu/cgi-bin/hgTables or in the LOTUS github (for hg38). Default = None.'
     )
 
     optional_merge.add_argument('--chromosome-step', '-step', dest='step', metavar='STEP',

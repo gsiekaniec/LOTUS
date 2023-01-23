@@ -74,7 +74,7 @@ def modify_variants_pass_and_get_genes(file1, file2, variants, weak, strong, gen
 	Output : dictionary containing genes and their number of weak and strong variants (specific to vcf file 1)
 	'''
 
-	outfile = parent_name+'/'+str(true_stem(file1)+'_compare_to_'+true_stem(file2)+'.pass.vcf')
+	outfile = parent_name+'/'+str(true_stem(file1)+'_'+true_stem(file2)+'.passed.vcf')
 	genes = {}
 	with open(outfile, 'w') as o:
 		for line in read_vcf(file1):
@@ -187,6 +187,10 @@ def create_graph_snp(df_snp, df_snp2, outname, logger):
 	plt.annotate(name2, xy=(0, ax1.get_ylim()[0] - 0.05 * ax1.get_ylim()[0]))
 
 	plt.savefig(outname)
+
+	outname = Path(outname).with_suffix('.png')
+	plt.savefig(outname)
+
 	plt.close()	
 
 
@@ -314,7 +318,10 @@ def create_graph_indel(deletion1, deletion2, insertion1, insertion2, outname, lo
 	logger.info(f'Draw indel size barplot in {outname}')
 
 	plt.savefig(outname)
-	plt.show()
+
+	outname = Path(outname).with_suffix('.png')
+	plt.savefig(outname)
+
 	plt.close()
 
 
@@ -467,8 +474,8 @@ def compare_vcf(vcf_pass_files : list, vcf_filtered_files : list, gene_name_dico
 		################################################
 		# Biological process enrichment using the genes list with the ToppGene and Panther API
 		if enrichment:
-			toppgene_name = str(Path(out_gene).resolve().parent)+'/'+str(true_stem(vcf_pass_files[num-1]))+'_compare_to_'+str(true_stem(vcf_pass_files[num]))+'_ToppGene_enrichment'
-			panther_name =  str(Path(out_gene).resolve().parent)+'/'+str(true_stem(vcf_pass_files[num-1]))+'_compare_to_'+str(true_stem(vcf_pass_files[num]))+'_Panther_enrichment'
+			toppgene_name = str(Path(out_gene).resolve().parent)+'/'+str(true_stem(vcf_pass_files[num-1]))+'_'+str(true_stem(vcf_pass_files[num]))+'_ToppGene_enrichment'
+			panther_name =  str(Path(out_gene).resolve().parent)+'/'+str(true_stem(vcf_pass_files[num-1]))+'_'+str(true_stem(vcf_pass_files[num]))+'_Panther_enrichment'
 			ToppGene_GEOA(genes_list, toppgene_name, logger)
 			Panther_GEOA(genes_list, panther_name, logger)
 		pbar_compare.update(1)
@@ -543,26 +550,26 @@ def main(args):
 			file_two = true_stem(vcf_filtered_files[i])
 
 			out_profile = str(Path(out_profile).resolve().parent)+'/'+str(Path(true_stem(out_profile)+'_'+file_one+'_'+file_two).with_suffix('.svg'))
-			#verif_output(out_profile)
+			verif_output(out_profile)
 
 			out_indel = str(Path(out_indel).resolve().parent)+'/'+str(Path(true_stem(out_indel)+'_'+file_one+'_'+file_two).with_suffix('.svg'))
-			#verif_output(out_indel)	
+			verif_output(out_indel)	
 
 			out_gene_test = str(Path(out_gene).resolve().parent)+'/'+str(file_one+'_'+file_two+'_'+true_stem(out_gene)+'.xlsx')
-			#verif_output(out_gene_test)
+			verif_output(out_gene_test)
 			out_gene = str(Path(out_gene).resolve().parent)+'/'+str(file_one+'_'+file_two+'_'+true_stem(out_gene)+'.tsv')
-			#verif_output(out_gene)
+			verif_output(out_gene)
 
-			vcf_strong_weak1 = str(Path(out_gene).resolve().parent)+'/'+str(Path(file_one+'_compare_to_'+file_two).with_suffix('.pass.vcf'))
-			#verif_output(vcf_strong_weak1)
-			vcf_strong_weak2 = str(Path(out_gene).resolve().parent)+'/'+str(Path(file_two+'_compare_to_'+file_one).with_suffix('.pass.vcf'))
-			#verif_output(vcf_strong_weak2)
+			vcf_strong_weak1 = str(Path(out_gene).resolve().parent)+'/'+str(Path(file_one+'_'+file_two).with_suffix('.passed.vcf'))
+			verif_output(vcf_strong_weak1)
+			vcf_strong_weak2 = str(Path(out_gene).resolve().parent)+'/'+str(Path(file_two+'_'+file_one).with_suffix('.passed.vcf'))
+			verif_output(vcf_strong_weak2)
 
 			if enrichment:
-				verif_output(str(Path(out_gene).resolve().parent)+'/'+str(Path(file_one+'_compare_to_'+file_two+'_ToppGene_enrichment.xlsx')))
-				verif_output(str(Path(out_gene).resolve().parent)+'/'+str(Path(file_one+'_compare_to_'+file_two+'_ToppGene_enrichment.tsv')))
-				verif_output(str(Path(out_gene).resolve().parent)+'/'+str(Path(file_one+'_compare_to_'+file_two+'_Panther_enrichment.xlsx')))
-				verif_output(str(Path(out_gene).resolve().parent)+'/'+str(Path(file_one+'_compare_to_'+file_two+'_Panther_enrichment.tsv')))
+				verif_output(str(Path(out_gene).resolve().parent)+'/'+str(Path(file_one+'_'+file_two+'_ToppGene_enrichment.xlsx')))
+				verif_output(str(Path(out_gene).resolve().parent)+'/'+str(Path(file_one+'_'+file_two+'_ToppGene_enrichment.tsv')))
+				verif_output(str(Path(out_gene).resolve().parent)+'/'+str(Path(file_one+'_'+file_two+'_Panther_enrichment.xlsx')))
+				verif_output(str(Path(out_gene).resolve().parent)+'/'+str(Path(file_one+'_'+file_two+'_Panther_enrichment.tsv')))
 
 		logger.info('- Outputs file ok -')
 

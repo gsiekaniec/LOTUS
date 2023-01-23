@@ -129,7 +129,7 @@ def test_add_to_genes():
 ######################################
 
 def test_modify_variants_pass_and_get_genes():
-	outfile = true_stem(false_vcf)+'_compare_to_'+true_stem('file2')+'.pass.vcf'
+	outfile = true_stem(false_vcf)+'_'+true_stem('file2')+'.passed.vcf'
 	assert modify_variants_pass_and_get_genes(false_vcf, 'file2', variants_2, variants_ok , strong, gene_name_dico, gene_id_dico, transcript_dico, '.', logger) == genes_from_vcf
 	assert Path(outfile).exists()
 	os.remove(outfile)
@@ -144,7 +144,9 @@ def test_create_graph_snp():
 	print(df_snp,'\n',df_snp2,'\n')
 	create_graph_snp(df_snp, df_snp2, out_snp_graph, logger)
 	assert Path(out_snp_graph).exists()
+	assert Path(out_snp_graph).with_suffix('.png').exists()
 	os.remove(out_snp_graph)
+	os.remove(Path(out_snp_graph).with_suffix('.png'))
 
 
 ######################
@@ -154,15 +156,21 @@ def test_create_graph_snp():
 def test_create_graph_indel():
 	create_graph_indel(del1, del2, ins1, ins2, out_indel_graph, logger)
 	assert Path(out_indel_graph).exists()
+	assert Path(out_indel_graph).with_suffix('.png').exists()
 	os.remove(out_indel_graph)
+	os.remove(Path(out_indel_graph).with_suffix('.png'))
 	
 	create_graph_indel(del1, del2, ins1, None, out_insertion_only, logger)
 	assert Path(out_insertion_only).exists()
+	assert Path(out_insertion_only).with_suffix('.png').exists()
 	os.remove(out_insertion_only)
+	os.remove(Path(out_insertion_only).with_suffix('.png'))
 
 	create_graph_indel(del1, None, ins1, ins2, out_deletion_only, logger)
 	assert Path(out_deletion_only).exists()
+	assert Path(out_deletion_only).with_suffix('.png').exists()
 	os.remove(out_deletion_only)
+	os.remove(Path(out_deletion_only).with_suffix('.png'))
 
 	create_graph_indel(del1, None, ins1, None, out_no_indel_graph, logger)
 	assert not Path(out_no_indel_graph).exists()

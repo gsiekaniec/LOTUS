@@ -117,7 +117,9 @@ def test_get_nb_files_and_file_names():
 def test_create_upsetplot():
 	create_upsetplot(data_for_upsetplot, category_for_upsetplot, upset_name, names_for_upsetplot, 1, 0, 1, 0, 101, logger)
 	assert Path(upset_name).exists()
+	assert Path(upset_name).with_suffix('.png').exists()
 	os.remove(upset_name)
+	os.remove(Path(upset_name).with_suffix('.png'))
 
 
 ##############################

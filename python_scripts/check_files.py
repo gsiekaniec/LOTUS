@@ -77,6 +77,7 @@ def verif_input_tsv (file : str):
 
 def verif_input_config_merge (config : str):
 	with open(config, 'r') as f:
+		print(f'Reading config file {config}\n')
 		for line in f:
 			line = line.strip()
 			line = line.split(',')[0]
@@ -105,6 +106,7 @@ def verif_input_config (config : str):
 	insertion = []
 	deletion = []
 	with open(config ,'r') as f:
+		print(f'Reading config file {config}\n')
 		try:
 			nb_sample = int(f.readline().strip())
 		except ValueError:

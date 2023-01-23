@@ -158,6 +158,10 @@ def graph_snp(d, name, vcf_name, logger):
 		xtick.set_color(color)
 	ax2.spines['bottom'].set_visible(False)
 	plt.savefig(name)
+
+	name = Path(name).with_suffix('.png')
+	plt.savefig(name)
+
 	plt.close()
 
 	print(f'Save profile values in {Path(name).with_suffix(".tsv")}...')
@@ -252,6 +256,10 @@ def graph_indel(deletion, insertion, name, vcf_name, logger):
 
 	plt.legend()
 	plt.savefig(name)
+
+	name = Path(name).with_suffix('.png')
+	plt.savefig(name)
+
 	plt.close()	
 
 

@@ -196,8 +196,10 @@ def test_create_ordered_dataframe():
 def test_graph_snp():
 	graph_snp(complete_profile_dictionary, snp_plot_name, vcf_name, logger)
 	assert Path(snp_plot_name).exists()
+	assert Path(snp_plot_name).with_suffix('.png').exists()
 	assert Path(snp_plot_name).with_suffix('.tsv').exists()
 	os.remove(snp_plot_name)
+	os.remove(Path(snp_plot_name).with_suffix('.png'))
 	os.remove(Path(snp_plot_name).with_suffix('.tsv'))
 
 ###############
@@ -207,24 +209,30 @@ def test_graph_snp():
 def test_graph_indel():
 	graph_indel(deletion_counter, insertion_counter, indel_plot_name, vcf_name, logger)
 	assert Path(indel_plot_name).exists()
+	assert Path(indel_plot_name).with_suffix('.png').exists()
 	assert Path(indel_plot_name).with_suffix('.deletion.tsv').exists()
 	assert Path(indel_plot_name).with_suffix('.insertion.tsv').exists()
 	os.remove(indel_plot_name)
+	os.remove(Path(indel_plot_name).with_suffix('.png'))
 	os.remove(Path(indel_plot_name).with_suffix('.deletion.tsv'))
 	os.remove(Path(indel_plot_name).with_suffix('.insertion.tsv'))
 
 def test_graph_insertion_only():
 	graph_indel(empty_counter, insertion_counter, insertion_plot_name, vcf_name, logger)
 	assert Path(insertion_plot_name).exists()
+	assert Path(insertion_plot_name).with_suffix('.png').exists()
 	assert Path(insertion_plot_name).with_suffix('.insertion.tsv').exists()
 	os.remove(insertion_plot_name)
+	os.remove(Path(insertion_plot_name).with_suffix('.png'))
 	os.remove(Path(insertion_plot_name).with_suffix('.insertion.tsv'))
 
 def test_graph_deletion_only():
 	graph_indel(deletion_counter, empty_counter, deletion_plot_name, vcf_name, logger)
 	assert Path(deletion_plot_name).exists()
+	assert Path(deletion_plot_name).with_suffix('.png').exists()
 	assert Path(deletion_plot_name).with_suffix('.deletion.tsv').exists()
 	os.remove(deletion_plot_name)
+	os.remove(Path(deletion_plot_name).with_suffix('.png'))
 	os.remove(Path(deletion_plot_name).with_suffix('.deletion.tsv'))
 
 def test_graph_no_count():

@@ -25,6 +25,9 @@ import matplotlib.pyplot as plt
 
 
 def get_informations_for_genes(info_file, logger):
+	'''
+	Extract informations from the external cancer databases file.
+	'''
 	df = pd.read_excel(info_file, index_col=1)
 	df = df.drop(['Ordre'], axis=1)
 	df.set_axis([source.split(' Info')[0] for source in df.columns], axis="columns", inplace=True)
@@ -34,6 +37,9 @@ def get_informations_for_genes(info_file, logger):
 		
 
 def read_config(config_file):
+	'''
+	Read the merge config file (composed of one gene.tsv compare file per line).
+	'''
 	with open(config_file, 'r') as f:
 		for line in f:
 			line = line.strip()
@@ -50,12 +56,18 @@ def read_config(config_file):
 
 
 def get_nb_files_and_file_names(config_file):
+	'''
+	Extract files number and name from the config file.
+	'''
 	names = [i.strip().split(',')[1] if i.strip() != '' and len(i.strip().split(',')) > 1 else true_stem(i.split(',')[0]) for i in open(config_file, 'r').readlines()]
 	nb = len(names)
 	return nb, names		
 
 
 def add_variants_to_dictionnary (d : {}, gene_name : str, pos : int, type : str, row):
+	'''
+	Add a variant in count dictionnary.
+	'''
 	for i in row.iloc[pos].split('|'):
 		if not i in d[gene_name][type].keys():
 			d[gene_name][type][i]=1
@@ -64,6 +76,9 @@ def add_variants_to_dictionnary (d : {}, gene_name : str, pos : int, type : str,
 
 
 def merge_results(it_files, category, output, upset_output, infos, cytoband_file, chromosomes_output, step, weakness_threshold, min_subset_size, max_subset_size, min_degree, max_degree, nb_files, enrichment, logger):
+	'''
+	
+	'''
 
 	# Get genes infos if not None
 	if infos:
@@ -183,6 +198,7 @@ def merge_results(it_files, category, output, upset_output, infos, cytoband_file
 	df[['Mean weakness', 'Tumor burden union', 'g.b1 union', 'c.b1 union', 'p.b1 union', 'Nb Mutation b1', 'g.b2 union', 'c.b2 union', 'p.b2 union', 'Nb Mutation b2']] = np.round(df[['Mean weakness', 'Tumor burden union', 'g.b1 union', 'c.b1 union', 'p.b1 union', 'Nb Mutation b1', 'g.b2 union', 'c.b2 union', 'p.b2 union', 'Nb Mutation b2']], 2)
 
 	if infos:
+		# Add additional cancer centric genes informations
 		df = df.join(infos_df)
 		# Drop empty informational columns
 		empty_cols = [col for col in df.columns if df[col].isnull().all()]
@@ -194,6 +210,7 @@ def merge_results(it_files, category, output, upset_output, infos, cytoband_file
 	# Save genes list files (.xlsx and .tsv) #
 
 	print(f'Save genes list files in {Path(output).with_suffix(".xlsx")} and {Path(output).with_suffix(".tsv")}')
+	logger.info(f'Save genes list files in {Path(output).with_suffix(".xlsx")} and {Path(output).with_suffix(".tsv")}')
 
 	if not str(output).endswith('.xlsx'):
 		output = Path(output).with_suffix('.xlsx')
@@ -213,6 +230,9 @@ def merge_results(it_files, category, output, upset_output, infos, cytoband_file
 
 
 def create_upsetplot(data, category, upset_output, names, min_subset_size, max_subset_size, min_degree, max_degree, weakness_threshold, logger):
+	'''
+	Create an Upsetplot showing the number of common genes to the different sample set
+	'''
 
 	if max_subset_size == 0:
 		max_subset_size = max([len(v) for v in data.values()])
@@ -271,8 +291,13 @@ def create_upsetplot(data, category, upset_output, names, min_subset_size, max_s
 		upset_output = Path(upset_output).with_suffix('.svg')
 	print(f'Create UpSetPlot in {upset_output} !')
 	logger.info(f'Create UpSetPlot in {upset_output} !')
-	
-	plt.savefig(upset_output,format='svg')
+	plt.savefig(upset_output,format='svg')	
+
+	if not str(upset_output).endswith('.png'):
+		upset_output = Path(upset_output).with_suffix('.png')
+	print(f'Create UpSetPlot in {upset_output} !')
+	logger.info(f'Create UpSetPlot in {upset_output} !')
+	plt.savefig(upset_output,format='png')
 
 
 def main(args):
