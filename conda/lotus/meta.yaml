@@ -1,0 +1,33 @@
+package:
+   name: lotus
+   version: "0.0.1"
+
+source:
+   path: ../../
+
+requirements:
+   build:
+      - python==3.8.3
+      - make
+
+   run:
+      - python==3.8.3
+      - numpy
+      - matplotlib
+      - pytest
+      - requests
+      - more-itertools
+      - pandas
+      - pyfastx
+      - tqdm
+      - upsetplot
+
+about:
+   home: https://github.com/gsiekaniec/LOTUS
+   license: AGPL-3.0
+   summary: LOTUS (LOngiTUdinal comparative genomics Study) is a software to process genomic data longitudinally with two or more time points to better understand a progression between two or more conditions. The input data must be a file containing the variants (.vcf) processed following the GATK best practices and annotated with Funcotator.
+   dev_url: https://github.com/gsiekaniec/LOTUS
+
+extra:
+   maintainers:
+      - G. Siekaniec, gregoire.siekaniec@ico.unicancer.fr
