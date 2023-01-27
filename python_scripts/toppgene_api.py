@@ -85,6 +85,9 @@ def ToppGene_GEOA(list_genes : list, toppgene_name : str, logger = None, pvalue 
 					del df['Category']
 					del df['Source']
 
+					df = df.rename(columns={"ID": "Id","Name": "Biological Process name", "PValue": "P-value"})
+					df = df.set_index('Id')
+
 					#Output files verification
 
 					xlsx = toppgene_name
@@ -107,7 +110,6 @@ def ToppGene_GEOA(list_genes : list, toppgene_name : str, logger = None, pvalue 
 
 		else:
 			print('No valid Gene !')
-
 
 
 

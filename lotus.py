@@ -210,8 +210,8 @@ if __name__ == '__main__':
     )
 
     optional_summarise.add_argument('--genes', '-genes', dest='genes', metavar='OUTPUT_GENES',
-    default='genes.txt',
-    help='Output file containing genes impacted by variants. Default = "genes.txt".'
+    default='MutatedGenes.tsv',
+    help='Output file containing genes impacted by variants. Default = "MutatedGenes.tsv".'
     )
 
     optional_summarise.add_argument('--profile', '-p', dest='profile',  metavar='OUTPUT_PROFILE', 
@@ -250,8 +250,8 @@ if __name__ == '__main__':
     )
 
     optional_compare.add_argument('--output', '-o', dest='out', metavar='OUTPUT', 
-    default='genes.xlsx', 
-    help='Excel file containing the genes specific to the first or second biopsy. Default = "genes.xlsx" wich give "{vcf1}_{vcf2}_genes.tsv/.xlsx".'
+    default='compared.tsv', 
+    help='Excel file containing the genes specific to the first or second biopsy. Default = "compared.tsv" wich give "{vcf1}_{vcf2}_compared.MutatedGenes.tsv/.xlsx".'
     )
     
     optional_compare.add_argument('--profile', '-p', dest='profile', metavar='PROFILE',

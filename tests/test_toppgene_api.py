@@ -21,8 +21,7 @@ list_genes = ['BRCA1', 'BRCA2']
 toppgene_name = str(uuid.uuid4())+'.tsv'
 pvalue = 0.05
 maxres = 100
-ids = ['ID', 'Name', 'PValue', 'QValueFDRBH', 'QValueFDRBY', 'QValueBonferroni', 'TotalGenes', 'GenesInTerm', 'GenesInQuery', 'GenesInTermInQuery', 'URL', 'Genes']
-
+ids = ['Id', 'Biological Process name', 'P-value', 'QValueFDRBH', 'QValueFDRBY', 'QValueBonferroni', 'TotalGenes', 'GenesInTerm', 'GenesInQuery', 'GenesInTermInQuery', 'URL', 'Genes']
 
 ################################################################################################################
 ################################################# Tests ########################################################

@@ -58,8 +58,8 @@ def create_dataframe_from_gene(d):
 	Output : dataframe corresponding to the dictionary
 	'''
 	
-	col = ['tumor_burden','details_(snp,dnp,tnp,np,insertion,deletion)','chromosome','ref','alt_variant(s)','position(s)'] 				# Columns name
-	id = 'gene_name'																# Index name
+	col = ['Tumour burden','Details (snp, dnp, tnp, np, insertion, deletion)','Ref','Alt variant(s)','Chromosome','Position(s)'] 				# Columns name
+	id = 'Gene name'																# Index name
 	d = OrderedDict(sorted(d.items()))
 	df = pd.DataFrame.from_dict(d, orient='index', columns=col)
 	df.index.name = id
@@ -67,20 +67,20 @@ def create_dataframe_from_gene(d):
 	#Modification of the dataframe using a copy of it
 	
 	df2 = pd.DataFrame()
-	df2['details_(snp,dnp,tnp,np,insertion,deletion)'] = [','.join(map(str, l)) for l in df['details_(snp,dnp,tnp,np,insertion,deletion)']]
-	df['details_(snp,dnp,tnp,np,insertion,deletion)'] = df2['details_(snp,dnp,tnp,np,insertion,deletion)'].values
+	df2['Details (snp, dnp, tnp, np, insertion, deletion)'] = [','.join(map(str, l)) for l in df['Details (snp, dnp, tnp, np, insertion, deletion)']]
+	df['Details (snp, dnp, tnp, np, insertion, deletion)'] = df2['Details (snp, dnp, tnp, np, insertion, deletion)'].values
 	del df2
 	df2 = pd.DataFrame()
-	df2['ref'] = [','.join(map(str, l)) for l in df['ref']]
-	df['ref'] = df2['ref'].values
+	df2['Ref'] = [','.join(map(str, l)) for l in df['Ref']]
+	df['Ref'] = df2['Ref'].values
 	del df2
 	df2 = pd.DataFrame()
-	df2['alt_variant(s)'] = [ ','.join([str(l2) if len(l2) > 1 else str(l2[0]) for l2 in l]) for l in df['alt_variant(s)']]
-	df['alt_variant(s)'] = df2['alt_variant(s)'].values
+	df2['Alt variant(s)'] = [ ','.join([str(l2) if len(l2) > 1 else str(l2[0]) for l2 in l]) for l in df['Alt variant(s)']]
+	df['Alt variant(s)'] = df2['Alt variant(s)'].values
 	del df2
 	df2 = pd.DataFrame()
-	df2['position(s)'] = [','.join(map(str, l)) for l in df['position(s)']]
-	df['position(s)'] = df2['position(s)'].values
+	df2['Position(s)'] = [','.join(map(str, l)) for l in df['Position(s)']]
+	df['Position(s)'] = df2['Position(s)'].values
 	del df2
 	
 	return df
@@ -330,7 +330,7 @@ def is_pickle(filename : str) -> bool:
 
 def get_genome_dict(genome_file, logger):
 	'''
-	Check the genome file and (1) read the fatsa file and create the pickle dictionary or (2) load the pickle dictionary and return this dictionary
+	Check the genome file and (1) read the fasta file and create the pickle dictionary or (2) load the pickle dictionary and return this dictionary
 	Input : path to the genome file and logger
 	Output : dictionnary containing the genome
 	'''
@@ -426,7 +426,7 @@ def variants_count(vcf_file, vcf_file_pass, genome, logger):
 	stats['INSERTION'] = [0,set()]
 	stats['DELETION'] = [0,set()]
 	genes_list = {}
-	gene_info = [0,[0,0,0,0,0,0],'',[], [], []] # [gene, [variants number (tumor burden),[snp, dnp, tnp, np, insertion, deletion]], chromosome, reference, alternative, position]
+	gene_info = [0, [0,0,0,0,0,0], [], [], '', []] # [gene, [variants number (tumor burden),[snp, dnp, tnp, np, insertion, deletion]], chromosome, reference, alternative, position]
 	idx = {}
 	snp_count = create_snp_dict()
 	counter_deletion_size = Counter()
@@ -469,10 +469,10 @@ def variants_count(vcf_file, vcf_file_pass, genome, logger):
 					gene = list(zip(*infos))[1][idx_funcotation].split('|')[0].lstrip('[')
 					if not gene in genes_list.keys():
 						genes_list[gene]=deepcopy(gene_info)
-					if genes_list[gene][2] == '':
-						genes_list[gene][2] = chr
-					genes_list[gene][3].append(ref)
-					genes_list[gene][4].append(alts)
+					if genes_list[gene][4] == '':
+						genes_list[gene][4] = chr
+					genes_list[gene][2].append(ref)
+					genes_list[gene][3].append(alts)
 					genes_list[gene][5].append(pos)
 				else:
 					warnings.warn("Warning! Some variants aren\'t annotated by Funcotation", UserWarning)					
@@ -531,28 +531,42 @@ def variants_count(vcf_file, vcf_file_pass, genome, logger):
 					non_functional = True
 					alts = line[idx['idx_alts']].split(',')
 					nb_variants = len(alts)
-					filters = line[idx['idx_filt']].split(',')
+					filters = line[idx['idx_filt']].split(',')[0].split(';')
+					if ''.join(filters) != 'PASS':
+						for i, alt in enumerate(alts):
+							stats['Total']+=1
+							if 'LOTUS_filter' in filters:
+								# Test if NOT_FUNCTIONAL is present in filter for the variant
+								#for information in line[idx['idx_info']].split(';'): 
+								#	if information.split('=')[0] == 'OTHER_FILTER':
+								#		nf = information.split('=')[1].split(',')[-nb_variants:][i]
+								#		if 'NOT_FUNCTIONAL' in nf:
+								#			non_functional = True
+								#[True for nf in [information.split('=')[1].split(',')[-nb_variants:] for information in line[idx['idx_info']].split(';') if information.split('=')[0] == 'OTHER_FILTER'] if 'NOT_FUNCTIONAL' in nf]
+								non_functional = any([True for nf in [information.split('=')[1].split(',')[-nb_variants:][i] for information in line[idx['idx_info']].split(';') if information.split('=')[0] == 'OTHER_FILTER'] if 'NOT_FUNCTIONAL' in nf])
 	
-					for i, alt in enumerate(alts):
-						stats['Total']+=1	
-	
-						non_functional = any([True for nf in [information.split('=')[1].split(',')[-nb_variants:] for information in line[idx['idx_info']].split(';') if information.split('=')[0] == 'OTHER_FILTER'] if 'NOT_FUNCTIONAL' in nf])
-	
-						if 'germline' in filters and 'panel_of_normals' in filters and non_functional:	
-							stats['germline+PON+non functional']+=1
-						elif 'germline' in filters and 'panel_of_normals' in filters:
-							stats['germline+PON']+=1
-						elif 'germline' in filters and non_functional:
-							stats['germline+non functional']+=1
-						elif 'panel_of_normals' in filters and non_functional:
-							stats['PON+non functional']+=1
-						elif 'germline' in filters:
-							stats['germline']+=1
-						elif 'panel_of_normals' in filters:
-							stats['PON']+=1
-						elif non_functional:
-							stats['non functional']+=1
+							else: 
+								non_functional = False
+
+							if 'germline' in filters and 'panel_of_normals' in filters and non_functional:	
+								stats['germline+PON+non functional']+=1
+							elif 'germline' in filters and 'panel_of_normals' in filters:
+								stats['germline+PON']+=1
+							elif 'germline' in filters and non_functional:
+								stats['germline+non functional']+=1
+							elif 'panel_of_normals' in filters and non_functional:
+								stats['PON+non functional']+=1
+							elif 'germline' in filters:
+								stats['germline']+=1
+							elif 'panel_of_normals' in filters:
+								stats['PON']+=1
+							elif non_functional:
+								stats['non functional']+=1
+					else:
+						for i, alt in enumerate(alts):
+							stats['Total']+=1
 					pbar.update(1)
+
 
 	# Get percentage from count for pass SNP
 	snp_count_pct = deepcopy(snp_count)
@@ -621,8 +635,7 @@ def write_stats(vcf_file : str, vcf_file_pass : str, out_stats : str, stats : Co
 			o.write(f'germline: {stats["germline"]}\t|\tPON: {stats["PON"]}\t|\tnot functional: {stats["non functional"]}\n')
 			o.write(f'germline & PON: {stats["germline+PON"]}\t|\tgermline &  not functional: {stats["germline+non functional"]}\t|\tPON &  not functional: {stats["PON+non functional"]}\n')
 			o.write(f'germline & PON & not functional: {stats["germline+PON+non functional"]}\n')
-		else:
-			o.write(f'########################### {vcf_file_pass} ###########################\n')
+		o.write(f'########################### {vcf_file_pass} ###########################\n')
 		o.write(f'\n###########################\nPASS : {stats["PASS"]}\n###########################\n')
 		o.write(f'---\nvariants : {stats["SNP"][0]+stats["DNP"][0]+stats["TNP"][0]+stats["NP"][0]+stats["INSERTION"][0]+stats["DELETION"][0]}\n---\n')
 		o.write(f'SNP : {stats["SNP"][0]}\tDNP : {stats["DNP"][0]}\tTNP : {stats["TNP"][0]}\tNP : {stats["NP"][0]}\n')
@@ -737,6 +750,8 @@ def main(args):
 	try:
 		logger.info('Verification of outputs file')
 		verif_output(out_stats)
+		if not out_genes.endswith('MutatedGenes.tsv'):
+			out_genes = Path(out_genes).with_suffix('.MutatedGenes.tsv')
 		verif_output(out_genes)
 		if not out_profile.endswith('.svg'):
                 	out_profile = Path(out_profile).with_suffix('.svg')

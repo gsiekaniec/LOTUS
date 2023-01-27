@@ -21,9 +21,7 @@ list_genes = ['BRCA1', 'BRCA2']
 panther_name = str(uuid.uuid4())+'.tsv'
 pvalue = 0.05
 maxres = 100
-ids = ["Id", "name", "PValue", "FDR", "Genes number"]
-#ids = 
-
+ids = ["Id", "Biological Process name", "P-value", "FDR", "Number of genes involved"]
 
 ################################################################################################################
 ################################################# Tests ########################################################

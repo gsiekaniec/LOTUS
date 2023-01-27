@@ -380,7 +380,7 @@ def compare_vcf(vcf_pass_files : list, vcf_filtered_files : list, gene_name_dico
 
 		# Creation of the dataframe containing impacted gene and creation of the new vcf files containing the genes type ('strong'/'weak'/'common')  
 
-		dfGenes = pd.DataFrame(columns=['Gene symbol', 'Chromosome', 'Gene position start', 'Gene position end', 'Variant weakness (in %)', 'Tumor burden (symmetrical difference)', str(true_stem(vcf_pass_files[num-1])), 'g.'+str(true_stem(vcf_pass_files[num-1])), 'c.'+str(true_stem(vcf_pass_files[num-1])), 'p.'+str(true_stem(vcf_pass_files[num-1])), str(true_stem(vcf_pass_files[num])), 'g.'+str(true_stem(vcf_pass_files[num])), 'c.'+str(true_stem(vcf_pass_files[num])), 'p.'+str(true_stem(vcf_pass_files[num]))])
+		dfGenes = pd.DataFrame(columns=['Gene symbol', 'Chromosome', 'Gene position start', 'Gene position end', 'Tumour burden (symmetrical difference)', 'Gene weakness (in %)', str(true_stem(vcf_pass_files[num-1])), 'g.'+str(true_stem(vcf_pass_files[num-1])), 'c.'+str(true_stem(vcf_pass_files[num-1])), 'p.'+str(true_stem(vcf_pass_files[num-1])), str(true_stem(vcf_pass_files[num])), 'g.'+str(true_stem(vcf_pass_files[num])), 'c.'+str(true_stem(vcf_pass_files[num])), 'p.'+str(true_stem(vcf_pass_files[num]))])
 		chromosomes_list = []
 		gene_position_list = []
 		weakness_list = []
@@ -442,8 +442,8 @@ def compare_vcf(vcf_pass_files : list, vcf_filtered_files : list, gene_name_dico
 		dfGenes['Chromosome']=chromosomes_list
 		dfGenes['Gene position start']=[i[2][0] for i in gene_position_list]
 		dfGenes['Gene position end']=[i[2][1] for i in gene_position_list]
-		dfGenes['Variant weakness (in %)']=weakness_list
-		dfGenes['Tumor burden (symmetrical difference)']=charge_list
+		dfGenes['Tumour burden (symmetrical difference)']=charge_list
+		dfGenes['Gene weakness (in %)']=weakness_list
 		b1 = str(true_stem(vcf_pass_files[num-1]))
 		b2 = str(true_stem(vcf_pass_files[num]))
 		dfGenes[b1]=tumor1_list
@@ -455,7 +455,7 @@ def compare_vcf(vcf_pass_files : list, vcf_filtered_files : list, gene_name_dico
 		dfGenes['c.'+b2]=coding_variant2_annotation_list
 		dfGenes['p.'+b2]=proteomic_variant2_annotation_list
 
-		dfGenes = dfGenes.sort_values(by=['Tumor burden (symmetrical difference)', 'Variant weakness (in %)', 'Gene symbol'], ascending = [False, True, True])		
+		dfGenes = dfGenes.sort_values(by=['Tumour burden (symmetrical difference)', 'Gene weakness (in %)', 'Gene symbol'], ascending = [False, True, True])		
 		dfGenes = dfGenes.set_index('Gene symbol')		
 		
 		# Save impacted genes informations
@@ -467,8 +467,10 @@ def compare_vcf(vcf_pass_files : list, vcf_filtered_files : list, gene_name_dico
 			dfGenes.drop(empty_cols, axis=1, inplace=True)
 
 		logger.info(f'Save genes list in {out_gene}')
+		print(f'Save genes list in {out_gene}')
 		dfGenes.to_csv(out_gene, sep='\t')
 		logger.info(f'Save genes list in {Path(out_gene).with_suffix(".xlsx")}')
+		print(f'Save genes list in {Path(out_gene).with_suffix(".xlsx")}')
 		dfGenes.to_excel(Path(out_gene).with_suffix('.xlsx'))
 
 		################################################
@@ -555,9 +557,9 @@ def main(args):
 			out_indel = str(Path(out_indel).resolve().parent)+'/'+str(Path(true_stem(out_indel)+'_'+file_one+'_'+file_two).with_suffix('.svg'))
 			verif_output(out_indel)	
 
-			out_gene_test = str(Path(out_gene).resolve().parent)+'/'+str(file_one+'_'+file_two+'_'+true_stem(out_gene)+'.xlsx')
+			out_gene_test = str(Path(out_gene).resolve().parent)+'/'+str(file_one+'_'+file_two+'_'+true_stem(out_gene)+'.MutatedGenes.xlsx')
 			verif_output(out_gene_test)
-			out_gene = str(Path(out_gene).resolve().parent)+'/'+str(file_one+'_'+file_two+'_'+true_stem(out_gene)+'.tsv')
+			out_gene = str(Path(out_gene).resolve().parent)+'/'+str(file_one+'_'+file_two+'_'+true_stem(out_gene)+'.MutatedGenes.tsv')
 			verif_output(out_gene)
 
 			vcf_strong_weak1 = str(Path(out_gene).resolve().parent)+'/'+str(Path(file_one+'_'+file_two).with_suffix('.passed.vcf'))

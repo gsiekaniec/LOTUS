@@ -29,8 +29,6 @@ def Panther_GEOA(list_genes : list, panther_name : str, logger = None, pvalue = 
 			json_data = json.loads(response.text) # Get json data
 			print('Done.\n')
 
-			###HERE
-
 			if 'search' in json_data.keys() and 'error' in json_data['search'].keys():                      # Search for errors in the answer
 				raise ValueError('Something went wrong with the Panther request (POST) !')
 
@@ -52,7 +50,7 @@ def Panther_GEOA(list_genes : list, panther_name : str, logger = None, pvalue = 
 			d = {}
 			compt = 0
 			nb_unclassified_GO=0
-			col = ["Id", "name", "PValue", "FDR", "Genes number"]
+			col = ["Id", "Biological Process name", "P-value", "FDR", "Number of genes involved"]
 			for l in json_data['results']['result']:
 				if float(l['pValue']) < pvalue and int(l['number_in_list']) != 0:
 					compt += 1
@@ -66,13 +64,14 @@ def Panther_GEOA(list_genes : list, panther_name : str, logger = None, pvalue = 
 				if nb_unclassified_GO > 0:
 					logger.warning(f'{nb_unclassified_GO} unclassified gene onthology !')
 			df = pd.DataFrame.from_dict(d, orient='index',  columns=col)
-			df['Genes number'] = df['Genes number'].astype(int)
-			df = df.sort_values(by='Genes number', ascending=False)
-			df = df.sort_values(by=['PValue','FDR'])
+			df['Number of genes involved'] = df['Number of genes involved'].astype(int)
+			df = df.sort_values(by='Number of genes involved', ascending=False)
+			df = df.sort_values(by=['P-value','FDR'])
 			df.index = [i for i in range(len(df.index))]
+			df.set_index('Id')
 
-			df.to_excel(xlsx)
-			df.to_csv(tsv, sep='\t')
+			df.to_excel(xlsx, index=False)
+			df.to_csv(tsv, sep='\t', index=False)
 
 		except (requests.exceptions.Timeout, requests.exceptions.ConnectionError) as err:
 			print ('Server taking too long. Try again later')

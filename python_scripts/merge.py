@@ -112,7 +112,7 @@ def merge_results(it_files, category, output, upset_output, infos, cytoband_file
 					add_variants_to_dictionnary (d, index, 11, 'cb2', row)
 				if not pd.isna(row.iloc[12]) and ''.join(row.iloc[12].split('|')) != '':
 					add_variants_to_dictionnary (d, index, 12, 'pb2', row)
-			d[index]['weakness'].append(float(row['Variant weakness (in %)']))
+			d[index]['weakness'].append(float(row['Gene weakness (in %)']))
 			d[index]['samples'].append(name)
 			if d[index]['chr'] == '':
 				d[index]['chr']=row['Chromosome']
@@ -126,7 +126,7 @@ def merge_results(it_files, category, output, upset_output, infos, cytoband_file
 
 	######################################
 	# Columns name for the union.tsv file #
-	column_names = ['Gene Symbol', 'Chromosome', 'Gene position start', 'Gene position end', 'Nb samples', 'Sample names', 'Mean weakness', 'Tumor burden union', 'Nb Mutation b1', 'g.b1 union', 'c.b1 union', 'p.b1 union', 'Nb Mutation b2', 'g.b2 union', 'c.b2 union', 'p.b2 union']
+	column_names = ['Gene Symbol', 'Chromosome', 'Gene position start', 'Gene position end', 'Nb samples', 'Sample names',  'Tumour burden union', 'Mean gene weakness', 'Nb Mutation b1', 'g.TPn union', 'c.TPn union', 'p.TPn union', 'Nb Mutation TPn+1', 'g.TPn+1 union', 'c.TPn+1 union', 'p.TPn+1 union']
 
 	d2 = {}										# gene dictionnary to create tsv union file (mean computation for each list)
 	data = {}									# dictionnary containing genes list for each sample - use to create the upset plot
@@ -164,16 +164,16 @@ def merge_results(it_files, category, output, upset_output, infos, cytoband_file
 		d2[k]['Gene position end'] = v['end']
 		d2[k]['Nb samples'] = int(len(v['samples']))
 		d2[k]['Sample names'] = ';'.join(v['samples'])
-		d2[k]['Mean weakness'] = np.mean(v['weakness'])
-		d2[k]['Tumor burden union'] = len(set(v['gb1'].keys()).union(set(v['gb2'].keys())))
-		d2[k]['Nb Mutation b1'] = len(set(v['gb1'].keys()))
-		d2[k]['g.b1 union'] = '|'.join([str(k)+'('+str(v)+')' for k,v in v['gb1'].items()])
-		d2[k]['c.b1 union'] = '|'.join([str(k)+'('+str(v)+')' for k,v in v['cb1'].items()])
-		d2[k]['p.b1 union'] = '|'.join([str(k)+'('+str(v)+')' for k,v in v['pb1'].items()])
-		d2[k]['Nb Mutation b2'] = len(set(v['gb2'].keys()))
-		d2[k]['g.b2 union'] = '|'.join([str(k)+'('+str(v)+')' for k,v in v['gb2'].items()])
-		d2[k]['c.b2 union'] = '|'.join([str(k)+'('+str(v)+')' for k,v in v['cb2'].items()])
-		d2[k]['p.b2 union'] = '|'.join([str(k)+'('+str(v)+')' for k,v in v['pb2'].items()])
+		d2[k]['Tumour burden union'] = len(set(v['gb1'].keys()).union(set(v['gb2'].keys())))
+		d2[k]['Mean gene weakness'] = np.mean(v['weakness'])
+		d2[k]['Nb Mutation TPn'] = len(set(v['gb1'].keys()))
+		d2[k]['g.TPn union'] = '|'.join([str(k)+'('+str(v)+')' for k,v in v['gb1'].items()])
+		d2[k]['c.TPn union'] = '|'.join([str(k)+'('+str(v)+')' for k,v in v['cb1'].items()])
+		d2[k]['p.TPn union'] = '|'.join([str(k)+'('+str(v)+')' for k,v in v['pb1'].items()])
+		d2[k]['Nb Mutation TPn+1'] = len(set(v['gb2'].keys()))
+		d2[k]['g.TPn+1 union'] = '|'.join([str(k)+'('+str(v)+')' for k,v in v['gb2'].items()])
+		d2[k]['c.TPn+1 union'] = '|'.join([str(k)+'('+str(v)+')' for k,v in v['cb2'].items()])
+		d2[k]['p.TPn+1 union'] = '|'.join([str(k)+'('+str(v)+')' for k,v in v['pb2'].items()])
 	
 
 	if cytoband_file:
@@ -193,9 +193,9 @@ def merge_results(it_files, category, output, upset_output, infos, cytoband_file
 	df.index.name = 'Gene'														# add a name to the index column
 
 
-	df = df.sort_values(by=['Nb samples', 'Mean weakness', 'Tumor burden union', 'Gene'], ascending = [False, True, False, True]) 		# sort columns
+	df = df.sort_values(by=['Nb samples', 'Mean gene weakness', 'Tumour burden union', 'Gene'], ascending = [False, True, False, True]) 		# sort columns
 	df['Nb samples'] = df['Nb samples'].astype('int')												 
-	df[['Mean weakness', 'Tumor burden union', 'g.b1 union', 'c.b1 union', 'p.b1 union', 'Nb Mutation b1', 'g.b2 union', 'c.b2 union', 'p.b2 union', 'Nb Mutation b2']] = np.round(df[['Mean weakness', 'Tumor burden union', 'g.b1 union', 'c.b1 union', 'p.b1 union', 'Nb Mutation b1', 'g.b2 union', 'c.b2 union', 'p.b2 union', 'Nb Mutation b2']], 2)
+	df[['Tumour burden union', 'Mean gene weakness', 'g.TPn union', 'c.Tpn union', 'p.TPn union', 'Nb Mutation TPn', 'g.TPn+1 union', 'c.TPn+1 union', 'p.TPn+1 union', 'Nb Mutation TPn+1']] = np.round(df[['Tumour burden union','Mean gene weakness', 'g.TPn union', 'c.TPn union', 'p.TPn union', 'Nb Mutation TPn', 'g.TPn+1 union', 'c.TPn+1 union', 'p.TPn+1 union', 'Nb Mutation TPn+1']], 2)
 
 	if infos:
 		# Add additional cancer centric genes informations
@@ -209,8 +209,8 @@ def merge_results(it_files, category, output, upset_output, infos, cytoband_file
 	##########################################
 	# Save genes list files (.xlsx and .tsv) #
 
-	print(f'Save genes list files in {Path(output).with_suffix(".xlsx")} and {Path(output).with_suffix(".tsv")}')
-	logger.info(f'Save genes list files in {Path(output).with_suffix(".xlsx")} and {Path(output).with_suffix(".tsv")}')
+	print(f'Save genes list files in {Path(output).with_suffix(".MutatedGenes.xlsx")} and {Path(output).with_suffix(".MutatedGenes.tsv")}')
+	logger.info(f'Save genes list files in {Path(output).with_suffix(".MutatedGenes.xlsx")} and {Path(output).with_suffix(".MutatedGenes.tsv")}')
 
 	if not str(output).endswith('.xlsx'):
 		output = Path(output).with_suffix('.xlsx')
@@ -342,6 +342,8 @@ def main(args):
 	verif_input_config_merge(config)
 	try:
 		logger.info('Verification of {output}')
+		if not output.endswith('MutatedGenes.tsv'):
+			output = Path(output).with_suffix('.MutatedGenes.tsv')
 		verif_output(Path(output).with_suffix('.xlsx'))
 		verif_output(Path(output).with_suffix('.tsv'))
 		logger.info('- Output file ok -')
