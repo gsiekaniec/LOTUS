@@ -89,14 +89,15 @@ Two output files: (1) the filtered.vcf file contains the variants of the origina
 | Parameters | Description | Default |
 |----------|:-------------:|:-------------:|
 | --vcf, -v | Result vcf file from Funcotator output. |  |
-| --output, -o | Filtered vcf file. The Pass vcf file is also create using this output name. | output.filtered.vcf |
+| --output, -o | Filtered vcf file. The Passed vcf file is also create using this output name. | output.filtered.vcf and output.passed.vcf |
 | --working-method, -w | "InMemory" (default) loads the vcf file in memory into a list (more speed but higher memory consumption) or "Direct" reads and modifies the vcf file on the fly (slow speed but low memory consumption). | InMemory |
 | --MBQ | Minimum median base variant quality for variant. | 20 |
 | --DP | Minimum variant coverage. | 10 |
 | --AF | Minimum fractions of variant in the tumor. | 0.1 |
 | --AD | Minimum variant depths. | 5 |
 | --POPAF | Maximum population (often GnomAD) variant frequencies. | 0.00001 |
-
+| --unpaired | Argument to use if the reads used are unpaired (single end), put False in the paired variable. | True |
+  
 </details>
 
 ----
@@ -157,16 +158,20 @@ This percentage of weakness (from 100% if all variants are weak to 0% if all var
 | Parameters | Description | Default |
 |----------|:-------------:|:-------------:|
 | --config, -c | Configuration file containing path to vcf file (filtered.vcf and pass.vcf file from LOTUS filter) and tsv files for indel and snp from LOTUS summarise. Example available [here](https://github.com/gsiekaniec/LOTUS/blob/main/example_config.txt). |  |
-| --output, -o | Excel file containing the genes specific to the first or second biopsy. | "genes.xlsx" wich give "{vcf1}_{vcf2}_genes.tsv/.xlsx". |
-| --profile, -p | SVG file that shows the comparison between mutations profiles of the two vcf file. | "profile.svg" wich give "{vcf1}_{vcf2}_profile.svg". |
-| --indel, -i | SVG file that shows the indel mutations size of the vcf file. | "indel.svg" wich give "{vcf1}_{vcf2}_indel.svg". |
+| --gff3, -gff3 | Gff3 file. This file can be found [here](https://ftp.ensembl.org/pub/release-108/gff3/homo_sapiens/) or in [LOTUS](https://github.com/gsiekaniec/LOTUS/blob/main/LOTUS_external_files/Homo_sapiens.GRCh38.108.chr.gff3.gz). |  |  
+| --output, -o | Excel file containing the genes specific to the first or second biopsy. | "genes.xlsx" wich give "{vcf1}_{vcf2}_genes.tsv/.xlsx" |
+| --profile, -p | SVG file that shows the comparison between mutations profiles of the two vcf file. | "profile.svg" wich give "{vcf1}_{vcf2}_profile.svg" |
+| --indel, -i | SVG file that shows the indel mutations size of the vcf file. | "indel.svg" wich give "{vcf1}_{vcf2}_indel.svg" |
 | --enrichment | Did the GO enrichment analysis on the genes list using ToppGene and Panther and returns the biological processes (works if the APIs are not down). | False |
-
+| --pickle_gff3 | Did the gff3 file given is a pickle file from previous lauch ? | False |
+| --additional_gene_information | Add gene informations using the [LOTUS file](https://github.com/gsiekaniec/LOTUS/blob/main/LOTUS_external_files/Lotus_ExternalBases_202301.xlsx) containing information from tumorspecific database (CancerHotSpot, CIViC, COSMIC, DoCM, IntOGen and TSGene 2.0). | False |
 </details>
 
 ----
 
 ## 🧬 Merge
+
+### Main purpose
 
 Merging results to find the genes impacted in all patient.
 
@@ -174,15 +179,19 @@ Merging results to find the genes impacted in all patient.
   <img width="350" src="img/merge_step.png">
 </p>
 
-:warning: The configuration file contains the list of genes (1_2_genes.xlsx or 1_2_genes.xlsx from the compare step) for all samples, one file per line (either xlsx or tsv). For example:
+### Input
+
+:warning: The configuration file contains the list of genes (1_2_genes.MutatedGenes.tsv or 1_2_genes.MutatedGenes.xlsx from the compare step) for all samples, one file per line (either xlsx or tsv). For example:
 
 ``` 
-genes_sample1.xlsx
-genes_sample2.tsv
-genes_sample3.tsv
+genes_sample1.MutatedGenes.xlsx
+genes_sample2.MutatedGenes.tsv
+genes_sample3.MutatedGenes.tsv
 ```
 
-Two output files: (1) the file union.tsv|.xlsx contains the list of common genes impacted for all samples. (2) The upset_plot.svg file which contains the upset plot[^2] indicating the number of common genes between the different sample sets.
+### Output
+
+Two output files: (1) the file union.MutatedGenes.tsv|.xlsx contains the list of common genes impacted for all samples. (2) The upset_plot.svg file which contains the upset plot[^2] indicating the number of common genes between the different sample sets.
 
 [^2]: [A. Lex, N. Gehlenborg, H. Strobelt, R. Vuillemot and H. Pfister, "UpSet: Visualization of Intersecting Sets," in IEEE Transactions on Visualization and Computer Graphics, vol. 20, no. 12, pp. 1983-1992, 31 Dec. 2014, doi: 10.1109/TVCG.2014.2346248.](https://ieeexplore.ieee.org/document/6876017)
 
@@ -191,13 +200,18 @@ Two output files: (1) the file union.tsv|.xlsx contains the list of common genes
 | Parameters | Description | Default |
 |----------|:-------------:|:-------------:|
 | --config, -c | Configuration file containing genes list from all patients. Merged patients results. |  |
-| --output, -o | Output file name. | union.xlsx |
-| --upset, -u | Output name for upset plot. The upset plot is not created if no name is given. | None |
+| --output, -o | Ouput file name. | union.xlsx |
+| --cytoband, -cyto | Human cytoband file for the corresponding genome version. This file can be download [here](https://genome.ucsc.edu/cgi-bin/hgTables) or find the [LOTUS github](https://github.com/gsiekaniec/LOTUS/blob/main/LOTUS_external_files/hg38_cytoband.tsv) (for hg38). |
+| --chromosome-step, -step | Frame used for counting the number of genes along the chromosomes. | 500000 |
+| --chromosomes_output, -co | Output file name for the chromosomes plot. | chromosomes.svg |
+| --upset, -u | Output name for upset plot. The upset plot is not created if no name is given. :warning: It can actually only handle a maximum of 15 files due to the explosion of the combination but this limitation should be lifted in the next version. | None |
 | --weakness_threshold, -w | Mean weakness threshold to take a gene into account. | 100 |
 | --min_subset_size, -minsb | Minimum size of a subset (nb of genes by subset) to be shown in the UpSetPlot. All subsets with a size smaller than this threshold will be omitted from plotting. | 1 |
 | --max_subset_size, -maxsb | Maximum size of a subset (nb of genes by subset) to be shown in the UpSetPlot. All subsets with a size greater than this threshold will be omitted from plotting. | 0 |
 | --min_degree, -mind | Minimum degree of a subset (nb of patients) to be shown in the UpSetPlot. | 1 |
 | --max_degree, -maxd | Maximum degree of a subset (nb of patients) to be shown in the UpSetPlot. | 0 |
+| --additional_gene_information | Add gene informations using the [LOTUS file](https://github.com/gsiekaniec/LOTUS/blob/main/LOTUS_external_files/Lotus_ExternalBases_202301.xlsx) containing information from tumorspecific database (CancerHotSpot, CIViC, COSMIC, DoCM, IntOGen and TSGene 2.0). | False |
+| --enrichment | Did the GO enrichment analysis on the genes list using ToppGene and Panther and returns the biological processes (works if the APIs are not down). | False |
   
 </details>
 
