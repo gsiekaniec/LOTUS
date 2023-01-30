@@ -295,8 +295,8 @@ def create_graph_indel(deletion1, deletion2, insertion1, insertion2, outname, lo
 	max_x = max(x1+x2)
 
 	ax1.set_xlim(0, max_x+1)
-	ax1.set_xlabel("Indel size")
-	ax1.set_ylabel("Percentage")
+	ax1.set_xlabel("Indel size (bp)")
+	ax1.set_ylabel("Indel percentage")
 	ax1.set_xticks(x2)
 	ax1.set_xticklabels(x2, fontsize=10)
 

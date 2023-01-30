@@ -251,8 +251,8 @@ def graph_indel(deletion, insertion, name, vcf_name, logger):
 		x0, x1, y0, y1 = plt.axis()
 		plt.axis((x0 - plot_margin, x1 + plot_margin*2, y0, y1))
 
-	plt.xlabel("Indel size")
-	plt.ylabel("Percentage")
+	plt.xlabel("Indel size (bp)")
+	plt.ylabel("Indel percentage")
 
 	plt.legend()
 	plt.savefig(name)
@@ -260,7 +260,7 @@ def graph_indel(deletion, insertion, name, vcf_name, logger):
 	name = Path(name).with_suffix('.png')
 	plt.savefig(name)
 
-	plt.close()	
+	plt.close()
 
 
 	print(f'Save indel counts in {Path(name).with_suffix(".tsv")}...')
