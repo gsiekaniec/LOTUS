@@ -119,8 +119,8 @@ Allows to extract a lot of statistics from a vcf file.
 | --genome, -g | Genome fasta file (allowed extensions : .fasta, .fa, .fan) or pickle (.pk, .pickle) file created after a first run. |  |
 | --statistics, -s | Output statistics file. | stats.txt |
 | --genes, -genes | Output file containing genes impacted by variants. | genes.txt |
-| --profile, p | SVG file that shows the mutations profile of the vcf file. | profil.svg |
-| --indel, -i | SVG file that shows the indel mutations size of the vcf file. | indel.svg |
+| --profile, p | SVG|PNG file that shows the mutations profile of the vcf file. | profil.svg |
+| --indel, -i | SVG|PNG file that shows the indel mutations size of the vcf file. | indel.svg |
 | --enrichment | Did the GO enrichment analysis on the genes list using ToppGene and Panther and returns the biological processes (works if the APIs are not down). | False |
 
 </details>
@@ -160,11 +160,12 @@ This percentage of weakness (from 100% if all variants are weak to 0% if all var
 | --config, -c | Configuration file containing path to vcf file (filtered.vcf and pass.vcf file from LOTUS filter) and tsv files for indel and snp from LOTUS summarise. Example available [here](https://github.com/gsiekaniec/LOTUS/blob/main/example_config.txt). |  |
 | --gff3, -gff3 | Gff3 file. This file can be found [here](https://ftp.ensembl.org/pub/release-108/gff3/homo_sapiens/) or in [LOTUS](https://github.com/gsiekaniec/LOTUS/blob/main/LOTUS_external_files/Homo_sapiens.GRCh38.108.chr.gff3.gz). |  |  
 | --output, -o | Excel file containing the genes specific to the first or second biopsy. | "genes.xlsx" wich give "{vcf1}_{vcf2}_genes.tsv/.xlsx" |
-| --profile, -p | SVG file that shows the comparison between mutations profiles of the two vcf file. | "profile.svg" wich give "{vcf1}_{vcf2}_profile.svg" |
-| --indel, -i | SVG file that shows the indel mutations size of the vcf file. | "indel.svg" wich give "{vcf1}_{vcf2}_indel.svg" |
+| --profile, -p | SVG|PNG file that shows the comparison between mutations profiles of the two vcf file. | "profile.svg" wich give "{vcf1}_{vcf2}_profile.svg" |
+| --indel, -i | SVG|PNG file that shows the indel mutations size of the vcf file. | "indel.svg" wich give "{vcf1}_{vcf2}_indel.svg" |
 | --enrichment | Did the GO enrichment analysis on the genes list using ToppGene and Panther and returns the biological processes (works if the APIs are not down). | False |
 | --pickle_gff3 | Did the gff3 file given is a pickle file from previous lauch ? | False |
 | --additional_gene_information | Add gene informations using the [LOTUS file](https://github.com/gsiekaniec/LOTUS/blob/main/LOTUS_external_files/Lotus_ExternalBases_202301.xlsx) containing information from tumorspecific database (CancerHotSpot, CIViC, COSMIC, DoCM, IntOGen and TSGene 2.0). | False |
+| --profile_proportion_off | Get different y-axis for the snp profile plot. Useful when one of the two axes is flattened by the size of the other one. | False |
 </details>
 
 ----
