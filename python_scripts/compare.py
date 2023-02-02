@@ -126,85 +126,131 @@ def modify_variants_pass_and_get_genes(file1, file2, variants, weak, strong, gen
 	return genes
 
 
-def create_graph_snp(df_snp, df_snp2, outname, logger):
+def create_graph_snp(df_snp, df_snp2, outname, profile_proportion_off, logger):
 	'''
 	Snp count plot creation
-        Input : snp profile of file 1, snp profile of file 2, output name for the plot and the logger
+	Input : snp profile of file 1, snp profile of file 2, output name for the plot and the logger
 	'''
-
-	#Colors
-	white_96 = ['white']*96
-	color_6 = ['darkblue', 'blue', 'lightblue', 'darkgreen', 'green', 'lightgreen']
-	color_96 = []
-	for i in color_6:
-		color_96 += [i]*16
 
 	name1 = true_stem(df_snp.columns[2])
 	name2 = true_stem(df_snp2.columns[2])
 	outname = str(Path(outname).resolve().parent)+'/'+str(true_stem(outname)+'.svg')
 
-	logger.info(f'Save profile comparison graph in {outname}')
+	# Colors
+	white_96 = ['white']*96
+	color_6 = ['darkblue', 'blue', 'lightblue', 'darkgreen', 'green', 'lightgreen']
+	color_96 = []
+	for i in color_6:
+		color_96 += [i]*16
+	########
+
 
 	bars = [row[1] for index, row in df_snp.iterrows()]
 	height = [float(i) for i in df_snp.iloc[:,2]-df_snp2.iloc[:,2]]
 	height2 = [float(i) for i in df_snp.iloc[:,2]]
 	height3 = [float(-i) for i in df_snp2.iloc[:,2]]
+	height4 = [i if i > 0 else 0 for i in height]
+	height5 = [i if i < 0 else 0 for i in height]
+	del height
 	group = ['C>A', 'C>G', 'C>T', 'T>A', 'T>C', 'T>G']
 	x_pos = np.arange(len(bars))
 
-	#Create bars
-	
-	plt.figure(figsize=(15, 10))
-	ax1 = plt.subplot(1,1,1)
-	plt.bar(x_pos, height2, color=white_96, edgecolor=color_96, linestyle="--")	
-	plt.bar(x_pos, height3, color=white_96, edgecolor=color_96, linestyle="--")
-	plt.bar(x_pos, height, color=color_96)
-	
-	#Create names on the x-axis 
+	# Create bars in two subplot
 
-	plt.xticks(x_pos, bars, rotation=90, fontsize=8)
-	ax1.set_ylabel(f'Difference between the percentages of each mutation-type')	
-	ax2 = ax1.twiny()
+	fig = plt.figure(figsize=(15, 10))
+	plt.gcf().subplots_adjust(left = 0.1, bottom = 0.1, right = 0.9, top = 0.9, wspace = 0, hspace = 0.12)
+	ax1 = plt.subplot(211)
+	ax1.bar(x_pos, height2, color=white_96, edgecolor=color_96, linestyle="--")
+	ax1.bar(x_pos, height4, color=color_96)
+	ax1.set_xticks(x_pos)
+	ax1.set_xticklabels(bars, rotation=90, fontsize=9)
+	ax2 = plt.subplot(212)
+	ax2.bar(x_pos, height3, color=white_96, edgecolor=color_96, linestyle="--")
+	ax2.bar(x_pos, height5, color=color_96)
+
+	# x-axis and y-axis creation
+
+	ax2.set_xticks(x_pos)
+	ax2.set_xticklabels([])
+	ax3 = ax2.twiny()
 	newpos = [8, 24, 40, 56, 72, 88]
+	ax3.set_xticks(newpos)
+	ax3.set_xticklabels(group)
+	ax2.xaxis.set_ticks_position('top')
+	ax3.xaxis.set_ticks_position('bottom')
+	ax3.xaxis.set_label_position('bottom')
+	ax3.spines['bottom'].set_position(('outward', 5))
 
-	ax2.set_xticks(newpos)
-	ax2.set_xticklabels(group)
-	ax2.xaxis.set_ticks_position('bottom')  # set the position of the second x-axis to bottom
-	ax2.xaxis.set_label_position('bottom')  # set the position of the second x-axis to bottom
-	ax2.spines['bottom'].set_position(('outward', 36))
-	ax2.set_xlabel('Mutation types')
-	ax2.set_xlim(ax1.get_xlim())
+	ax3.set_xlabel('Mutation types')
+	ax3.set_xlim(ax2.get_xlim())
+
 	plt.tick_params(
 	axis='x',          # changes apply to the x-axis
 	which='both',      # both major and minor ticks are affected
 	bottom=False,      # ticks along the bottom edge are off
-	top=False,         # ticks along the top edge are off
-	labelbottom=True)  # labels along the bottom edge are off
-	for xtick, color in zip(ax2.get_xticklabels(), color_6):
+	labelbottom=True)  # labels along the bottom edge are on
+
+	for xtick, color in zip(ax3.get_xticklabels(), color_6):
 		xtick.set_color(color)
-	ax2.spines['bottom'].set_visible(False)
-	plt.annotate(name1, xy=(0, ax1.get_ylim()[1]-0.08*ax1.get_ylim()[1]))
-	plt.annotate(name2, xy=(0, ax1.get_ylim()[0] - 0.05 * ax1.get_ylim()[0]))
+		xtick.set_size(12)
+	ax3.spines['bottom'].set_visible(False)
 
-	plt.savefig(outname)
+	plt.draw()		# populate the yticklabels
 
+	if not profile_proportion_off: 
+		ylabels = [round(float(ytick.get_text()), 2) if (ytick.get_text()[0] == '0' or ytick.get_text()[0] == '1') else round(float(ytick.get_text()[1:]),2) for ytick in ax1.get_yticklabels()]
+		ylabels2 = [round(float(ytick.get_text()), 2) if (ytick.get_text()[0] == '0' or ytick.get_text()[0] == '1') else round(float(ytick.get_text()[1:]),2) for ytick in ax2.get_yticklabels()]
+		max_ylabel = max(ylabels+ylabels2)
+	
+		ylab = [x for x in np.arange(0, max_ylabel+0.01, 0.01)]
+		ax1.set_yticks(ylab)
+		ax1.set_yticklabels([str(round(i*100,1)) for i in  ylab])
+		ax2.set_yticks([-i for i in ylab[::-1]])
+		ax2.set_yticklabels([str(round(i*100,1)) for i in  ylab[::-1]])
+	else:
+	
+		ylabels = [str(round(float(ytick.get_text()), 2)) if (ytick.get_text()[0] == '0' or ytick.get_text()[0] == '1') else str(round(float(ytick.get_text()[1:]),2)) for ytick in ax1.get_yticklabels()]
+		ax1.set_yticks(ax1.get_yticks())
+		ax1.set_yticklabels([str(round(float(i)*100,1)) for i in ylabels])
+		ylabels2 = [str(round(float(ytick.get_text()), 2)) if (ytick.get_text()[0] == '0' or ytick.get_text()[0] == '1') else str(round(float(ytick.get_text()[1:]),2)) for ytick in ax2.get_yticklabels()]
+		ylabels2 = sorted(list(set(ylabels2)))
+		ax2.set_yticks([-float(i) for i in ylabels2])
+		ax2.set_yticklabels([str(round(float(i)*100,1)) for i in ylabels2])
+	
+	# Sample name
+	ax1.annotate(name1, xy=(0, ax1.get_ylim()[1] - 0.08 * ax1.get_ylim()[1]))
+	ax2.annotate(name2, xy=(0, ax2.get_ylim()[0] - 0.05 * ax2.get_ylim()[0]))
+
+	# y-axis title
+	fig.text(0.05, 0.5, 'Difference between the percentages of each mutation-type', va='center', rotation='vertical')
+
+	logger.info(f'Save profile comparison graph in {outname}')
+	plt.savefig(outname) #.svg
 	outname = Path(outname).with_suffix('.png')
-	plt.savefig(outname)
+	logger.info(f'Save profile comparison graph in {outname}')
+	plt.savefig(outname) #.png
+	
+	plt.close()
 
-	plt.close()	
+
+def create_merged_profile_tsv(df1, df2, out_profile):
+	dftot = pd.merge(df1, df2)
+	dftot = dftot.rename({'Unnamed: 0' : 'Mutation types', 'Unnamed: 1' : 'DNA context'}, axis=1)
+	dftot.to_csv(Path(out_profile).with_suffix(".tsv"), sep='\t', index=False)
 
 
-def graph_snp(snp_profile_files, out_profile, logger):
+def graph_snp(snp_profile_files, out_profile, profile_proportion_off, logger):
 	'''
 	Create the snp profile plot for each snp profile file (if exist)
 	Input : snp profile files, snp profile files, output name for the plot and the logger	
 	'''
-	print('Save profile comparison graph...')
+	print('Create profile comparison graph...')
 	pbar_snp = tqdm(total=len(snp_profile_files)-1)
 	for num in range(1,len(snp_profile_files)):
 		df1 = pd.read_csv(snp_profile_files[num-1], sep='\t')
 		df2 = pd.read_csv(snp_profile_files[num], sep='\t')
-		create_graph_snp(df1,df2,out_profile, logger)
+		create_graph_snp(df1,df2,out_profile, profile_proportion_off, logger)
+		create_merged_profile_tsv(df1, df2, out_profile)
 		pbar_snp.update(1)
 	pbar_snp.close()
 
@@ -257,11 +303,14 @@ def create_graph_indel(deletion1, deletion2, insertion1, insertion2, outname, lo
 
 	if delet and insert:
 		maximum = max([max(bars_ins1)+1, max(bars_ins2)+1, max(bars_del1)+1, max(bars_del2)+1])
+		max_y = max(height_del1+height_del2+height_ins1+height_ins2)+0.05	
 	elif delet:
 		maximum = max([max(bars_del1)+1, max(bars_del2)+1])
+		max_y = max(height_del1+height_del2)+0.05
 	elif not delet:
 		maximum = max([max(bars_ins1)+1, max(bars_ins2)+1])
-	
+		max_y = max(height_ins1+height_ins2)+0.05
+
 	x1 = [0]+[i+1 for i in range(maximum)]
 	x2 = [0]+[i+1 for i in range(maximum)]
 
@@ -308,12 +357,19 @@ def create_graph_indel(deletion1, deletion2, insertion1, insertion2, outname, lo
 
 	fig.set_size_inches(max_x/3, 10)
 
+
 	y_pos = list(np.arange(-1, 1.1, 0.1))
-	y_value = [round(i,1) for i in (list(np.arange(1, 0, -0.1))+list(np.arange(0,1.1, 0.1)))]
+	y_value = [round(i,1) for i in (list(np.arange(1, 0, -0.1))+list(np.arange(0, 1.1, 0.1)))]
 	ax1.set_yticks(y_pos)
 	ax1.set_yticklabels(y_value)
 
+	ylabels = [str(round(float(ytick.get_text()), 2)) if (ytick.get_text()[0] == '0' or ytick.get_text()[0] == '1') else str(round(float(ytick.get_text()[1:]),2)) for ytick in ax1.get_yticklabels()]
+	ax1.set_yticks(ax1.get_yticks())
+	ax1.set_yticklabels([str(round(float(i)*100,1)) for i in ylabels])
+	ax1.set_ylim(-max_y, max_y)
+
 	plt.hlines(0, 0, maximum+1, color='black', linewidth=1)
+	
 
 	logger.info(f'Draw indel size barplot in {outname}')
 
@@ -493,6 +549,7 @@ def main(args):
 	gff3 = args.gff3
 	pk_gff3 = args.pk_gff3
 	sup_infos = args.agi
+	profile_proportion_off = args.ppoff
 
 	current_directory = os.getcwd()
 
@@ -604,6 +661,8 @@ def main(args):
 		no_argument+=' --enrichment'
 	if sup_infos:
 		no_argument+=' --additional_gene_information'
+	if profile_proportion_off:
+		no_argument+=' --profile_proportion_off'
 	logger.info(f'** cmd line : python lotus.py compare -c {str(args.config)} -o {str(out_gene)} -p {str(out_profile)} -i {str(out_indel)}'+str(no_argument)+' **')
 	logger.info('* Start comparing *')
 	logger.info(f'Current directory : {Path().absolute()}')
@@ -616,7 +675,7 @@ def main(args):
 	####################################################
 	# Create snp mutation types plot and indel size plot
 
-	graph_snp(snp_profile_files, out_profile, logger)
+	graph_snp(snp_profile_files, out_profile, profile_proportion_off, logger)
 	graph_indel(insertions_count_files, deletions_count_files, out_indel, logger)
 
 	logger.info('* End comparing *')

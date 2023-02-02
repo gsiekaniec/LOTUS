@@ -279,6 +279,12 @@ if __name__ == '__main__':
     help='Add gene informations using the LOTUS file containing information from tumorspecific database (CancerHotSpot, CIViC, COSMIC, DoCM, IntOGen and TSGene 2.0). Default = False.'
     )
 
+    optional_compare.add_argument('--profile_proportion_off', dest='ppoff',
+    action='store_true',
+    help='Get different y-axis for the snp profile plot. Useful when one of the two axes is flattened by the size of the other one. Default = False.'
+    )
+    
+
     parser_compare.set_defaults(parser_filter=False, parser_summarise=False, parser_compare=True, parser_merge=False)
 
 
@@ -320,7 +326,7 @@ if __name__ == '__main__':
 
     optional_merge.add_argument('--weakness_threshold', '-w', dest='threshold', metavar='WEAKNESS_THRESHOLD',
     default=100, type=int,
-    help='Mean weakness threshold to save take a gene into account. Default = 100.'
+    help='Mean weakness threshold to take a gene into account. Default = 100.'
     )
 	
     optional_merge.add_argument('--min_subset_size', '-minsb', dest='min_subset_size', metavar='MIN_SUBSET_SIZE',

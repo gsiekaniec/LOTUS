@@ -17,6 +17,7 @@ import pandas as pd
 from python_scripts.check_files import verif_input_vcf, verif_output 
 from python_scripts.toppgene_api import ToppGene_GEOA
 from python_scripts.panther_api import Panther_GEOA
+from python_scripts.path_modification import true_stem
 from python_scripts.read_vcf import read_vcf
 import matplotlib.pyplot as plt
 
@@ -99,10 +100,10 @@ def create_ordered_dataframe(d):
 	return df
 
 
-def graph_snp(d, name, vcf_name, logger):
+def graph_snp(d, dcount, name, vcf_name, logger):
 	'''
         Creation of the profile graph 
-        Input : a dictionnary containing the count for all kind of SNP (d), the output file name and the logger
+        Input : a dictionnary containing the count for all kind of SNP (d), same dictionnary but with counts instead of percentage, the output file name and the logger
         Output : write a .svg file 
         '''
 
@@ -110,7 +111,8 @@ def graph_snp(d, name, vcf_name, logger):
 	logger.info(f'Draw profile in {name}')
 
 	df = create_ordered_dataframe(d)
-	df.columns = [str(Path(vcf_name).stem)]
+
+	df.columns = [str(true_stem(vcf_name))]
 	
 	#color for graph
 
@@ -157,8 +159,13 @@ def graph_snp(d, name, vcf_name, logger):
 	for xtick, color in zip(ax2.get_xticklabels(), color_6):
 		xtick.set_color(color)
 	ax2.spines['bottom'].set_visible(False)
-	plt.savefig(name)
+	
+	plt.draw()
+	ylabels = [str(round(float(ytick.get_text()), 2)) if (ytick.get_text()[0] == '0' or ytick.get_text()[0] == '1') else str(round(float(ytick.get_text()[1:]),2)) for ytick in ax1.get_yticklabels()]
+	ax1.set_yticks(ax1.get_yticks())
+	ax1.set_yticklabels([str(round(float(i)*100,1)) for i in ylabels])
 
+	plt.savefig(name)
 	name = Path(name).with_suffix('.png')
 	plt.savefig(name)
 
@@ -166,6 +173,11 @@ def graph_snp(d, name, vcf_name, logger):
 
 	print(f'Save profile values in {Path(name).with_suffix(".tsv")}...')
 	logger.info(f'Save profile values in {Path(name).with_suffix(".tsv")}')
+
+	counts = []
+	for i in df.index:
+		counts.append(dcount[i[0]][i[1]])
+	df["Associated count "+str(true_stem(vcf_name))] = counts
 
 	df.to_csv(Path(name).with_suffix(".tsv"), sep='\t')
 
@@ -220,6 +232,8 @@ def graph_indel(deletion, insertion, name, vcf_name, logger):
 		maximum = int(max_ins)+1
 	x = [0]+[i+1 for i in range(maximum)]
 	
+
+	ax = plt.axes()
 	if delet and insert:
 		plt.bar([float(i)-(width*0.65) for i in r_del], height_del, color = 'k', width = width, edgecolor = 'k', label='Deletion')
 		plt.bar([float(i)+(width*0.65) for i in r_ins], height_ins, color = 'r', width = width, edgecolor = 'r', label='Insertion')
@@ -227,7 +241,6 @@ def graph_indel(deletion, insertion, name, vcf_name, logger):
 		plt.bar([float(i) for i in r_del], height_del, color = 'k', width = width, edgecolor = 'k', label='Deletion')
 	elif not delet:
 		plt.bar([float(i) for i in r_ins], height_ins, color = 'r', width = width, edgecolor = 'r', label='Insertion')
-			
 
 	plt.xticks(x, fontsize=9)
 	plt.yticks()
@@ -250,6 +263,12 @@ def graph_indel(deletion, insertion, name, vcf_name, logger):
 		plot_margin = 1
 		x0, x1, y0, y1 = plt.axis()
 		plt.axis((x0 - plot_margin, x1 + plot_margin*2, y0, y1))
+
+	plt.draw()
+	ylabels = [str(round(float(ytick.get_text()), 2)) if (ytick.get_text()[0] == '0' or ytick.get_text()[0] == '1') else str(round(float(ytick.get_text()[1:]),2)) for ytick in ax.get_yticklabels()]
+	ax.set_yticks(ax.get_yticks())
+	ax.set_yticklabels([str(round(float(i)*100,1)) for i in ylabels])
+
 
 	plt.xlabel("Indel size (bp)")
 	plt.ylabel("Indel percentage")
@@ -575,7 +594,7 @@ def variants_count(vcf_file, vcf_file_pass, genome, logger):
 		for k, v in val.items():
 			snp_count_pct[key][k] = round((v / tot), 8)
 
-	return counter_deletion_size, counter_insertion_size, snp_count_pct, genes_list, stats
+	return counter_deletion_size, counter_insertion_size, snp_count_pct, snp_count, genes_list, stats
 
 
 def is_snp(ref_length, alt_length):
@@ -669,7 +688,7 @@ def summary(vcf_file : str, vcf_file_pass : str, genome_file : str, out_stats : 
 	####################
 	# Get stats and data
 
-	counter_deletion_size, counter_insertion_size, snp_count_pct, genes_list, stats = variants_count(vcf_file, vcf_file_pass, genome, logger)
+	counter_deletion_size, counter_insertion_size, snp_count_pct, snp_count, genes_list, stats = variants_count(vcf_file, vcf_file_pass, genome, logger)
 
 	##################
 	# Write stats file
@@ -692,7 +711,7 @@ def summary(vcf_file : str, vcf_file_pass : str, genome_file : str, out_stats : 
 	#################
 	# Create snp mutation types plot and indel size plot
 
-	graph_snp(snp_count_pct, out_profile, vcf_file_pass, logger)
+	graph_snp(snp_count_pct, snp_count, out_profile, vcf_file_pass, logger)
 	if not graph_indel(counter_deletion_size, counter_insertion_size, out_indel, vcf_file_pass, logger):
 		logger.warning(f'No figures will be plotted !')
 

@@ -10,7 +10,7 @@ import logging
 import uuid
 from pathlib import Path
 import pytest
-from python_scripts.compare import get_variants, add_to_genes, modify_variants_pass_and_get_genes, create_graph_snp, create_graph_indel, compare_vcf, get_informations_for_genes
+from python_scripts.compare import get_variants, add_to_genes, modify_variants_pass_and_get_genes, create_graph_snp, create_merged_profile_tsv, create_graph_indel, compare_vcf, get_informations_for_genes
 from python_scripts.path_modification import true_stem
 
 
@@ -55,9 +55,10 @@ transcript_dico = {'ENST000000000' : [('CADM3', 'chr1', (159171609, 159203313))]
 
 out_snp_graph = str(uuid.uuid4())+'.svg'
 
-dt = np.dtype([('Unnamed: 0', np.unicode_, 16),('Unnamed: 1', np.unicode_, 16),('sample', float)])
-df_snp = pd.DataFrame(np.array([('C>A', 'ACA', 1.0)], dtype=dt), columns=['Unnamed: 0', 'Unnamed: 1', 'sample'])
-df_snp2 = pd.DataFrame(np.array([('C>T', 'ACT', 0.7),('C>A', 'ACA', 0.3)], dtype=dt), columns=['Unnamed: 0', 'Unnamed: 1', 'sample'])
+dt = np.dtype([('Unnamed: 0', np.unicode_, 16),('Unnamed: 1', np.unicode_, 16),('sample', float),('Associated count', int)])
+df_snp = pd.DataFrame(np.array([('C>A', 'ACA', 1.0, 13)], dtype=dt), columns=['Unnamed: 0', 'Unnamed: 1', 'sample', 'Associated count'])
+df_snp2 = pd.DataFrame(np.array([('C>T', 'ACT', 0.7, 7),('C>A', 'ACA', 0.3, 3)], dtype=dt), columns=['Unnamed: 0', 'Unnamed: 1', 'sample', 'Associated count'])
+profile_proportion_off = True
 
 
 ######################
@@ -141,16 +142,25 @@ def test_modify_variants_pass_and_get_genes():
 ####################
 
 def test_create_graph_snp():
-	print(df_snp,'\n',df_snp2,'\n')
-	create_graph_snp(df_snp, df_snp2, out_snp_graph, logger)
+	create_graph_snp(df_snp, df_snp2, out_snp_graph, profile_proportion_off, logger)
 	assert Path(out_snp_graph).exists()
 	assert Path(out_snp_graph).with_suffix('.png').exists()
 	os.remove(out_snp_graph)
 	os.remove(Path(out_snp_graph).with_suffix('.png'))
 
 
+#############################
+# create merged profile tsv #
+#############################
+
+def test_create_merged_profile_tsv():
+	create_merged_profile_tsv(df_snp, df_snp2, out_snp_graph)
+	assert Path(out_snp_graph).with_suffix('.tsv').exists()
+	os.remove(Path(out_snp_graph).with_suffix('.tsv'))
+
+
 ######################
-# create_graph_indel #
+# create graph indel #
 ######################
 
 def test_create_graph_indel():
