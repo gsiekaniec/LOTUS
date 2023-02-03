@@ -76,6 +76,8 @@ For that there are many ways to proceed, we advise here to use the [GATK best pr
 
 ## 🧬 Filter
 
+### Main purpose
+
 Simple filter on the vcf file from Funcotator using multiple informations to keep only trustworthy somatic variants.
 
 <p align="center">
@@ -83,6 +85,8 @@ Simple filter on the vcf file from Funcotator using multiple informations to kee
 </p>
 
 Two output files: (1) the filtered.vcf file contains the variants of the original vcf file with an annotation indicating the filters not passed in the Info field. (2) The pass.vcf file contains only the variants passing the filters. 
+
+
 
 <details><summary>Parameters</summary>
 
@@ -103,6 +107,8 @@ Two output files: (1) the filtered.vcf file contains the variants of the origina
 ----
 
 ## 🧬 Summarise
+
+### Main purpose
 
 Allows to extract a lot of statistics from a vcf file.
 
@@ -125,9 +131,15 @@ Allows to extract a lot of statistics from a vcf file.
 
 </details>
 
+### Inputs
+
+### Outputs
+
 ----
 
 ## 🧬 Compare
+
+### Main purpose
 
 Compare multiple vcf files longitudinally.
 
@@ -168,6 +180,10 @@ This percentage of weakness (from 100% if all variants are weak to 0% if all var
 | --profile_proportion_off | Get different y-axis for the snp profile plot. Useful when one of the two axes is flattened by the size of the other one. | False |
 </details>
 
+### Inputs
+
+### Outputs
+
 ----
 
 ## 🧬 Merge
@@ -179,22 +195,6 @@ Merging results to find the genes impacted in all patient.
 <p align="center">
   <img width="350" src="img/merge_module.png">
 </p>
-
-### Input
-
-:warning: The configuration file contains the list of genes (1_2_genes.MutatedGenes.tsv or 1_2_genes.MutatedGenes.xlsx from the compare step) for all samples, one file per line (either xlsx or tsv). For example:
-
-``` 
-genes_sample1.MutatedGenes.xlsx
-genes_sample2.MutatedGenes.tsv
-genes_sample3.MutatedGenes.tsv
-```
-
-### Output
-
-Two output files: (1) the file union.MutatedGenes.tsv|.xlsx contains the list of common genes impacted for all samples. (2) The upset_plot.svg file which contains the upset plot[^2] indicating the number of common genes between the different sample sets.
-
-[^2]: [A. Lex, N. Gehlenborg, H. Strobelt, R. Vuillemot and H. Pfister, "UpSet: Visualization of Intersecting Sets," in IEEE Transactions on Visualization and Computer Graphics, vol. 20, no. 12, pp. 1983-1992, 31 Dec. 2014, doi: 10.1109/TVCG.2014.2346248.](https://ieeexplore.ieee.org/document/6876017)
 
 <details><summary>Parameters</summary>
 
@@ -216,11 +216,27 @@ Two output files: (1) the file union.MutatedGenes.tsv|.xlsx contains the list of
   
 </details>
 
+### Inputs
 
+:warning: The configuration file contains the list of genes (1_2_genes.MutatedGenes.tsv or 1_2_genes.MutatedGenes.xlsx from the compare step) for all samples, one file per line (either xlsx or tsv). For example:
+
+``` 
+genes_sample1.MutatedGenes.xlsx
+genes_sample2.MutatedGenes.tsv
+genes_sample3.MutatedGenes.tsv
+```
+
+### Outputs
+
+Two output files: (1) the file union.MutatedGenes.tsv|.xlsx contains the list of common genes impacted for all samples. (2) The upset_plot.svg file which contains the upset plot[^2] indicating the number of common genes between the different sample sets.
+
+[^2]: [A. Lex, N. Gehlenborg, H. Strobelt, R. Vuillemot and H. Pfister, "UpSet: Visualization of Intersecting Sets," in IEEE Transactions on Visualization and Computer Graphics, vol. 20, no. 12, pp. 1983-1992, 31 Dec. 2014, doi: 10.1109/TVCG.2014.2346248.](https://ieeexplore.ieee.org/document/6876017)
+
+----
 ----
 
 
-# Tests
+# Unit testing
 
 To run tests:
 
