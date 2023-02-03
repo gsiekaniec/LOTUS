@@ -2,7 +2,7 @@
 
 ## Filter
 
-#### Intputs
+### Intputs
 
 - **Raw vcf file**
 
@@ -36,7 +36,7 @@ The ```passed.vcf``` file is a vcf file that contains only the variants passing 
 
 ## Summarise
 
-#### Intputs
+### Intputs
 
 
 ### Outputs
@@ -44,7 +44,7 @@ The ```passed.vcf``` file is a vcf file that contains only the variants passing 
 
 ## Compare
 
-#### Intputs
+### Intputs
 
 
 ### Outputs
@@ -52,7 +52,7 @@ The ```passed.vcf``` file is a vcf file that contains only the variants passing 
 
 ## Merge
 
-#### Intputs
+### Intputs
 
 - **Configuration file**
 
