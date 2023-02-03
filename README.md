@@ -79,7 +79,7 @@ For that there are many ways to proceed, we advise here to use the [GATK best pr
 Simple filter on the vcf file from Funcotator using multiple informations to keep only trustworthy somatic variants.
 
 <p align="center">
-  <img width="350" src="img/filter_step.png">
+  <img width="350" src="img/filter_module.png">
 </p>
 
 Two output files: (1) the filtered.vcf file contains the variants of the original vcf file with an annotation indicating the filters not passed in the Info field. (2) The pass.vcf file contains only the variants passing the filters. 
@@ -107,7 +107,7 @@ Two output files: (1) the filtered.vcf file contains the variants of the origina
 Allows to extract a lot of statistics from a vcf file.
 
 <p align="center">
-  <img width="350" src="img/summarise_step.png">
+  <img width="350" src="img/summarise_module.png">
 </p>
 
 <details><summary>Parameters</summary>
@@ -132,7 +132,7 @@ Allows to extract a lot of statistics from a vcf file.
 Compare multiple vcf files longitudinally.
 
 <p align="center">
-  <img width="500" src="img/compare_step.png">
+  <img width="500" src="img/compare_module.png">
 </p>
 
 Compare introduces a new concept of weakness and weakness percentage.
@@ -177,7 +177,7 @@ This percentage of weakness (from 100% if all variants are weak to 0% if all var
 Merging results to find the genes impacted in all patient.
 
 <p align="center">
-  <img width="350" src="img/merge_step.png">
+  <img width="350" src="img/merge_module.png">
 </p>
 
 ### Input
