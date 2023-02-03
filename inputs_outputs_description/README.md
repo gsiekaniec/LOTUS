@@ -10,8 +10,6 @@ Raw vcf file from Funcotator
 
 - **Filters**
 
-median base variant quality (MBQ) ≥ 20; variant coverage (DP) ≥ 10; fractions of variant in the tumour (AF) ≥ 0.1; variant depths (AD) ≥ 5; population variant frequencies, often from gnomAD (10-POPAF) < 1e-5; at least one paired read to support a variant (MFRL) > 0; a variant must be in a coding region (RNA or protein) and not silent (Funcotation information).
-
 The basic filters of LOTUS are the following:
   - Median base variant quality (MBQ) ≥ 20.
   - Variant coverage (DP) ≥ 10.
