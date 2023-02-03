@@ -190,11 +190,15 @@ This percentage of weakness (from 100% if all variants are weak to 0% if all var
 
 ### Main purpose
 
-Merging results to find the genes impacted in all patient.
+The merge module allows to have an overview of all the samples, it allows to group and compare all TP*n* against all TP*n+1*.
+
+### Inputs/Outputs [(get more details)](https://github.com/gsiekaniec/LOTUS/tree/main/inputs_outputs_description#merge)
 
 <p align="center">
-  <img width="350" src="img/merge_module.png">
+  <img width="400" src="img/merge_module.png">
 </p>
+
+
 
 <details><summary>Parameters</summary>
 
@@ -202,7 +206,7 @@ Merging results to find the genes impacted in all patient.
 |----------|:-------------:|:-------------:|
 | --config, -c | Configuration file containing genes list from all patients. Merged patients results. |  |
 | --output, -o | Ouput file name. | union.xlsx |
-| --cytoband, -cyto | Human cytoband file for the corresponding genome version. This file can be download [here](https://genome.ucsc.edu/cgi-bin/hgTables) or find the [LOTUS github](https://github.com/gsiekaniec/LOTUS/blob/main/LOTUS_external_files/hg38_cytoband.tsv) (for hg38). |
+| --cytoband, -cyto | Human cytoband file for the corresponding genome version. This file can be download [here](https://genome.ucsc.edu/cgi-bin/hgTables) or find the [LOTUS github](https://github.com/gsiekaniec/LOTUS/blob/main/LOTUS_external_files/hg38_cytoband.tsv) (for hg38). If this file is not provided the chromosome.svg plot will not be created. | None |
 | --chromosome-step, -step | Frame used for counting the number of genes along the chromosomes. | 500000 |
 | --chromosomes_output, -co | Output file name for the chromosomes plot. | chromosomes.svg |
 | --upset, -u | Output name for upset plot. The upset plot is not created if no name is given. :warning: It can actually only handle a maximum of 15 files due to the explosion of the combination but this limitation should be lifted in the next version. | None |
@@ -216,23 +220,15 @@ Merging results to find the genes impacted in all patient.
   
 </details>
 
-### Inputs
+<details><summary>Future plot</summary>
 
-:warning: The configuration file contains the list of genes (1_2_genes.MutatedGenes.tsv or 1_2_genes.MutatedGenes.xlsx from the compare step) for all samples, one file per line (either xlsx or tsv). For example:
-
-``` 
-genes_sample1.MutatedGenes.xlsx
-genes_sample2.MutatedGenes.tsv
-genes_sample3.MutatedGenes.tsv
-```
-
-### Outputs
-
-Two output files: (1) the file union.MutatedGenes.tsv|.xlsx contains the list of common genes impacted for all samples. (2) The upset_plot.svg file which contains the upset plot[^2] indicating the number of common genes between the different sample sets.
+Currently LOTUS allows to create an UpsetPlot[^2] representing for each sample set the corresponding impacted gene set. However, due to the high computational complexity, this graph is only available for a maximum of 15 samples. The passage to a larger number is envisaged in the future.
 
 [^2]: [A. Lex, N. Gehlenborg, H. Strobelt, R. Vuillemot and H. Pfister, "UpSet: Visualization of Intersecting Sets," in IEEE Transactions on Visualization and Computer Graphics, vol. 20, no. 12, pp. 1983-1992, 31 Dec. 2014, doi: 10.1109/TVCG.2014.2346248.](https://ieeexplore.ieee.org/document/6876017)
 
-----
+</details>
+
+
 ----
 
 
