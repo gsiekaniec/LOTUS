@@ -23,7 +23,7 @@ Except for the Funcotator annotations (7), these filters can be modified to filt
 
 ### Outputs
 
-It is advisable to use the -o option of LOTUS filter in order to choose a prefix corresponding to your samples, by default the output files will be named ```output.filtered.vcf``` and ```output.passed.vcf```
+It is advisable to use the ```-o``` option of LOTUS filter in order to choose a prefix corresponding to your samples, by default the output files will be named ```output.filtered.vcf``` and ```output.passed.vcf```
 
 - **Filtered vcf file** 
 
@@ -99,13 +99,13 @@ It contains the list of genes impacted by the variants in the passed file (varia
 
 - **Mutational SNP profile files**
 
-The mutational SNP profile file is a graphical file representing the percentage of mutations in each snp plotted according to its sequence context. This graphic is output in two image formats: *svg* and *png*. The default output for this graph is in ```profile.svg|.png``` but the *-p* option allows you to change the output name.
+The mutational SNP profile file is a graphical file representing the percentage of mutations in each snp plotted according to its sequence context. This graphic is output in two image formats: *svg* and *png*. The default output for this graph is in ```profile.svg|.png``` but the ```-p``` option allows you to change the output name.
 
 In addition to the graphical output the associated percentages and counts for each snp context are also output in a file named as the graphical output but with the *.tsv* suffix, i.e. ```profile.tsv```.
 
 - **Indel size profile files**
 
-The indel size profile file is a graphical file representing the percentage of insertions/deletions plotted according to their size. As with the mutational profile, this graph is output in two image formats: *svg* and *png*. The default output for this graph is ```indel.svg|.png``` but the *-i* option allows you to change the name of the output.
+The indel size profile file is a graphical file representing the percentage of insertions/deletions plotted according to their size. As with the mutational profile, this graph is output in two image formats: *svg* and *png*. The default output for this graph is ```indel.svg|.png``` but the ```-i``` option allows you to change the name of the output.
 
 In addition to the graphical output, the percentages and associated numbers for each indel size are also produced in two files separating insertions from deletions. These files are named like the graphical output but with the *.insertion.tsv* and *.deletion.tsv* suffix, i.e. ```indel.deletion.tsv``` and ```indel.insertion.tsv```.
 
@@ -171,13 +171,13 @@ The first line containing a number (here 3) corresponding to the number of time 
  
 The reference genome annotation file is a *gff3* file containing informations about genes presents in the genome. In the case of the *hg38* version of the human genome, this file can be found [here](https://ftp.ensembl.org/pub/release-108/gff3/homo_sapiens/) or in the [LOTUS_external_files](https://github.com/gsiekaniec/LOTUS/blob/main/LOTUS_external_files/Homo_sapiens.GRCh38.108.chr.gff3.gz) directory.
 
-As for the genome fasta file in the *summarise* module, during the first run of the *compare* module, the information from the reference genome annotation file is serialized and saved using [pickle](https://docs.python.org/3/library/pickle.html) (*.pk*, *.pickle*). The *.pk* file created can be used later to retrieve information more quickly without parsing the entire gff3 file, e.g. to process another TP or sample. :warning: When using a *.pk* file instead of the original file the *--pickle_gff3* option must be specified.
+As for the genome fasta file in the *summarise* module, during the first run of the *compare* module, the information from the reference genome annotation file is serialized and saved using [pickle](https://docs.python.org/3/library/pickle.html) (*.pk*, *.pickle*). The *.pk* file created can be used later to retrieve information more quickly without parsing the entire gff3 file, e.g. to process another TP or sample. :warning: When using a *.pk* file instead of the original file the ```--pickle_gff3``` option must be specified.
 
 ### Outputs
 
 - **Mutated genes file**
 
-The default value of this file is ```TPn_TPn+1_compared.MutatedGenes.tsv|.xlsx``` where TP*n* and TP*n+1* are the name of the first and second filtered.vcf file, e.g. if your vcf file for the first TP is file1.filtered.vcf and the name for the second TP vcf file is file2.filtered.vcf, the final output will be ```file1_file2_compared.MutatedGenes.tsv|.xlsx```. However is possible to replace the ```compared``` part by using the *-o* option.
+The default value of this file is ```TPn_TPn+1_compared.MutatedGenes.tsv|.xlsx``` where TP*n* and TP*n+1* are the name of the first and second filtered.vcf file, e.g. if your vcf file for the first TP is file1.filtered.vcf and the name for the second TP vcf file is file2.filtered.vcf, the final output will be ```file1_file2_compared.MutatedGenes.tsv|.xlsx```. However is possible to replace the ```compared``` part by using the **-o** option.
 
 This ```TPn_TPn+1_compared.MutatedGenes.tsv|.xlsx``` file contains the list of impacted genes specific to TP*n* or TP*n+1*. The details of the information provided for each gene are as follows:
   - ```Gene symbol```: Gene name ([HGNC](https://www.genenames.org/) symbol).
@@ -187,33 +187,31 @@ This ```TPn_TPn+1_compared.MutatedGenes.tsv|.xlsx``` file contains the list of i
   - ```Tumour burden (symmetrical difference)```: Total number of different variants impacting the gene. Only variants specific to TP*n* or TP*n+1* are considered. Variants common to both TPs are not taken into account.
   - ```Gene weakness (in %)```: Percentage of gene weakness (see X part below)
   - ```TPn```: Number of different variants impacting the gene and specific to TP*n*.
-  - ```g.TPn```: Variants representation relative to the linear genomic reference sequence specific to TP*n* and separated by ```|```([HGVS](https://varnomen.hgvs.org/) nomenclature). 
-  - ```c.TPn```: Variants representation relative to the coding DNA reference sequence specific to TP*n* and separate by ```|```([HGVS](https://varnomen.hgvs.org/) nomenclature).
-  - ```p.TPn```: Variants representation relative to the protein reference sequence specific to TP*n* and separate by ```|```([HGVS](https://varnomen.hgvs.org/) nomenclature).
+  - ```g.TPn```: Variants representation relative to the linear genomic reference sequence specific to TP*n* ([HGVS](https://varnomen.hgvs.org/) nomenclature). 
+  - ```c.TPn```: Variants representation relative to the coding DNA reference sequence specific to TP*n* ([HGVS](https://varnomen.hgvs.org/) nomenclature).
+  - ```p.TPn```: Variants representation relative to the protein reference sequence specific to TP*n* ([HGVS](https://varnomen.hgvs.org/) nomenclature).
   - ```TPn+1```: Number of different variants impacting this gene and specific to TP*n+1*.
-  - ```g.TPn+1```: Variants representation relative to the linear genomic reference sequence specific to TP*n+1* and separated by ```|```([HGVS](https://varnomen.hgvs.org/) nomenclature).
-  - ```c.TPn+1```: Variants representation relative to the coding DNA reference sequence specific to TP*n+1* and separate by ```|```([HGVS](https://varnomen.hgvs.org/) nomenclature).
-  - ```p.TPn+1```: Variants representation relative to the protein reference sequence specific to TP*n+1* and separate by ```|```([HGVS](https://varnomen.hgvs.org/) nomenclature).
+  - ```g.TPn+1```: Variants representation relative to the linear genomic reference sequence specific to TP*n+1* ([HGVS](https://varnomen.hgvs.org/) nomenclature).
+  - ```c.TPn+1```: Variants representation relative to the coding DNA reference sequence specific to TP*n+1* ([HGVS](https://varnomen.hgvs.org/) nomenclature).
+  - ```p.TPn+1```: Variants representation relative to the protein reference sequence specific to TP*n+1* ([HGVS](https://varnomen.hgvs.org/) nomenclature).
 
-In addition to the above information, it is possible, by adding the --X option, to display additional information from external cancer databases:
+In addition to the above information, it is possible, by adding the ```--additional_gene_information``` option, to display additional human cancer specific information from external databases:
 
-  - ```CancerHotSpot```[^1]: 
-  - ```CIViC```[^2]:
-  - ```COSMIC```[^3]:
-  - ```DoCM```[^4]:
-  - ```IntOGen```[^5]:
-  - ```TSGene 2.0```[^6]:
-        
-[^1]: [Ainscough, Benjamin J *et al*. “DoCM: a database of curated mutations in cancer.” Nature methods vol. 13,10 (2016): 806-7.](https://www.nature.com/articles/nmeth.4000#citeas)
-[^2]: [Min Zhao *et al*, TSGene 2.0: an updated literature-based knowledgebase for tumor suppressor genes, Nucleic Acids Research, Volume 44, Issue D1, 4 January 2016, Pages D1023–D1031.](https://academic.oup.com/nar/article/44/D1/D1023/2503080)
-[^3]: []()
-[^4]: []()
-[^5]: []()
-[^6]: []()
-
-DoCM; TSGene 2.0; CIViC; CancerHotspots; COSMIC; IntOGen (Ainscough et al., 2016; Min et al., 2016; Griffith et al., 2017; Matthew et al., 2018; Sondka et al., 2018; Martinez-Jimenez et al., 2020). 
-        
-RB1     chr13   48303744        48599436        3       0.0     0                               3       g.chr13:48342684T>C|g.chr13:48367581C>T|g.chr13:48476843G>A     c.350T>C|c.1027C>T|c.2663G>A    p.F117S|p.L343F|p.S888N InDel | SNP: bladder, bowel, cnsbrain, esophagusstomach, headandneck, lung, skin, softtissue Level : ClinicalEvidence, Gene, Variant COSMIC ID:COSG250675|Tier:1|Hallmark:Yes|Tumour Types(Somatic):retinoblastoma, sarcoma, breast, small cell lung carcinoma|Tumour Types(Germline):retinoblastoma, sarcoma, breast, small cell lung carcinoma  cancer,lung small cell carcinoma,retinoblastoma Cancer_Type : ACC, BLCA, BRCA, CESC, CM, ESCA, GBM, HC, HNSC, LEIS, LUAD, LUSC, MM, NSCLC, OS, OV, PIA, PRAD, RB, S, SCLC, ST, UCEC, UCS     MIM:614041|HGNC:HGNC:9884|Ensembl:ENSG00000139687|HPRD:01574|Vega:OTTHUMG00000016900|GeneType:protein-coding
+  - ```CancerHotSpot```: Informations from the [Cancer HotSpots](https://www.cancerhotspots.org/)[^1] database.
+  - ```CIViC```: Informations from the [Clinical Interpretation of Variants in Cancer](https://civicdb.org/)[^2] database.
+  - ```COSMIC```: Informations from the [Catalogue Of Somatic Mutations In Cancer](https://cancer.sanger.ac.uk/cosmic)[^3] database.
+  - ```DoCM```: Informations from the [Database of Curated Mutations](http://www.docm.info/)[^4] database.
+  - ```IntOGen```: Informations from the [Integrative Onco Genomics](https://www.intogen.org/)[^5] database.
+  - ```TSGene 2.0```: Informations from the [Tumor suppressor gene database](https://bioinfo.uth.edu/TSGene/)[^6] database.
+       
+Informations from these different databases is available in the [LOTUS_external_files](https://github.com/gsiekaniec/LOTUS/blob/main/LOTUS_external_files/Lotus_ExternalBases_202301.xlsx).
+       
+[^1]: [Matthew T. Chang *et al*. Accelerating Discovery of Functional Mutant Alleles in Cancer. Cancer Discov 1 February 2018; 8 (2): 174–183.](https://doi.org/10.1158/2159-8290.CD-17-0321)
+[^2]: [Griffith, M. *et al*. CIViC is a community knowledgebase for expert crowdsourcing the clinical interpretation of variants in cancer. Nat Genet 49, 170–174 (2017).](https://doi.org/10.1038/ng.3774)
+[^3]: [Sondka, Z. *et al*. The COSMIC Cancer Gene Census: describing genetic dysfunction across all human cancers. Nat Rev Cancer 18, 696–705 (2018).](https://doi.org/10.1038/s41568-018-0060-1)
+[^4]: [Ainscough, Benjamin J *et al*. “DoCM: a database of curated mutations in cancer.” Nature methods vol. 13,10 (2016): 806-7.](https://doi.org/10.1038/nmeth.4000)
+[^5]: [Martínez-Jiménez, F. *et al*. A compendium of mutational cancer driver genes. Nat Rev Cancer 20, 555–572 (2020).](https://doi.org/10.1038/s41568-020-0290-x)
+[^6]: [Min Zhao *et al*. TSGene 2.0: an updated literature-based knowledgebase for tumor suppressor genes, Nucleic Acids Research, Volume 44, Issue D1, 4 January 2016, Pages D1023–D1031.](https://doi.org/10.1093/nar/gkv1268)
 
 #### Gene weakness
 
