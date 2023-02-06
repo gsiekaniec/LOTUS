@@ -169,13 +169,53 @@ The first line containing a number (here 3) corresponding to the number of time 
  
  - **Reference genome annotation file**
  
- The reference genome annotation file is a *gff3* file containing informations about genes presents in the genome. In the case of the *hg38* version of the human genome, this file can be found [here](https://ftp.ensembl.org/pub/release-108/gff3/homo_sapiens/) or in the [LOTUS_external_files](https://github.com/gsiekaniec/LOTUS/blob/main/LOTUS_external_files/Homo_sapiens.GRCh38.108.chr.gff3.gz) directory.
+The reference genome annotation file is a *gff3* file containing informations about genes presents in the genome. In the case of the *hg38* version of the human genome, this file can be found [here](https://ftp.ensembl.org/pub/release-108/gff3/homo_sapiens/) or in the [LOTUS_external_files](https://github.com/gsiekaniec/LOTUS/blob/main/LOTUS_external_files/Homo_sapiens.GRCh38.108.chr.gff3.gz) directory.
 
 As for the genome fasta file in the *summarise* module, during the first run of the *compare* module, the information from the reference genome annotation file is serialized and saved using [pickle](https://docs.python.org/3/library/pickle.html) (*.pk*, *.pickle*). The *.pk* file created can be used later to retrieve information more quickly without parsing the entire gff3 file, e.g. to process another TP or sample. :warning: When using a *.pk* file instead of the original file the *--pickle_gff3* option must be specified.
 
 ### Outputs
 
 - **Mutated genes file**
+
+The default value of this file is ```TPn_TPn+1_compared.MutatedGenes.tsv|.xlsx``` where TP*n* and TP*n+1* are the name of the first and second filtered.vcf file, e.g. if your vcf file for the first TP is file1.filtered.vcf and the name for the second TP vcf file is file2.filtered.vcf, the final output will be ```file1_file2_compared.MutatedGenes.tsv|.xlsx```. However is possible to replace the ```compared``` part by using the *-o* option.
+
+This ```TPn_TPn+1_compared.MutatedGenes.tsv|.xlsx``` file contains the list of impacted genes specific to TP*n* or TP*n+1*. The details of the information provided for each gene are as follows:
+  - ```Gene symbol```: Gene name ([HGNC](https://www.genenames.org/) symbol).
+  - ```Chromosome```: Chromosome on which the gene is located.
+  - ```Gene position start```: Gene start position, extract from the reference genome annotation file (gff3).
+  - ```Gene position end```: Gene end position, extract from the reference genome annotation file (gff3).
+  - ```Tumour burden (symmetrical difference)```: Total number of different variants impacting the gene. Only variants specific to TP*n* or TP*n+1* are considered. Variants common to both TPs are not taken into account.
+  - ```Gene weakness (in %)```: Percentage of gene weakness (see X part below)
+  - ```TPn```: Number of different variants impacting the gene and specific to TP*n*.
+  - ```g.TPn```: Variants representation relative to the linear genomic reference sequence specific to TP*n* and separated by ```|```([HGVS](https://varnomen.hgvs.org/) nomenclature). 
+  - ```c.TPn```: Variants representation relative to the coding DNA reference sequence specific to TP*n* and separate by ```|```([HGVS](https://varnomen.hgvs.org/) nomenclature).
+  - ```p.TPn```: Variants representation relative to the protein reference sequence specific to TP*n* and separate by ```|```([HGVS](https://varnomen.hgvs.org/) nomenclature).
+  - ```TPn+1```: Number of different variants impacting this gene and specific to TP*n+1*.
+  - ```g.TPn+1```: Variants representation relative to the linear genomic reference sequence specific to TP*n+1* and separated by ```|```([HGVS](https://varnomen.hgvs.org/) nomenclature).
+  - ```c.TPn+1```: Variants representation relative to the coding DNA reference sequence specific to TP*n+1* and separate by ```|```([HGVS](https://varnomen.hgvs.org/) nomenclature).
+  - ```p.TPn+1```: Variants representation relative to the protein reference sequence specific to TP*n+1* and separate by ```|```([HGVS](https://varnomen.hgvs.org/) nomenclature).
+
+In addition to the above information, it is possible, by adding the --X option, to display additional information from external cancer databases:
+
+  - ```CancerHotSpot```[^1]: 
+  - ```CIViC```[^2]:
+  - ```COSMIC```[^3]:
+  - ```DoCM```[^4]:
+  - ```IntOGen```[^5]:
+  - ```TSGene 2.0```[^6]:
+        
+[^1]: [Ainscough, Benjamin J *et al*. “DoCM: a database of curated mutations in cancer.” Nature methods vol. 13,10 (2016): 806-7.](https://www.nature.com/articles/nmeth.4000#citeas)
+[^2]: [Min Zhao *et al*, TSGene 2.0: an updated literature-based knowledgebase for tumor suppressor genes, Nucleic Acids Research, Volume 44, Issue D1, 4 January 2016, Pages D1023–D1031.](https://academic.oup.com/nar/article/44/D1/D1023/2503080)
+[^3]: []()
+[^4]: []()
+[^5]: []()
+[^6]: []()
+
+DoCM; TSGene 2.0; CIViC; CancerHotspots; COSMIC; IntOGen (Ainscough et al., 2016; Min et al., 2016; Griffith et al., 2017; Matthew et al., 2018; Sondka et al., 2018; Martinez-Jimenez et al., 2020). 
+        
+RB1     chr13   48303744        48599436        3       0.0     0                               3       g.chr13:48342684T>C|g.chr13:48367581C>T|g.chr13:48476843G>A     c.350T>C|c.1027C>T|c.2663G>A    p.F117S|p.L343F|p.S888N InDel | SNP: bladder, bowel, cnsbrain, esophagusstomach, headandneck, lung, skin, softtissue Level : ClinicalEvidence, Gene, Variant COSMIC ID:COSG250675|Tier:1|Hallmark:Yes|Tumour Types(Somatic):retinoblastoma, sarcoma, breast, small cell lung carcinoma|Tumour Types(Germline):retinoblastoma, sarcoma, breast, small cell lung carcinoma  cancer,lung small cell carcinoma,retinoblastoma Cancer_Type : ACC, BLCA, BRCA, CESC, CM, ESCA, GBM, HC, HNSC, LEIS, LUAD, LUSC, MM, NSCLC, OS, OV, PIA, PRAD, RB, S, SCLC, ST, UCEC, UCS     MIM:614041|HGNC:HGNC:9884|Ensembl:ENSG00000139687|HPRD:01574|Vega:OTTHUMG00000016900|GeneType:protein-coding
+
+#### Gene weakness
 
 
 
@@ -218,14 +258,14 @@ XXX
 
 In addition to the outputs presented above, the three modules *summarise*, *compare* and *merge* offer the possibility to request a GOEA based on biological process terms from the output gene lists using the ```--enrichment``` option. 
 
-These GOEAs are performed using the ToppGene[^1] and PANTHER[^2] APIs and output in files suffixed with ```Panther_enrichment.tsv|.xlsx``` and ```ToppGene_enrichment.tsv|.xlsx```.
+These GOEAs are performed using the ToppGene[^7] and PANTHER[^8] APIs and output in files suffixed with ```Panther_enrichment.tsv|.xlsx``` and ```ToppGene_enrichment.tsv|.xlsx```.
 
 The information contained in the columns of these files is as follows:
 
 XXX
 
 
-[^1]: [Chen,J. et al. (2009) ToppGene Suite for gene list enrichment analysis and candidate gene prioritization. Nucleic Acids Res., 37, W305-11.)](https://academic.oup.com/nar/article/37/suppl_2/W305/1149611?login=true)
-[^2]: [Mi,H. et al. (2019) Protocol Update for large-scale genome and gene function analysis with the PANTHER classification system (v.14.0). Nat. Protoc., 14, 703-721.)](https://www.nature.com/articles/s41596-019-0128-8)
+[^7]: [Chen,J. et al. (2009) ToppGene Suite for gene list enrichment analysis and candidate gene prioritization. Nucleic Acids Res., 37, W305-11.](https://academic.oup.com/nar/article/37/suppl_2/W305/1149611?login=true)
+[^8]: [Mi,H. et al. (2019) Protocol Update for large-scale genome and gene function analysis with the PANTHER classification system (v.14.0). Nat. Protoc., 14, 703-721.)](https://www.nature.com/articles/s41596-019-0128-8)
 
 
