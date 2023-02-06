@@ -39,11 +39,11 @@ The ```passed.vcf``` file is a vcf file that contains only the variants passing 
 
 ### Intputs
 
-- **vcf file from filter module**
+- **Vcf file from filter module**
 
 The ```passed.vcf``` is mandatory but the ```filtered.vcf``` is optional. The ```filtered.vcf``` file is used to add information on the total number of variants as well as details of those not passing the ```NOT_FUNCTIONAL``` (LOTUS), ```germline``` (GATK) and ```panel_of_normals``` (GATK) filters. 
 
--**reference genome fasta file**
+- **Reference genome fasta file**
 
 Genome fasta file with the extensions : *.fasta*, *.fa* or *.fan*. This file must be the same one used to align the raw data. 
 or pickle (.pk, .pickle) file created after the first run. It is used to retrieve the flanking bases when creating the mutational profile graph detailing the snp types found among the variants passing the filters.
@@ -52,7 +52,11 @@ or pickle (.pk, .pickle) file created after the first run. It is used to retriev
 
 ### Outputs
 
-- **stats.txt file**
+- **Stats.txt file**
+
+By default the statistics file will be output as ```stats.txt```. 
+
+The output file structure is as follows :
 
 ```
 ########################### filtered.vcf ###########################
@@ -78,6 +82,36 @@ Impacted genes : X (list in MutatedGenes.xlsx)
 SNP : X      DNP : X      TNP : X      NP : X
 INDEL : X      INSERTION : X, DELETION : X
 ```
+
+:warning: The filtered part will only be present if the filtered.vcf file is passed to the *summarise* module.
+
+- **Mutated genes file**
+
+The default value of this file is ```MutatedGenes.tsv|.xlsx```.
+It contains the list of genes impacted by the variants in the passed file (variants that pass the filters). For each impacted gene, the following information is given:
+
+  - ```Gene name```: Gene name ([HGNC](https://www.genenames.org/) symbol).
+  - ```Tumour burden```: Total number of different variants impacting this gene.
+  - ```Details (snp, dnp, tnp, onp, insertion, deletion)```: Details of the number of variants impacting the gene by type of variant: snp (Single Nucleotide Polymorphism), dnp (Double nucleotide polymorphism), tnp (Triple nucleotide polymorphism), onp (Oligo-nucleotide polymorphism), ins (insertion) and del (deletion)
+  - ```Ref```: Sequences in the reference genome.
+  - ```Alt variant(s)```: Variants in the sample genome in the same order that *Ref*.
+  - ```Chromosome```: Chromosome on which the gene is located.
+  - ```Position(s)```: Variants positions in the same order that *Ref* and *Alt variant(s)*.
+
+
+- **Mutational SNP profile files**
+
+The mutational SNP profile file is a graphical file representing the percentage of mutations in each snp plotted according to its sequence context. This graphic is output in two image formats: *svg* and *png*. The default output for this graph is in ```profile.svg|.png``` but the *-p* option allows you to change the output name.
+
+In addition to the graphical output the associated percentages and counts for each snp context are also output in a file named as the graphical output but with the *.tsv* suffix, i.e. ```profile.tsv```.
+
+
+
+- **Indel size profile files**
+
+The indel size profile file is a graphical file representing the percentage of insertions/deletions plotted according to their size. As with the mutational profile, this graph is output in two image formats: *svg* and *png*. The default output for this graph is ```indel.svg|.png``` but the *-i* option allows you to change the name of the output.
+
+In addition to the graphical output, the percentages and associated numbers for each indel size are also produced in two files separating insertions from deletions. These files are named like the graphical output but with the suffix *.insertion.tsv* and *.deletion.tsv*, i.e. ```indel.deletion.tsv``` and ```indel.insertion.tsv```.
 
 ---
 
@@ -116,9 +150,10 @@ For the hg38 version of the human genome, this file can be found [here](https://
 
 ### Outputs
 
-- **union.MutatedGenes.tsv|.xlsx file** 
+- **Mutated genes file** 
 
-This file contains the list of common impacted genes for all samples given in the configuration file. For each impacted gene a large amount of information can be found such as :
+The default value of this file is ```union.MutatedGenes.tsv|.xlsx```.
+It contains the list of common impacted genes for all samples given in the configuration file. For each impacted gene a large amount of information can be found such as :
 
 XXX
 
