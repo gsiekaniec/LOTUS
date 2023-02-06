@@ -185,7 +185,7 @@ This ```TPn_TPn+1_compared.MutatedGenes.tsv|.xlsx``` file contains the list of i
   - ```Gene position start```: Gene start position, extract from the reference genome annotation file (gff3).
   - ```Gene position end```: Gene end position, extract from the reference genome annotation file (gff3).
   - ```Tumour burden (symmetrical difference)```: Total number of different variants impacting the gene. Only variants specific to TP*n* or TP*n+1* are considered. Variants common to both TPs are not taken into account.
-  - ```Gene weakness (in %)```: Percentage of gene weakness (see X part below)
+  - ```Gene weakness (in %)```: Percentage of gene weakness (see the [Gene weakness](https://github.com/gsiekaniec/LOTUS/blob/main/inputs_outputs_description/README.md#gene-weakness) part below)
   - ```TPn```: Number of different variants impacting the gene and specific to TP*n*.
   - ```g.TPn```: Variants representation relative to the linear genomic reference sequence specific to TP*n* ([HGVS](https://varnomen.hgvs.org/) nomenclature). 
   - ```c.TPn```: Variants representation relative to the coding DNA reference sequence specific to TP*n* ([HGVS](https://varnomen.hgvs.org/) nomenclature).
