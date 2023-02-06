@@ -4,11 +4,11 @@
 
 ### Intputs
 
-- **Raw vcf file**
+#### Raw vcf file
 
 Raw vcf file from Funcotator
 
-- **Filters**
+#### Filters
 
 The basic filters of LOTUS are the following:
   1. Median base variant quality (MBQ) ≥ 20.
@@ -25,11 +25,11 @@ Except for the Funcotator annotations (7), these filters can be modified to filt
 
 It is advisable to use the ```-o``` option of LOTUS filter in order to choose a prefix corresponding to your samples, by default the output files will be named ```output.filtered.vcf``` and ```output.passed.vcf```
 
-- **Filtered vcf file** 
+#### Filtered vcf file
 
 The ```filtered.vcf``` file is a vcf file that contains the variants of the original vcf file with an annotation indicating the filters not passed in the *Info field*.
 
-- **Passed vcf file** 
+#### Passed vcf file
 
 The ```passed.vcf``` file is a vcf file that contains only the variants passing the filters. 
 
@@ -39,11 +39,11 @@ The ```passed.vcf``` file is a vcf file that contains only the variants passing 
 
 ### Intputs
 
-- **Vcf file from filter module**
+#### Vcf file from filter module
 
 The ```passed.vcf``` is mandatory but the ```filtered.vcf``` is optional. The ```filtered.vcf``` file is used to add information on the total number of variants as well as details of those not passing the ```NOT_FUNCTIONAL``` (LOTUS), ```germline``` (GATK) and ```panel_of_normals``` (GATK) filters. 
 
-- **Reference genome fasta file**
+#### Reference genome fasta file
 
 Genome fasta file with the extensions : *.fasta*, *.fa* or *.fan*. This file must be the same one used to align the raw data. This file is used to retrieve the flanking bases when creating the mutational profile graph detailing the snp types found among the variants passing the filters.
 
@@ -51,7 +51,7 @@ On the first run of this module, the information from the genome fasta file is s
 
 ### Outputs
 
-- **Stats.txt file**
+#### Stats.txt file
 
 By default the statistics file will be output as ```stats.txt```. 
 
@@ -84,7 +84,7 @@ INDEL : X      INSERTION : X, DELETION : X
 
 :warning: The filtered part will only be present if the ```filtered.vcf``` file is passed to the *summarise* module.
 
-- **Mutated genes file**
+#### Mutated genes file
 
 The default value of this file is ```MutatedGenes.tsv|.xlsx```.
 It contains the list of genes impacted by the variants in the passed file (variants that pass the filters). For each impacted gene, the following information is given:
@@ -97,13 +97,13 @@ It contains the list of genes impacted by the variants in the passed file (varia
   - ```Chromosome```: Chromosome on which the gene is located.
   - ```Position(s)```: Variants positions in the same order that *Ref* and *Alt variant(s)*.
 
-- **Mutational SNP profile files**
+#### Mutational SNP profile files
 
 The mutational SNP profile file is a graphical file representing the percentage of mutations in each snp plotted according to its sequence context. This graphic is output in two image formats: *svg* and *png*. The default output for this graph is in ```profile.svg|.png``` but the ```-p``` option allows you to change the output name.
 
 In addition to the graphical output the associated percentages and counts for each snp context are also output in a file named as the graphical output but with the *.tsv* suffix, i.e. ```profile.tsv```.
 
-- **Indel size profile files**
+#### Indel size profile files
 
 The indel size profile file is a graphical file representing the percentage of insertions/deletions plotted according to their size. As with the mutational profile, this graph is output in two image formats: *svg* and *png*. The default output for this graph is ```indel.svg|.png``` but the ```-i``` option allows you to change the name of the output.
 
@@ -115,7 +115,7 @@ In addition to the graphical output, the percentages and associated numbers for 
 
 ### Intputs
 
-- **Configuration file**
+#### Configuration file
 
 The configuration file is the only file needed to run the compare module. 
 
@@ -167,7 +167,7 @@ The first line containing a number (here 3) corresponding to the number of time 
 
 :warning: Sometimes it may appear that there is no insertion or deletion in a sample. In this case, it is possible to put *None* in the corresponding indel path and no indel graph will be produced for comparison with this TP.
  
- - **Reference genome annotation file**
+#### Reference genome annotation file
  
 The reference genome annotation file is a *gff3* file containing informations about genes presents in the genome. In the case of the *hg38* version of the human genome, this file can be found [here](https://ftp.ensembl.org/pub/release-108/gff3/homo_sapiens/) or in the [LOTUS_external_files](https://github.com/gsiekaniec/LOTUS/blob/main/LOTUS_external_files/Homo_sapiens.GRCh38.108.chr.gff3.gz) directory.
 
@@ -175,7 +175,7 @@ As for the genome fasta file in the *summarise* module, during the first run of 
 
 ### Outputs
 
-- **Mutated genes file**
+#### Mutated genes file
 
 The default value of this file is ```TPn_TPn+1_compared.MutatedGenes.tsv|.xlsx``` where TP*n* and TP*n+1* are the name of the first and second filtered.vcf file, e.g. if your vcf file for the first TP is file1.filtered.vcf and the name for the second TP vcf file is file2.filtered.vcf, the final output will be ```file1_file2_compared.MutatedGenes.tsv|.xlsx```. However is possible to replace the ```compared``` part by using the **-o** option.
 
@@ -213,7 +213,7 @@ Informations from these different databases is available in the [LOTUS_external_
 [^5]: [Martínez-Jiménez, F. *et al*. A compendium of mutational cancer driver genes. Nat Rev Cancer 20, 555–572 (2020).](https://doi.org/10.1038/s41568-020-0290-x)
 [^6]: [Min Zhao *et al*. TSGene 2.0: an updated literature-based knowledgebase for tumor suppressor genes, Nucleic Acids Research, Volume 44, Issue D1, 4 January 2016, Pages D1023–D1031.](https://doi.org/10.1093/nar/gkv1268)
 
-#### Gene weakness
+##### Gene weakness
 
 The *compare* module introduces a new concept of weakness and weakness percentage.
 
@@ -232,13 +232,23 @@ This *percentage of weakness* (from 100% if all variants are weak to 0% if all v
   <img width="750" src="../img/weakness.png">
 </p>
 
+
+#### Mutational SNP profile files
+
+The mutational SNP profile file is a graphical file representing the percentage of mutations in each snp plotted according to its sequence context. This graphic is output in two image formats: *svg* and *png*. The default output for this graph is in ```profile.svg|.png``` but the ```-p``` option allows you to change the output name.
+
+In addition to the graphical output the associated percentages and counts for each snp context are also output in a file named as the graphical output but with the *.tsv* suffix, i.e. ```profile.tsv```.
+
+#### Indel size profile files
+
+
 ---
 
 ## Merge
 
 ### Intputs
 
-- **Configuration file**
+#### Configuration file
 
 The only file needed for the *merge* module is the configuration file (```.txt```).
 
@@ -250,16 +260,16 @@ sample2_TP1_TP2.MutatedGenes.tsv
 sample3_TP1_TP2.MutatedGenes.tsv
 ```
 
-- **Cytoband file**
+#### Cytoband file
 
 To create the graph showing the impacted genes on the cytoband maps of the chromosomes (```.tsv```), the file containing the position of these cytobands must be provided. 
 
-For the hg38 version of the human genome, this file can be found [here](https://genome.ucsc.edu/cgi-bin/hgTables) or provided with [LOTUS](https://github.com/gsiekaniec/LOTUS/blob/main/LOTUS_external_files/hg38_cytoband.tsv).
+For the *hg38* version of the human genome, this file can be found [here](https://genome.ucsc.edu/cgi-bin/hgTables) or provided with [LOTUS](https://github.com/gsiekaniec/LOTUS/blob/main/LOTUS_external_files/hg38_cytoband.tsv).
 
 
 ### Outputs
 
-- **Mutated genes file** 
+#### Mutated genes file
 
 The default value of this file is ```union.MutatedGenes.tsv|.xlsx```.
 It contains the list of common impacted genes for all samples given in the configuration file. For each impacted gene a large amount of information can be found such as :
