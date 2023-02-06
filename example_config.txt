@@ -1,14 +1,14 @@
 3
 
 ### VCF files ###
-# Filtered.vcf files (from g-LOTUS filter)
+# Filtered.vcf files (from LOTUS filter)
 
 - filtered:
 /path/to/file1.filtered.vcf
 /path/to/file2.filtered.vcf
 /path/to/file3.filtered.vcf
 
-# Corresponding Pass.vcf files in the same order (from g-LOTUS filter)
+# Corresponding Passed.vcf files in the same order (from LOTUS filter)
 
 - pass:
 /path/to/file1.pass.vcf
