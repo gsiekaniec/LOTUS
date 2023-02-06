@@ -195,7 +195,7 @@ This ```TPn_TPn+1_compared.MutatedGenes.tsv|.xlsx``` file contains the list of i
   - ```c.TPn+1```: Variants representation relative to the coding DNA reference sequence specific to TP*n+1* ([HGVS](https://varnomen.hgvs.org/) nomenclature).
   - ```p.TPn+1```: Variants representation relative to the protein reference sequence specific to TP*n+1* ([HGVS](https://varnomen.hgvs.org/) nomenclature).
 
-In addition to the above information, it is possible, by adding the ```--additional_gene_information``` option, to display additional human cancer specific information from external databases:
+In addition to the above information, it is possible, by adding the ```--additional_gene_information``` option, to display additional human cancer specific information from external databases for each gene (blank if no informations for a gene):
 
   - ```CancerHotSpot```: Informations from the [Cancer HotSpots](https://www.cancerhotspots.org/)[^1] database.
   - ```CIViC```: Informations from the [Clinical Interpretation of Variants in Cancer](https://civicdb.org/)[^2] database.
@@ -215,7 +215,22 @@ Informations from these different databases is available in the [LOTUS_external_
 
 #### Gene weakness
 
+The *compare* module introduces a new concept of weakness and weakness percentage.
 
+To make it simple, when comparing two vcf files TPs coming from the same individual, we compare the variants of the two vcf. To do this, we use the files with the variants that pass the LOTUS and GATK filters (```passed.vcf``` file).
+
+In the case of LOTUS the files containing the variants that do not pass these filters are also used (```filtered.vcf``` file). We can then consider two types of variants: 
+  1. the so-called *strong* variants (**S** in the figure below) are those which are found in the ```passed.vcf``` files for a TP but not in the variants which do not pass the filters (```filtered.vcf```) in the other TP.
+  2. the so-called *weak* variants (**W** in the figure below) are those that pass the filters (```passed.vcf```) in one of the two TP but are also found in the filtered variants (```filtered.vcf```) of the other TP. These variants are said to be *weak* because their specificity at one of the two TP is more likely to result from errors linked to filters that are too strict or to poor sequencing of the variant zone in one of the two TP. 
+  
+Finally, the common variants (**C** in the figure below) in the two ```filtered.vcf``` files are not taken into account because they are either germline variants, or variants that do not evolve over time and therefore theoretically have less impact on the evolution from TP*n* to TP*n+1*.
+
+At the gene level, we can then calculate a *percentage of weakness* for the genes impacted by one or several *weak* and/or *strong* variants (see *%gene weakness* figure below).
+This *percentage of weakness* (from 100% if all variants are weak to 0% if all variants are strong) gives us additional information on the reliability of the impacted genes.
+
+<p align="center">
+  <img width="750" src="../img/weakness.png">
+</p>
 
 ---
 
