@@ -1,4 +1,4 @@
-# Description of the inputs/outputs needed to understand LOTUS
+# Description of the input/output files
 
 ## Filter
 
@@ -48,8 +48,6 @@ The ```passed.vcf``` is mandatory but the ```filtered.vcf``` is optional. The ``
 Genome fasta file with the extensions : *.fasta*, *.fa* or *.fan*. This file must be the same one used to align the raw data. 
 or pickle (.pk, .pickle) file created after the first run. It is used to retrieve the flanking bases when creating the mutational profile graph detailing the snp types found among the variants passing the filters.
 
-
-
 ### Outputs
 
 - **Stats.txt file**
@@ -83,7 +81,7 @@ SNP : X      DNP : X      TNP : X      NP : X
 INDEL : X      INSERTION : X, DELETION : X
 ```
 
-:warning: The filtered part will only be present if the filtered.vcf file is passed to the *summarise* module.
+:warning: The filtered part will only be present if the ```filtered.vcf``` file is passed to the *summarise* module.
 
 - **Mutated genes file**
 
@@ -98,20 +96,17 @@ It contains the list of genes impacted by the variants in the passed file (varia
   - ```Chromosome```: Chromosome on which the gene is located.
   - ```Position(s)```: Variants positions in the same order that *Ref* and *Alt variant(s)*.
 
-
 - **Mutational SNP profile files**
 
 The mutational SNP profile file is a graphical file representing the percentage of mutations in each snp plotted according to its sequence context. This graphic is output in two image formats: *svg* and *png*. The default output for this graph is in ```profile.svg|.png``` but the *-p* option allows you to change the output name.
 
 In addition to the graphical output the associated percentages and counts for each snp context are also output in a file named as the graphical output but with the *.tsv* suffix, i.e. ```profile.tsv```.
 
-
-
 - **Indel size profile files**
 
 The indel size profile file is a graphical file representing the percentage of insertions/deletions plotted according to their size. As with the mutational profile, this graph is output in two image formats: *svg* and *png*. The default output for this graph is ```indel.svg|.png``` but the *-i* option allows you to change the name of the output.
 
-In addition to the graphical output, the percentages and associated numbers for each indel size are also produced in two files separating insertions from deletions. These files are named like the graphical output but with the suffix *.insertion.tsv* and *.deletion.tsv*, i.e. ```indel.deletion.tsv``` and ```indel.insertion.tsv```.
+In addition to the graphical output, the percentages and associated numbers for each indel size are also produced in two files separating insertions from deletions. These files are named like the graphical output but with the *.insertion.tsv* and *.deletion.tsv* suffix, i.e. ```indel.deletion.tsv``` and ```indel.insertion.tsv```.
 
 ---
 
@@ -119,6 +114,58 @@ In addition to the graphical output, the percentages and associated numbers for 
 
 ### Intputs
 
+- **Configuration file**
+
+The configuration file is the only file needed to run the compare module. 
+
+This configuration file must contain the path to the ```filtered.vcf``` and ```passed.vcf``` files (outputs of the *filter* module) for the different time points (**TP**) of a sample. In addition to that it also takes the path to the ```profile.tsv```,```indel.insertion.tsv``` and ```indel.deletion.tsv``` files (outputs of the *summary* module).
+
+An example of a configuration file is available [here](https://github.com/gsiekaniec/LOTUS/blob/main/example_config.txt). It looks like this:
+```
+3
+
+### VCF files ###
+# Filtered.vcf files (from LOTUS filter)
+
+- filtered:
+/path/to/file1.filtered.vcf
+/path/to/file2.filtered.vcf
+/path/to/file3.filtered.vcf
+
+# Corresponding Passed.vcf files in the same order (from LOTUS filter)
+
+- pass:
+/path/to/file1.pass.vcf
+/path/to/file2.pass.vcf
+/path/to/file3.pass.vcf
+
+### TSV files ### (same order than vcf files)
+# snp profile tsv 
+
+- profile:
+/path/to/profile1.tsv
+/path/to/profile2.tsv
+/path/to/profile3.tsv
+
+# insertion count tsv (None if no file)
+
+- insertion:
+/path/to/insertion1.tsv
+None
+/path/to/insertion3.tsv
+
+# deletion count tsv (None if no file)
+
+- deletion:
+/path/to/deletion1.tsv
+/path/to/deletion2.tsv
+None
+```
+
+The first line containing a number (here 3) corresponds to the number of time points for the treated sample.
+
+:warning: Sometimes it may appear that there is no insertion or deletion in a sample. In this case, it is possible to put *None* in the corresponding indel path and no indel graph will be produced for comparison with this TP.
+ 
 
 ### Outputs
 
