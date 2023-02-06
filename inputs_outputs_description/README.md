@@ -11,17 +11,19 @@ Raw vcf file from Funcotator
 - **Filters**
 
 The basic filters of LOTUS are the following:
-  - Median base variant quality (MBQ) ≥ 20.
-  - Variant coverage (DP) ≥ 10.
-  - Fractions of variant in the tumour (AF) ≥ 0.1.
-  - Variant depths (AD) ≥ 5.
-  - Population variant frequencies (10<sup>-POPAF</sup>) < 1e-5.
-  - At least one paired read to support a variant (MFRL) > 0. It is possible to skip this filter by using the ```--unpaired``` option which indicates that the original reads are not paired.
-  - A variant must be in a coding region (RNA or protein) and non-silent (Funcotator information). The list of Funcotator annotations allowing to keep a variant is the following: X, Y, Z, AA.
+  1. Median base variant quality (MBQ) ≥ 20.
+  2. Variant coverage (DP) ≥ 10.
+  3. Fractions of variant in the tumour (AF) ≥ 0.1.
+  4. Variant depths (AD) ≥ 5.
+  5. Population variant frequencies (10<sup>-POPAF</sup>) < 1e-5.
+  6. At least one paired read to support a variant (MFRL) > 0. It is possible to skip this filter by using the ```--unpaired``` option which indicates that the original reads are not paired.
+  7. A variant must be in a coding region (RNA or protein) and non-silent (Funcotator information). The list of Funcotator annotations allowing to keep a variant is the following: ```MISSENSE```, ```NONSENSE```, ```NONSTOP```, ```RNA```, ```LINCRNA```, ```START_CODON_SNP```, ```DE_NOVO_START_IN_FRAME```, ```DE_NOVO_START_OUT_FRAME```, ```IN_FRAME_DEL```, ```IN_FRAME_INS```, ```FRAME_SHIFT_INS```, ```FRAME_SHIFT_DEL```, ```START_CODON_INS```, ```START_CODON_DEL```, ```DE_NOVO_START_IN_FRAME```, ```DE_NOVO_START_OUT_FRAME``` and finally ```SPLICE SITE``` associated with one of the other annotations. These variants are considered to have a potential functional impact, the others are annotated as ```NOT_FUNCTIONAL``` and are not saved. 
 
-These filters can be modified in order to filter the varaint in a more or less stringent way.
+Except for the Funcotator annotations (7), these filters can be modified to filter the variant in a more or less stringent way.
 
 ### Outputs
+
+It is advisable to use the -o option of LOTUS filter in order to choose a prefix corresponding to your samples, by default the output files will be named ```output.filtered.vcf``` and ```output.passed.vcf```
 
 - **Filtered vcf file** 
 
@@ -31,14 +33,53 @@ The ```filtered.vcf``` file is a vcf file that contains the variants of the orig
 
 The ```passed.vcf``` file is a vcf file that contains only the variants passing the filters. 
 
+---
 
 ## Summarise
 
 ### Intputs
 
+- **vcf file from filter module**
+
+The ```passed.vcf``` is mandatory but the ```filtered.vcf``` is optional. The ```filtered.vcf``` file is used to add information on the total number of variants as well as details of those not passing the ```NOT_FUNCTIONAL``` (LOTUS), ```germline``` (GATK) and ```panel_of_normals``` (GATK) filters. 
+
+-**reference genome fasta file**
+
+Genome fasta file with the extensions : *.fasta*, *.fa* or *.fan*. This file must be the same one used to align the raw data. 
+or pickle (.pk, .pickle) file created after the first run. It is used to retrieve the flanking bases when creating the mutational profile graph detailing the snp types found among the variants passing the filters.
+
+
 
 ### Outputs
 
+- **stats.txt file**
+
+```
+########################### filtered.vcf ###########################
+###########################
+Total variants : X
+###########################
+germline: X      |      PON: X      |      not functional: X
+germline & PON: X      |      germline &  not functional: X      |      PON &  not functional: X
+germline & PON & not functional: X
+
+########################### passed.vcf ###########################
+###########################
+PASS : X
+###########################
+---
+variants : X
+---
+SNP : X       DNP : X TNP : X NP : X
+INDEL : X      INSERTION : X, DELETION : X
+---
+Impacted genes : X (list in MutatedGenes.xlsx)
+---
+SNP : X      DNP : X      TNP : X      NP : X
+INDEL : X      INSERTION : X, DELETION : X
+```
+
+---
 
 ## Compare
 
@@ -47,6 +88,8 @@ The ```passed.vcf``` file is a vcf file that contains only the variants passing 
 
 ### Outputs
 
+
+---
 
 ## Merge
 
