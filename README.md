@@ -78,7 +78,7 @@ For that there are many ways to proceed, we advise here to use the [GATK best pr
 
 ### Main purpose
 
-Simple filter on the vcf file from Funcotator using multiple informations to keep only trustworthy somatic variants.
+Simple filters on the vcf file from Funcotator using multiple informations to keep only trustworthy somatic variants.
 
 ### Inputs/Outputs [(get more details)](https://github.com/gsiekaniec/LOTUS/tree/main/inputs_outputs_description#filter)
 
@@ -108,7 +108,7 @@ Simple filter on the vcf file from Funcotator using multiple informations to kee
 
 ### Main purpose
 
-Allows to extract a lot of statistics from a vcf file.
+The *summarise* module provides information on the variants from the vcf files, including statistics on the number and nature of variants passing or not passing the filters, graphs representing the mutational profiles or the size of the indels and the list of impacted genes and their tumor burden.
 
 ### Inputs/Outputs [(get more details)](https://github.com/gsiekaniec/LOTUS/tree/main/inputs_outputs_description#summarise)
 
@@ -137,7 +137,7 @@ Allows to extract a lot of statistics from a vcf file.
 
 ### Main purpose
 
-Compare multiple vcf files longitudinally.
+The *compare* module allows a longitudinal comparative genomic analysis of the vcf files of a sample in order to determine the variants present at a time point (TP*n*) and disappearing/appearing at a time point (TP*n+1*) as well as the genes impacted by these variants.
 
 ### Inputs/Outputs [(get more details)](https://github.com/gsiekaniec/LOTUS/tree/main/inputs_outputs_description#compare)
 
@@ -166,7 +166,7 @@ Compare multiple vcf files longitudinally.
 
 ### Main purpose
 
-The merge module allows to have an overview of all the samples, it allows to group and compare all TP*n* against all TP*n+1*.
+The *merge* module allows to have an overview of all the samples, it allows to group and compare all TP*n* against all TP*n+1*.
 
 ### Inputs/Outputs [(get more details)](https://github.com/gsiekaniec/LOTUS/tree/main/inputs_outputs_description#merge)
 
