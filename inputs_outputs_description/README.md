@@ -312,7 +312,6 @@ As for the *compare* module, it is possible to use the ```--additional_gene_info
        
 > __Note__ Informations from these different databases is available in the [LOTUS_external_files](https://github.com/gsiekaniec/LOTUS/blob/main/LOTUS_external_files/Lotus_ExternalBases_202301.xlsx).
 
-
 #### Chromosomes plot
 
 The chromosomes plot represents the mutated genes on the cytoband maps of the chromosomes. The curves above the chromosomes refer to the number of variants along the chromosome (in $\color[RGB]{185,105,0}orange$ line for TP*n* and $\color[RGB]{0,0,0}black$ for TP*n+1*). The curve below the chromosome represents the number of samples (in $\color[RGB]{0,128,255}blue$ line). The scale on the left fits the maximum found on each chromosome.
@@ -323,17 +322,25 @@ In order to obtain the curves, *merge* LOTUS starts from a list of impacted gene
 
 > __Warning__ Using too large step number will result in a large loss of accuracy and too small step number will provide a more detailed but potentially less readable visualization and be much more complex to compute in terms of time and memory.   
 
-
 ## Gene Ontology Enrichment Analysis
 
 In addition to the outputs presented above, the three modules *summarise*, *compare* and *merge* offer the possibility to request a GOEA based on biological process terms from the output gene lists using the ```--enrichment``` option. 
 
 These GOEAs are performed using the ToppGene[^7] and PANTHER[^8] APIs and output in files suffixed with ```Panther_enrichment.tsv|.xlsx``` and ```ToppGene_enrichment.tsv|.xlsx```.
 
-The information contained in the columns of these files is as follows:
+The information contained in the columns of the ```Panther_enrichment.tsv|.xlsx``` files is as follows:
+  - ```Id```: Gene Ontology identifier.
+  - ```Biological Process name```: Name of the biological process.
+  - ```P-value```: pvalue for this biological process related to this request.
+  - ```FDR```: false discovery rate for this biological process related to this request.
+  - ```Number of genes involved```: Number of genes from the request involved in the biological process.
 
-XXX
-
+The information contained in the columns of the ```ToppGene_enrichment.tsv|.xlsx``` files is as follows:
+  - ```Id```: Gene Ontology identifier.
+  - ```Biological Process name```: 
+  - ```P-value```: 
+  - ```FDR```: 
+  - ```Number of genes involved```: 
 
 [^7]: [Chen,J. et al. (2009) ToppGene Suite for gene list enrichment analysis and candidate gene prioritization. Nucleic Acids Res., 37, W305-11.](https://academic.oup.com/nar/article/37/suppl_2/W305/1149611?login=true)
 [^8]: [Mi,H. et al. (2019) Protocol Update for large-scale genome and gene function analysis with the PANTHER classification system (v.14.0). Nat. Protoc., 14, 703-721.)](https://www.nature.com/articles/s41596-019-0128-8)
