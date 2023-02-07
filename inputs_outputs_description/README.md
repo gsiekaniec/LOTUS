@@ -187,7 +187,7 @@ This ```TPn_TPn+1_compared.MutatedGenes.tsv|.xlsx``` file contains the list of i
   - ```Gene position start```: Gene start position, extract from the reference genome annotation file (gff3).
   - ```Gene position end```: Gene end position, extract from the reference genome annotation file (gff3).
   - ```Tumour burden (symmetrical difference)```: Total number of different variants impacting the gene. Only variants specific to TP*n* or TP*n+1* are considered. Variants common to both TPs are not taken into account.
-  - ```Gene weakness (in %)```: Percentage of gene weakness (see the [Gene weakness](https://github.com/gsiekaniec/LOTUS/blob/main/inputs_outputs_description/README.md#gene-weakness) part below)
+  - ```Gene weakness (in %)```: Percentage of gene weakness (see the [Gene weakness](https://github.com/gsiekaniec/LOTUS/blob/main/inputs_outputs_description/README.md#gene-weakness) part below).
   - ```TPn```: Number of different variants impacting the gene and specific to TP*n*.
   - ```g.TPn```: Variants representation relative to the linear genomic reference sequence specific to TP*n* ([HGVS](https://varnomen.hgvs.org/) nomenclature). 
   - ```c.TPn```: Variants representation relative to the coding DNA reference sequence specific to TP*n* ([HGVS](https://varnomen.hgvs.org/) nomenclature).
@@ -285,8 +285,22 @@ To create the graph showing the impacted genes on the cytoband maps of the chrom
 
 The default value of this file is ```union.MutatedGenes.tsv|.xlsx``` by the **-o** option allow to change this name.
 It contains the list of common impacted genes for all samples given in the configuration file. For each impacted gene a large amount of information can be found such as :
-
-XXX
+  - ```Gene```: Gene name ([HGNC](https://www.genenames.org/) symbol).
+  - ```Chromosome```: Chromosome on which the gene is located.
+  - ```Gene position start```: Gene start position, extract from the reference genome annotation file (gff3).
+  - ```Gene position end```: Gene end position, extract from the reference genome annotation file (gff3).
+  - ```Nb samples```: Number of samples in which the gene is impacted.
+  - ```Sample names```: Name of the samples in which this gene is impacted.
+  - ```Tumour burden union```: Number corresponding to the union of the variants having an impact on the gene for all the samples in TP*n* and TP*n+1*. If there are $x$ variants in TP*n* and $y$ variants in TP*n+1* for all the samples, this number can be smaller than the sum $x+y$ because some variants specific to TP*n* in a sample can be present in TP*n+1* in another sample (but not in the same sample because otherwise the variant would have been considered as common between TP*n* and TP*n+1* by the module *compare*).
+  - ```Mean gene weakness (in %)```: Mean percentage of gene weakness across all sample in which this gene is impacted (see the [Gene weakness](https://github.com/gsiekaniec/LOTUS/blob/main/inputs_outputs_description/README.md#gene-weakness) part).
+  - ```Nb Mutation TPn```: Number corresponding to the union of the variants impacting the gene in TP*n* for all sample in which this gene is impacted.
+  - ```g.TPn union```: Union of the variants representation relative to the linear genomic reference sequence at TP*n* for all sample in which this gene is impacted ([HGVS](https://varnomen.hgvs.org/) nomenclature). 
+  - ```c.TPn union```: Union of the variants representation relative to the coding DNA reference sequence at TP*n* for all sample in which this gene is impacted ([HGVS](https://varnomen.hgvs.org/) nomenclature).
+  - ```p.TPn union```: Union of the variants representation relative to the protein reference sequence at TP*n* for all sample in which this gene is impacted ([HGVS](https://varnomen.hgvs.org/) nomenclature).
+  - ```Nb Mutation TPn+1```: Number corresponding to the union of the variants impacting the gene in TP*n+1* for all sample in which this gene is impacted.
+  - ```g.TPn+1 union```: Union of the variants representation relative to the linear genomic reference sequence at TP*n+1* for all sample in which this gene is impacted ([HGVS](https://varnomen.hgvs.org/) nomenclature).
+  - ```c.TPn+1 union```: Union of the variants representation relative to the coding DNA reference sequence at TP*n+1* for all sample in which this gene is impacted ([HGVS](https://varnomen.hgvs.org/) nomenclature).
+  - ```p.TPn+1 union```: Union of the variants representation relative to the protein reference sequence at TP*n+1* for all sample in which this gene is impacted ([HGVS](https://varnomen.hgvs.org/) nomenclature).
 
 As for the *compare* module, it is possible to use the ```--additional_gene_information``` option to display additional human cancer specific information from external databases for each gene:
   - ```CancerHotSpot```: Informations from the [Cancer HotSpots](https://www.cancerhotspots.org/)[^1] database.
@@ -301,12 +315,13 @@ As for the *compare* module, it is possible to use the ```--additional_gene_info
 
 #### Chromosomes plot
 
-The ```chromosomes.svg``` plot represents the mutated genes on the cytoband maps of the chromosomes. The curves above the chromosomes refer to the number of variants along the chromosome (in $\color[RGB]{185,105,0}orange$ line for TP*n* and $\color[RGB]{0,0,0}black$ for TP*n+1*). The curve below the chromosome represents the number of samples (in $\color[RGB]{0,128,255}blue$ line). The scale on the left fits the maximum found on each chromosome.
+The chromosomes plot represents the mutated genes on the cytoband maps of the chromosomes. The curves above the chromosomes refer to the number of variants along the chromosome (in $\color[RGB]{185,105,0}orange$ line for TP*n* and $\color[RGB]{0,0,0}black$ for TP*n+1*). The curve below the chromosome represents the number of samples (in $\color[RGB]{0,128,255}blue$ line). The scale on the left fits the maximum found on each chromosome.
+
+This graph is output in two image formats: *svg* and *png* and the default output for this graphic is ```chromosomes.svg|.png``` but it is possible to use the ```-co``` option to change this output name.
 
 In order to obtain the curves, *merge* LOTUS starts from a list of impacted genes associated with (1) their number of variants (specific to TP*n* or TP*n+1*) or (2) the number of samples with this impacted gene. This information is then linked to the positions of the different genes. Therefore, a sliding window is used to traverse the chromosomes positions and the height of the curve at a point corresponds to the set of counts (variants or samples) for the genes overlapping this sliding window. The step for the sliding window is $500 000$ by default but can be increased or decreased using the **-step** option to get a more or less precise overview of the impacted chromosome areas. The step of the slidding windows also determines the size of the observer window which is equal to $2*step$.
 
 > __Warning__ Using too large step number will result in a large loss of accuracy and too small step number will provide a more detailed but potentially less readable visualization and be much more complex to compute in terms of time and memory.   
-
 
 
 ## Gene Ontology Enrichment Analysis
