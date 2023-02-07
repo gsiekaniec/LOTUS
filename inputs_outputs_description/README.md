@@ -82,7 +82,7 @@ SNP : X      DNP : X      TNP : X      NP : X
 INDEL : X      INSERTION : X, DELETION : X
 ```
 
-:warning: The filtered part will only be present if the ```filtered.vcf``` file is passed to the *summarise* module.
+> __Warning__ The filtered part will only be present if the ```filtered.vcf``` file is passed to the *summarise* module.
 
 #### Mutated genes file
 
@@ -165,7 +165,7 @@ None
 
 The first line containing a number (here 3) corresponding to the number of time points for the treated sample. In the case where more than two TPs are given the files are compared two by two in temporal order. Thus the first TP is compared to the second, then the second is compared to the third and so on.
 
-:warning: Sometimes it may appear that there is no insertion or deletion in a sample. In this case, it is possible to put *None* in the corresponding indel path and no indel graph will be produced for comparison with this TP.
+> __Warning__ Sometimes it may appear that there is no insertion or deletion in a sample. In this case, it is possible to put *None* in the corresponding indel path and no indel graph will be produced for comparison with this TP.
  
 #### Reference genome annotation file
  
@@ -278,7 +278,7 @@ For the *hg38* version of the human genome, this file can be found [here](https:
 
 ### Outputs
 
-:warning: The ```--weakness_threshold``` or ```-w``` option allows you to take a gene into account only if its average percentage of weakness over all samples is less than or equal to the threshold passed to the option. By default this threshold is set to *100* but lowering this threshold allows to obtain more robust results on the remaining genes. Therefore, this option impacts all the outputs of the merge module.
+> __Note__ The **--weakness_threshold** or **-w** option allows you to take a gene into account only if its average percentage of weakness over all samples is less than or equal to the threshold passed to the option. By default this threshold is set to *100* but lowering this threshold allows to obtain more robust results on the remaining genes. Therefore, this option impacts all the outputs of the merge module.
 
 #### Mutated genes file
 
@@ -289,6 +289,11 @@ XXX
 
 #### Chromosomes plot
 
+The ```chromosomes.svg``` plot represents the mutated genes on the cytoband maps of the chromosomes. The curves above the chromosomes refer to the number of variants along the chromosome (in $\color[RGB]{185,105,0}orange$ line for TP*n* and $\color[RGB]{0,0,0}black$ for TP*n+1*). The curve below the chromosome represents the number of samples (in $\color[RGB]{0,128,255}blue$ line). The scale on the left fits the maximum found on each chromosome.
+
+In order to obtain the curves, *merge* LOTUS starts from a list of impacted genes associated with (1) their number of variants (specific to TP*n* or TP*n+1*) or (2) the number of samples with this impacted gene. This information is then linked to the positions of the different genes. Therefore, a sliding window is used to traverse the chromosomes positions and the height of the curve at a point corresponds to the set of counts (variants or samples) for the genes overlapping this sliding window. The step for the sliding window is $500 000$ by default but can be increased or decreased using the **-step** option to get a more or less precise overview of the impacted chromosome areas. The step of the slidding windows also determines the size of the observer window which is equal to $2*step$.
+
+> __Warning__ Using too large step number will result in a large loss of accuracy and too small step number will provide a more detailed but potentially less readable visualization and be much more complex to compute in terms of time and memory.   
 
 
 
