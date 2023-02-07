@@ -110,6 +110,8 @@ Simple filter on the vcf file from Funcotator using multiple informations to kee
 
 Allows to extract a lot of statistics from a vcf file.
 
+### Inputs/Outputs [(get more details)](https://github.com/gsiekaniec/LOTUS/tree/main/inputs_outputs_description#summarise)
+
 <p align="center">
   <img width="350" src="img/summarise_module.png">
 </p>
@@ -129,10 +131,6 @@ Allows to extract a lot of statistics from a vcf file.
 
 </details>
 
-### Inputs
-
-### Outputs
-
 ----
 
 ## 🧬 Compare
@@ -140,6 +138,8 @@ Allows to extract a lot of statistics from a vcf file.
 ### Main purpose
 
 Compare multiple vcf files longitudinally.
+
+### Inputs/Outputs [(get more details)](https://github.com/gsiekaniec/LOTUS/tree/main/inputs_outputs_description#compare)
 
 <p align="center">
   <img width="500" src="img/compare_module.png">
@@ -160,10 +160,6 @@ Compare multiple vcf files longitudinally.
 | --profile_proportion_off | Get different y-axis for the snp profile plot. Useful when one of the two axes is flattened by the size of the other one. | False |
 </details>
 
-### Inputs
-
-### Outputs
-
 ----
 
 ## 🧬 Merge
@@ -177,8 +173,6 @@ The merge module allows to have an overview of all the samples, it allows to gro
 <p align="center">
   <img width="400" src="img/merge_module.png">
 </p>
-
-
 
 <details><summary>Parameters</summary>
 
@@ -208,9 +202,7 @@ Currently LOTUS allows to create an UpsetPlot[^2] representing for each sample s
 
 </details>
 
-
 ----
-
 
 # Unit testing
 
