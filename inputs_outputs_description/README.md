@@ -177,7 +177,7 @@ As for the genome fasta file in the *summarise* module, during the first run of 
 
 #### Mutated genes file
 
-The default value of this file is ```TPn_TPn+1_compared.MutatedGenes.tsv|.xlsx``` where TP*n* and TP*n+1* are the name of the first and second filtered.vcf file, e.g. if your vcf file for the first TP is file1.filtered.vcf and the name for the second TP vcf file is file2.filtered.vcf, the final output will be ```file1_file2_compared.MutatedGenes.tsv|.xlsx```. However is possible to replace the ```compared``` part by using the **-o** option.
+The default value of this file is ```TPn_TPn+1_compared.MutatedGenes.tsv|.xlsx``` where TP*n* and TP*n+1* are the name of the first and second ```filtered.vcf``` file, e.g. if your vcf file for the first TP is ```file1.filtered.vcf``` and the name for the second TP vcf file is ```file2.filtered.vcf```, the final output will be ```file1_file2_compared.MutatedGenes.tsv|.xlsx```. However is possible to replace the ```compared``` part by using the **-o** option.
 
 This ```TPn_TPn+1_compared.MutatedGenes.tsv|.xlsx``` file contains the list of impacted genes specific to TP*n* or TP*n+1*. The details of the information provided for each gene are as follows:
   - ```Gene symbol```: Gene name ([HGNC](https://www.genenames.org/) symbol).
@@ -233,14 +233,24 @@ This *percentage of weakness* (from 100% if all variants are weak to 0% if all v
 </p>
 
 
-#### Mutational SNP profile files
+#### Mutational SNP profile comparison files
 
-The mutational SNP profile file is a graphical file representing the percentage of mutations in each snp plotted according to its sequence context. This graphic is output in two image formats: *svg* and *png*. The default output for this graph is in ```profile.svg|.png``` but the ```-p``` option allows you to change the output name.
+The comparison file of mutational SNP profiles between TP*n* and TP*n+1* is a graphical file created using the ```profile.tsv``` file from the *sumarise* module for TP*n* and TP*n+1*. As for the mutation profile of the *summarise* module, this graph is edited in two image formats: *svg* and *png*. 
 
-In addition to the graphical output the associated percentages and counts for each snp context are also output in a file named as the graphical output but with the *.tsv* suffix, i.e. ```profile.tsv```.
+The default value of this file is ```profile_TPn_TPn+1.svg|.png``` where TP*n* and TP*n+1* are the name of the first and second ```filtered.vcf``` file, e.g. if your vcf file for the first TP is ```file1.filtered.vcf``` and the name for the second TP vcf file is ```file2.filtered.vcf```, the final output will be ```profile_file1_file2.svg|.png```. However is possible to replace the ```profile``` part by using the **-p** option.
 
-#### Indel size profile files
+In addition this graphical comparison output, a concatenation of the percentages and associated numbers for each snp context from the two TPs is also saved in a file named like the graphical output but with the suffix *.tsv*, i.e. ```profile_TPn_TPn+1.tsv```.
 
+#### Indel size profile comparison files
+
+The indel size profile comparison file is a graphical file created from the ```indel.deletion.tsv``` and ```indel.insertion.tsv``` files of TP*n* and TP*n+1*. As for the mutational profile comparison, this graph is output in two image formats: *svg* and *png*. As well ,the default output for this graphic is ```indel_TPn_TPn+1.svg|.png``` where the ```-i``` option allows you to change the ```indel``` part of the output name.
+
+#### TP*n*/TP*n+1* specific vcf 
+
+As seen previously in the [Gene weakness](https://github.com/gsiekaniec/LOTUS/blob/main/inputs_outputs_description/README.md#gene-weakness) paragraph, the module compare has for first goal to separate the variants specific to TP*n* and those specific to TP*n+1*. Thus we obtain two vcf files named ```TPn_Tpn+1.passed.vcf``` and ```TPn+1_TPn.passed.vcf```. These files contain the variants, passing filters, specific to the first TP of the name and annotated with respect to the second TP.  The annotation consists in adding a ```VARIANT_TYPE``` field in the ```INFO``` column of the vcf. This ```VARIANT_TYPE``` field can take three values for a variant 
+  1. ```common```: if the variant d TP*n* is also present in the file ```passed.vcf``` TP*n+1*.
+  2. ```weak```: if the variant d TP*n* is absent in the file ```passed.vcf``` of TP*n+1* but present in the file ```filtered.vcf``` of TP*n+1*.
+  3. ```strong```: if the variant d TP*n* is absent in the file ```passed.vcf``` and ```filtered.vcf``` of TP*n+1*.
 
 ---
 
