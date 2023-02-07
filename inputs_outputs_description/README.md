@@ -169,7 +169,9 @@ The first line containing a number (here 3) corresponding to the number of time 
  
 #### Reference genome annotation file
  
-The reference genome annotation file is a *gff3* file containing informations about genes presents in the genome. In the case of the *hg38* version of the human genome, this file can be found [here](https://ftp.ensembl.org/pub/release-108/gff3/homo_sapiens/) or in the [LOTUS_external_files](https://github.com/gsiekaniec/LOTUS/blob/main/LOTUS_external_files/Homo_sapiens.GRCh38.108.chr.gff3.gz) directory.
+The reference genome annotation file is a *gff3* file containing informations about genes presents in the genome. 
+
+> __Note__ In the case of the *hg38* version of the human genome, this file can be found [here](https://ftp.ensembl.org/pub/release-108/gff3/homo_sapiens/) or in the [LOTUS_external_files](https://github.com/gsiekaniec/LOTUS/blob/main/LOTUS_external_files/Homo_sapiens.GRCh38.108.chr.gff3.gz) directory.
 
 As for the genome fasta file in the *summarise* module, during the first run of the *compare* module, the information from the reference genome annotation file is serialized and saved using [pickle](https://docs.python.org/3/library/pickle.html) (*.pk*, *.pickle*). The *.pk* file created can be used later to retrieve information more quickly without parsing the entire gff3 file, e.g. to process another TP or sample. :warning: When using a *.pk* file instead of the original file the ```--pickle_gff3``` option must be specified.
 
@@ -196,7 +198,6 @@ This ```TPn_TPn+1_compared.MutatedGenes.tsv|.xlsx``` file contains the list of i
   - ```p.TPn+1```: Variants representation relative to the protein reference sequence specific to TP*n+1* ([HGVS](https://varnomen.hgvs.org/) nomenclature).
 
 In addition to the above information, it is possible, by adding the ```--additional_gene_information``` option, to display additional human cancer specific information from external databases for each gene (blank if no informations for a gene):
-
   - ```CancerHotSpot```: Informations from the [Cancer HotSpots](https://www.cancerhotspots.org/)[^1] database.
   - ```CIViC```: Informations from the [Clinical Interpretation of Variants in Cancer](https://civicdb.org/)[^2] database.
   - ```COSMIC```: Informations from the [Catalogue Of Somatic Mutations In Cancer](https://cancer.sanger.ac.uk/cosmic)[^3] database.
@@ -204,7 +205,7 @@ In addition to the above information, it is possible, by adding the ```--additio
   - ```IntOGen```: Informations from the [Integrative Onco Genomics](https://www.intogen.org/)[^5] database.
   - ```TSGene 2.0```: Informations from the [Tumor suppressor gene database](https://bioinfo.uth.edu/TSGene/)[^6] database.
        
-Informations from these different databases is available in the [LOTUS_external_files](https://github.com/gsiekaniec/LOTUS/blob/main/LOTUS_external_files/Lotus_ExternalBases_202301.xlsx).
+> __Note__ Informations from these different databases is available in the [LOTUS_external_files](https://github.com/gsiekaniec/LOTUS/blob/main/LOTUS_external_files/Lotus_ExternalBases_202301.xlsx).
        
 [^1]: [Matthew T. Chang *et al*. Accelerating Discovery of Functional Mutant Alleles in Cancer. Cancer Discov 1 February 2018; 8 (2): 174–183.](https://doi.org/10.1158/2159-8290.CD-17-0321)
 [^2]: [Griffith, M. *et al*. CIViC is a community knowledgebase for expert crowdsourcing the clinical interpretation of variants in cancer. Nat Genet 49, 170–174 (2017).](https://doi.org/10.1038/ng.3774)
@@ -274,7 +275,7 @@ sample3_TP1_TP2.MutatedGenes.tsv
 
 To create the graph showing the impacted genes on the cytoband maps of the chromosomes, the file containing the position of these cytobands must be provided, e.g. ```hg38_cytoband.tsv```. If this cytoband card file is not provided throught the **-cyto** option the ```chromosome.svg|.png``` plot will not be generated.
 
-For the *hg38* version of the human genome, this file can be found [here](https://genome.ucsc.edu/cgi-bin/hgTables) or provided with [LOTUS](https://github.com/gsiekaniec/LOTUS/blob/main/LOTUS_external_files/hg38_cytoband.tsv). 
+> __Note__ For the *hg38* version of the human genome, this file can be found [here](https://genome.ucsc.edu/cgi-bin/hgTables) or provided with [LOTUS](https://github.com/gsiekaniec/LOTUS/blob/main/LOTUS_external_files/hg38_cytoband.tsv). 
 
 ### Outputs
 
@@ -286,6 +287,17 @@ The default value of this file is ```union.MutatedGenes.tsv|.xlsx``` by the **-o
 It contains the list of common impacted genes for all samples given in the configuration file. For each impacted gene a large amount of information can be found such as :
 
 XXX
+
+As for the *compare* module, it is possible to use the ```--additional_gene_information``` option to display additional human cancer specific information from external databases for each gene:
+  - ```CancerHotSpot```: Informations from the [Cancer HotSpots](https://www.cancerhotspots.org/)[^1] database.
+  - ```CIViC```: Informations from the [Clinical Interpretation of Variants in Cancer](https://civicdb.org/)[^2] database.
+  - ```COSMIC```: Informations from the [Catalogue Of Somatic Mutations In Cancer](https://cancer.sanger.ac.uk/cosmic)[^3] database.
+  - ```DoCM```: Informations from the [Database of Curated Mutations](http://www.docm.info/)[^4] database.
+  - ```IntOGen```: Informations from the [Integrative Onco Genomics](https://www.intogen.org/)[^5] database.
+  - ```TSGene 2.0```: Informations from the [Tumor suppressor gene database](https://bioinfo.uth.edu/TSGene/)[^6] database.
+       
+> __Note__ Informations from these different databases is available in the [LOTUS_external_files](https://github.com/gsiekaniec/LOTUS/blob/main/LOTUS_external_files/Lotus_ExternalBases_202301.xlsx).
+
 
 #### Chromosomes plot
 
