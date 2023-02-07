@@ -23,7 +23,7 @@ Except for the Funcotator annotations (7), these filters can be modified to filt
 
 ### Outputs
 
-It is advisable to use the ```-o``` option of LOTUS filter in order to choose a prefix corresponding to your samples, by default the output files will be named ```output.filtered.vcf``` and ```output.passed.vcf```
+It is advisable to use the **-o** option of LOTUS filter in order to choose a prefix corresponding to your samples, by default the output files will be named ```output.filtered.vcf``` and ```output.passed.vcf```
 
 #### Filtered vcf file
 
