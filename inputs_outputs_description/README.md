@@ -6,7 +6,7 @@
 
 #### Raw vcf file
 
-Raw vcf file from Funcotator
+Raw vcf file from Funcotator.
 
 #### Filters
 
@@ -247,7 +247,7 @@ The indel size profile comparison file is a graphical file created from the ```i
 
 #### TP*n*/TP*n+1* specific vcf 
 
-As seen previously in the [Gene weakness](https://github.com/gsiekaniec/LOTUS/blob/main/inputs_outputs_description/README.md#gene-weakness) paragraph, the module compare has for first goal to separate the variants specific to TP*n* and those specific to TP*n+1*. Thus we obtain two vcf files named ```TPn_Tpn+1.passed.vcf``` and ```TPn+1_TPn.passed.vcf```. These files contain the variants, passing filters, specific to the first TP of the name and annotated with respect to the second TP.  The annotation consists in adding a ```VARIANT_TYPE``` field in the ```INFO``` column of the vcf. This ```VARIANT_TYPE``` field can take three values for a variant 
+As seen previously in the [Gene weakness](https://github.com/gsiekaniec/LOTUS/blob/main/inputs_outputs_description/README.md#gene-weakness) paragraph, the *compare* module separate the variants specific to TP*n* and those specific to TP*n+1*. Thus we obtain two vcf files named ```TPn_Tpn+1.passed.vcf``` and ```TPn+1_TPn.passed.vcf```. These files contain the variants, passing filters, specific to the first TP of the name and annotated with respect to the second TP.  The annotation consists in adding a ```VARIANT_TYPE``` field in the ```INFO``` column of the vcf. This ```VARIANT_TYPE``` field can take three values for a variant 
   1. ```common```: if the variant d TP*n* is also present in the file ```passed.vcf``` TP*n+1*.
   2. ```weak```: if the variant d TP*n* is absent in the file ```passed.vcf``` of TP*n+1* but present in the file ```filtered.vcf``` of TP*n+1*.
   3. ```strong```: if the variant d TP*n* is absent in the file ```passed.vcf``` and ```filtered.vcf``` of TP*n+1*.
@@ -260,9 +260,9 @@ As seen previously in the [Gene weakness](https://github.com/gsiekaniec/LOTUS/bl
 
 #### Configuration file
 
-The only file needed for the *merge* module is the configuration file (```.txt```).
+The only file needed for the *merge* module is the configuration file (```config.txt```).
 
-This configuration file contains the list of genes (```MutatedGenes.tsv``` or ```MutatedGenes.xlsx``` from the *compare* step) for all samples, one file per line (either xlsx or tsv). For example:
+This configuration file contains the list of genes (```MutatedGenes.tsv``` or ```MutatedGenes.xlsx``` from the *compare* step) for all samples, one file per line (either *.xlsx* or *.tsv*). For example:
 
 ``` 
 sample1_TP1_TP2.MutatedGenes.xlsx
@@ -272,19 +272,24 @@ sample3_TP1_TP2.MutatedGenes.tsv
 
 #### Cytoband file
 
-To create the graph showing the impacted genes on the cytoband maps of the chromosomes (```.tsv```), the file containing the position of these cytobands must be provided. 
+To create the graph showing the impacted genes on the cytoband maps of the chromosomes, the file containing the position of these cytobands must be provided, e.g. ```hg38_cytoband.tsv```. If this cytoband card file is not provided throught the **-cyto** option the ```chromosome.svg|.png``` plot will not be generated.
 
-For the *hg38* version of the human genome, this file can be found [here](https://genome.ucsc.edu/cgi-bin/hgTables) or provided with [LOTUS](https://github.com/gsiekaniec/LOTUS/blob/main/LOTUS_external_files/hg38_cytoband.tsv).
-
+For the *hg38* version of the human genome, this file can be found [here](https://genome.ucsc.edu/cgi-bin/hgTables) or provided with [LOTUS](https://github.com/gsiekaniec/LOTUS/blob/main/LOTUS_external_files/hg38_cytoband.tsv). 
 
 ### Outputs
 
+:warning: The ```--weakness_threshold``` or ```-w``` option allows you to take a gene into account only if its average percentage of weakness over all samples is less than or equal to the threshold passed to the option. By default this threshold is set to *100* but lowering this threshold allows to obtain more robust results on the remaining genes. Therefore, this option impacts all the outputs of the merge module.
+
 #### Mutated genes file
 
-The default value of this file is ```union.MutatedGenes.tsv|.xlsx```.
+The default value of this file is ```union.MutatedGenes.tsv|.xlsx``` by the **-o** option allow to change this name.
 It contains the list of common impacted genes for all samples given in the configuration file. For each impacted gene a large amount of information can be found such as :
 
 XXX
+
+#### Chromosomes plot
+
+
 
 
 ## Gene Ontology Enrichment Analysis
