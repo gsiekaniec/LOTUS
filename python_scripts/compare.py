@@ -13,7 +13,7 @@ from pathlib import Path
 from python_scripts.check_files import verif_input_vcf, verif_output, verif_input_config, verif_input, verif_supplementary_information_file
 from python_scripts.toppgene_api import ToppGene_GEOA
 from python_scripts.panther_api import Panther_GEOA
-from python_scripts.read_vcf import read_vcf
+from python_scripts.read_vcf import read_vcf, get_vcf_header
 from python_scripts.path_modification import true_stem
 from python_scripts.read_gff3 import read_gff3
 
@@ -77,6 +77,8 @@ def modify_variants_pass_and_get_genes(file1, file2, variants, weak, strong, gen
 	outfile = parent_name+'/'+str(true_stem(file1)+'_'+true_stem(file2)+'.passed.vcf')
 	genes = {}
 	with open(outfile, 'w') as o:
+		for line in get_vcf_header(file1):
+			o.write(line+'\n')
 		for line in read_vcf(file1):
 			if type(line) == type({}):
 				intfield = line

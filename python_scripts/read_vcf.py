@@ -56,3 +56,17 @@ def read_vcf(vcf_file, get_variant_idx = False):
 						idx['idx_format'] = line.index('FORMAT')
 						idx['idx_values'] = idx['idx_format']+1
 						yield (pos, idx)
+
+def get_vcf_header (vcf_file):
+	'''
+	Create a generator for the headers line of a vcf
+	'''
+	with open(vcf_file, 'r', encoding='latin-1') as vcf:
+		for line in vcf:
+			if line != '':
+				if line.startswith('#'):
+					yield(line.strip())
+	
+
+
+

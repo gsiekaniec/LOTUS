@@ -192,7 +192,7 @@ def get_values (record : str, strFieldSplit : dict, intIndex : dict, InfoFieldsT
 
 def create_new_records(record, strFieldSplit, intIndex, InfoFieldsToProcess, strCRLF, filter_mbq = 20, filter_dp = 10, filter_af = 0.1, filter_ad = 5, filter_popaf = 0.00001, paired: bool = True):
 	'''
-	Creation of new records containing new g-Lotus filter or without variants that dont pass filters  
+	Creation of new records containing new Lotus filter or without variants that dont pass filters  
         Input : record and dictionnary needed to find and split line fields
         Output : boolean (is the record pass filters) and the two new records
 	'''
@@ -312,7 +312,7 @@ def filter(vcf_file : str, logger : str, output : str, working_method : str, fil
 		strHeaderInfo = '##INFO'				# To locate info fields
 
 		# New lines to add in header
-		strNewFilter = '##FILTER=<ID=LOTUS_filter,Description="Mutation does not pass g-LOTUS filters">'
+		strNewFilter = '##FILTER=<ID=LOTUS_filter,Description="Mutation does not pass LOTUS filters">'
 		strNewInfo = '##INFO=<ID=OTHER_FILTER,Number=A,Type=String,Description="Other filter that dont pass.">'
 
 		# Line ending

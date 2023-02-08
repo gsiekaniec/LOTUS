@@ -27,10 +27,10 @@ empty_count_dictionary = {'T>G': {'ATA': 0, 'ATT': 0, 'ATC': 0, 'ATG': 0, 'TTA':
 ##############################
 
 gene_dictionary = {'LINC01410': [1, [1, 0, 0, 0, 0, 0], 'chr9', ['G'], [['T']], ['62801195']], 'PLXNB3': [1, [1, 0, 0, 0, 0, 0], 'chr6', ['C'], [['A']], ['143507595']], 'CADM3': [1, [0, 0, 0, 0, 1, 0], 'chr1', ['G'], [['GC']], ['159192649']]}
-dt = np.dtype([('Tumour burden', int),('Details (snp, dnp, tnp, np, insertion, deletion)', np.unicode_, 16),('Ref', np.unicode_, 16),('Alt variant(s)', np.unicode_, 16),('Chromosome', np.unicode_, 16),('Position(s)', np.unicode_, 16)])
+dt = np.dtype([('Tumour burden', int),('Details (snp, dnp, tnp, onp, ins, del)', np.unicode_, 16),('Ref', np.unicode_, 16),('Alt variant(s)', np.unicode_, 16),('Chromosome', np.unicode_, 16),('Position(s)', np.unicode_, 16)])
 
 df_gene = pd.DataFrame(np.array([(1, '0,0,0,0,1,0', 'G', 'GC', 'chr1', 159192649),(1,'1,0,0,0,0,0','G','T','chr9',62801195),(1,'1,0,0,0,0,0','C','A','chr6',143507595)], dtype=dt),
-		columns=['Tumour burden', 'Details (snp, dnp, tnp, np, insertion, deletion)', 'Ref', 'Alt variant(s)', 'Chromosome', 'Position(s)'], 
+		columns=['Tumour burden', 'Details (snp, dnp, tnp, onp, ins, del)', 'Ref', 'Alt variant(s)', 'Chromosome', 'Position(s)'], 
 		index=['CADM3', 'LINC01410', 'PLXNB3'])
 df_gene.index.name = 'Gene name'
 

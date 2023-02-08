@@ -59,7 +59,7 @@ def create_dataframe_from_gene(d):
 	Output : dataframe corresponding to the dictionary
 	'''
 	
-	col = ['Tumour burden','Details (snp, dnp, tnp, np, insertion, deletion)','Ref','Alt variant(s)','Chromosome','Position(s)'] 				# Columns name
+	col = ['Tumour burden','Details (snp, dnp, tnp, onp, ins, del)','Ref','Alt variant(s)','Chromosome','Position(s)'] 				# Columns name
 	id = 'Gene name'																# Index name
 	d = OrderedDict(sorted(d.items()))
 	df = pd.DataFrame.from_dict(d, orient='index', columns=col)
@@ -68,8 +68,8 @@ def create_dataframe_from_gene(d):
 	#Modification of the dataframe using a copy of it
 	
 	df2 = pd.DataFrame()
-	df2['Details (snp, dnp, tnp, np, insertion, deletion)'] = [','.join(map(str, l)) for l in df['Details (snp, dnp, tnp, np, insertion, deletion)']]
-	df['Details (snp, dnp, tnp, np, insertion, deletion)'] = df2['Details (snp, dnp, tnp, np, insertion, deletion)'].values
+	df2['Details (snp, dnp, tnp, onp, ins, del)'] = [','.join(map(str, l)) for l in df['Details (snp, dnp, tnp, onp, ins, del)']]
+	df['Details (snp, dnp, tnp, onp, ins, del)'] = df2['Details (snp, dnp, tnp, onp, ins, del)'].values
 	del df2
 	df2 = pd.DataFrame()
 	df2['Ref'] = [','.join(map(str, l)) for l in df['Ref']]
@@ -654,8 +654,8 @@ def write_stats(vcf_file : str, vcf_file_pass : str, out_stats : str, stats : Co
 			o.write(f'germline: {stats["germline"]}\t|\tPON: {stats["PON"]}\t|\tnot functional: {stats["non functional"]}\n')
 			o.write(f'germline & PON: {stats["germline+PON"]}\t|\tgermline &  not functional: {stats["germline+non functional"]}\t|\tPON &  not functional: {stats["PON+non functional"]}\n')
 			o.write(f'germline & PON & not functional: {stats["germline+PON+non functional"]}\n')
-		o.write(f'########################### {vcf_file_pass} ###########################\n')
-		o.write(f'\n###########################\nPASS : {stats["PASS"]}\n###########################\n')
+		o.write(f'\n########################### {vcf_file_pass} ###########################\n')
+		o.write(f'###########################\nPASS : {stats["PASS"]}\n###########################\n')
 		o.write(f'---\nvariants : {stats["SNP"][0]+stats["DNP"][0]+stats["TNP"][0]+stats["NP"][0]+stats["INSERTION"][0]+stats["DELETION"][0]}\n---\n')
 		o.write(f'SNP : {stats["SNP"][0]}\tDNP : {stats["DNP"][0]}\tTNP : {stats["TNP"][0]}\tNP : {stats["NP"][0]}\n')
 		o.write(f'INDEL : {stats["INSERTION"][0]+stats["DELETION"][0]}\tINSERTION : {stats["INSERTION"][0]}, DELETION : {stats["DELETION"][0]}\n')
