@@ -331,18 +331,32 @@ These GOEAs are performed using the ToppGene[^7] and PANTHER[^8] APIs and output
 The information contained in the columns of the ```Panther_enrichment.tsv|.xlsx``` files is as follows:
   - ```Id```: Gene Ontology identifier.
   - ```Biological Process name```: Name of the biological process.
-  - ```P-value```: pvalue for this biological process related to this request.
+  - ```P-value```: pvalue for the biological process related to this request.
   - ```FDR```: false discovery rate for this biological process related to this request.
   - ```Number of genes involved```: Number of genes from the request involved in the biological process.
 
 The information contained in the columns of the ```ToppGene_enrichment.tsv|.xlsx``` files is as follows:
   - ```Id```: Gene Ontology identifier.
-  - ```Biological Process name```: 
-  - ```P-value```: 
-  - ```FDR```: 
-  - ```Number of genes involved```: 
+  - ```Biological Process name```: Name of the biological process.
+  - ```P-value```: Uncorrected pvalue regardless of what cutoff and correction was used in the request.
+  - ```QValueFDRBH```: Corrected pvalue using the False Discovery Rate method described in Yoav Benjamini and Yosef Hochberg[^9].
+  - ```QValueFDRBY```: False Discovery Rate as described in Yoav Benjamini and Daniel Yekutieli [^10]. 
+  - ```QValueBonferroni```: Correction method described by C.E. Bonferroni (1936)[^11].
+  - ```TotalGenes```: Number of genes for all annotations in the category.
+  - ```GenesInTerm```: Number of genes in the specific annotation.
+  - ```GenesInQuery```: Number of genes supplied in the request.
+  - ```GenesInTermInQuery```: Intersection of *GenesInTerm* and *GenesInQuery*.
+  - ```URL```: Url to the [QuickGO](https://www.ebi.ac.uk/QuickGO/term/)[^12] Gene Ontology identifier.
+  - ```Genes```: list of genes in ```GenesInTermInQuery```.
+
 
 [^7]: [Chen,J. et al. (2009) ToppGene Suite for gene list enrichment analysis and candidate gene prioritization. Nucleic Acids Res., 37, W305-11.](https://academic.oup.com/nar/article/37/suppl_2/W305/1149611?login=true)
 [^8]: [Mi,H. et al. (2019) Protocol Update for large-scale genome and gene function analysis with the PANTHER classification system (v.14.0). Nat. Protoc., 14, 703-721.)](https://www.nature.com/articles/s41596-019-0128-8)
+[^9]: [Benjamini, Y. and Hochberg, Y. (1995). Controlling the False Discovery Rate: A Practical and Powerful Approach to Multiple Testing. Journal of the Royal Statistical Society: Series B (Methodological), 57: 289-300.](https://doi.org/10.1111/j.2517-6161.1995.tb02031.x)
+[^10]: [Benjamini, Y., & Yekutieli, D. (2001). The control of the false discovery rate in multiple testing under dependency. Annals of statistics, 1165-1188.](https://doi.org/10.1214/aos/1013699998)
+[^11]: Bonferroni CE (1936). Teoria statistica delle classi e calcolo delle probabilit. Pubblicazioni del R Istituto Superiore di Scienze Economiche e Commerciali di Firenze, 8:3-62.
+[^12]: [Binns, D. *et al*. QuickGO: a web-based tool for Gene Ontology searching, Bioinformatics, Volume 25, Issue 22, November 2009, Pages 3045–3046](https://doi.org/10.1093/bioinformatics/btp536)
+
+
 
 
