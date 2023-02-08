@@ -83,7 +83,7 @@ Simple filters on the vcf file from Funcotator using multiple informations to ke
 ### Inputs/Outputs [(get more details)](https://github.com/gsiekaniec/LOTUS/tree/main/inputs_outputs_description#filter)
 
 <p align="center">
-  <img width="350" src="img/filter_module.png">
+  <img width="400" src="img/filter_module.png">
 </p>
 
 <details><summary>Parameters</summary>
@@ -113,7 +113,7 @@ The *summarise* module provides information on the variants from the vcf files, 
 ### Inputs/Outputs [(get more details)](https://github.com/gsiekaniec/LOTUS/tree/main/inputs_outputs_description#summarise)
 
 <p align="center">
-  <img width="350" src="img/summarise_module.png">
+  <img width="450" src="img/summarise_module.png">
 </p>
 
 <details><summary>Parameters</summary>
