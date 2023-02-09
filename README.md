@@ -35,7 +35,21 @@ LOTUS is composed of the following four modules to process vcf files from GATK o
   </a>
 </p>
 
-----
+> __Note__
+> In order to simplify the output of the files it can be interesting to create a *results* folder with the following tree structure:
+```bash
+results
+  |
+  +-- filter
+  |
+  +-- summarise
+  |
+  +-- compare
+  |
+  +-- merge
+```
+
+---
 
 ## 🧬 Preliminary steps
 
@@ -78,6 +92,18 @@ Simple filters on the vcf file from Funcotator using multiple informations to ke
   
 </details>
 
+### Command line examples
+
+#### Basic
+```
+lotus filter -v {PATH_TO_VCF}/sample.funcotated.vcf -o {OUTPUT_PATH}/sample.vcf
+```
+
+#### Complete
+```
+lotus filter -v {PATH_TO_VCF}/sample_unpaired_reads.funcotated.vcf -o {OUTPUT_PATH}/sample.vcf -wm Direct --MBQ 20 --DP 10 --AF 0.1 --AD 5 --POPAF 0.00001 --unpaired
+```
+
 ----
 
 ## 🧬 Summarise
@@ -107,6 +133,18 @@ The *summarise* module provides information on the variants from the vcf files, 
 
 </details>
 
+### Command line examples
+
+#### Basic
+```
+lotus summarise -vp {FILTER_OUTPUT_PATH}/sample.passed.vcf -g ../hg38.fasta
+```
+
+#### Complete
+```
+lotus summarise -vp {FILTER_OUTPUT_PATH}/sample.passed.vcf -v {FILTER_OUTPUT_PATH}/sample.filtered.vcf -s {SUMMARISE_OUTPUT_PATH}/sample.stats.txt -p {SUMMARISE_OUTPUT_PATH}/sample_profile.svg -i {SUMMARISE_OUTPUT_PATH}/sample_indel.svg -g ../hg38.fasta -genes {SUMMARISE_OUTPUT_PATH}/sample.tsv --enrichment
+```
+
 ----
 
 ## 🧬 Compare
@@ -135,6 +173,18 @@ The *compare* module allows a longitudinal comparative genomic analysis of the v
 | --additional_gene_information | Add gene informations using the [LOTUS file](https://github.com/gsiekaniec/LOTUS/blob/main/LOTUS_external_files/Lotus_ExternalBases_202301.xlsx) containing information from tumorspecific database (CancerHotSpot, CIViC, COSMIC, DoCM, IntOGen and TSGene 2.0). | False |
 | --profile_proportion_off | Get different y-axis for the snp profile plot. Useful when one of the two axes is flattened by the size of the other one. | False |
 </details>
+
+### Command line examples
+
+#### Basic
+```
+lotus compare -c config_compare_sample.txt -gff3 LOTUS_external_files/Homo_sapiens.GRCh38.108.chr.gff3.gz
+```
+
+#### Complete
+```
+lotus compare -c config_compare_sample.txt -gff3 LOTUS_external_files/Homo_sapiens.GRCh38.108.chr.gff3.pk -i {COMPARE_OUTPUT_PATH}/sample_indel.svg -o {COMPARE_OUTPUT_PATH}/compare.tsv -p {COMPARE_OUTPUT_PATH}/sample_profile.svg --additional_gene_information --enrichment --pickle_gff3 --profile_proportion_off
+```
 
 ----
 
@@ -170,8 +220,20 @@ The *merge* module allows to have an overview of all the samples, it allows to g
   
 </details>
 
-<details><summary>Future plot</summary>
+### Command line examples
 
+#### Basic
+```
+lotus merge -c config_merge.txt
+```
+
+#### Complete
+```
+lotus merge -c config_merge.txt -o {MERGE_OUTPUT_PATH}/union.xlsx -cyto LOTUS_external_files/hg38_cytoband.tsv -w 99 -co {COMPARE_OUTPUT_PATH}/chromosomes.svg -step 500000 --additional_gene_information --enrichment
+```
+
+<details><summary>Future plot</summary>
+  
 Currently LOTUS allows to create an UpsetPlot[^2] representing for each sample set the corresponding impacted gene set. However, due to the high computational complexity, this graph is only available for a maximum of 15 samples. The passage to a larger number is envisaged in the future.
 
 [^2]: [A. Lex, N. Gehlenborg, H. Strobelt, R. Vuillemot and H. Pfister, "UpSet: Visualization of Intersecting Sets," in IEEE Transactions on Visualization and Computer Graphics, vol. 20, no. 12, pp. 1983-1992, 31 Dec. 2014, doi: 10.1109/TVCG.2014.2346248.](https://ieeexplore.ieee.org/document/6876017)
