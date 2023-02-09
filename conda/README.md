@@ -38,6 +38,8 @@ Using this method, it is then possible to call LOTUS with:
 python3 {PATH_TO_LOTUS}/lotus.py -h
 ```
 
+## Unit testing
+
 Unlike the first method, this way of doing things also allows you to run unit tests with:
 ```
 python3 -m py.test {PATH_TO_LOTUS}/tests
