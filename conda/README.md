@@ -1,6 +1,6 @@
-
-
 # LOTUS installation
+
+## First way
 
 The easiest way to install it is through conda:
 ```
@@ -16,17 +16,31 @@ lotus -h
 
 ---
 
-A second possibility is simply to clone the github directory: ```git clone git@github.com:gsiekaniec/LOTUS.git``` and install python 3 with the necessary packages for LOTUS to work properly (see the list below in section [Python packages]()). 
-To simplify the installation, it is possible to create a conda environment containing python 3 and the necessary packages via the file ``environment.yml`` with the command:
+## Second way
 
-```conda env create -f {PATH_TO_LOTUS}/conda/environment.yml```
+A second possibility is simply to clone the github directory: 
+```
+git clone git@github.com:gsiekaniec/LOTUS.git
+``` 
+
+Then install python 3 with the necessary packages for LOTUS to work properly (see the list below in section [Python packages]()). 
+To simplify the installation, it is possible to create a conda environment containing python 3 and the necessary packages via the file ``environment.yml`` with the command:
+```
+conda env create -f {PATH_TO_LOTUS}/conda/environment.yml
+conda activate lotus
+```
 
 > __Note__
-The environment.yml file can be found here.
+The ```environment.yml``` file can be found [here](https://github.com/gsiekaniec/LOTUS/blob/main/conda/environment.yml).
 
 Using this method, it is then possible to call LOTUS with:
 ```
 python3 {PATH_TO_LOTUS}/lotus.py -h
+```
+
+Unlike the first method, this way of doing things also allows you to run unit tests with:
+```
+python3 -m py.test {PATH_TO_LOTUS}/tests
 ```
 
 ## Python packages
