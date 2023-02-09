@@ -23,7 +23,7 @@ A second possibility is simply to clone the github directory:
 git clone git@github.com:gsiekaniec/LOTUS.git
 ``` 
 
-Then install python 3 with the necessary packages for LOTUS to work properly (see the list below in section [Python packages]()). 
+Then install python 3 with the necessary packages for LOTUS to work properly (see the list below in section [Python packages](https://github.com/gsiekaniec/LOTUS/blob/main/conda/README.md#python-packages)). 
 To simplify the installation, it is possible to create a conda environment containing python 3 and the necessary packages via the file ``environment.yml`` with the command:
 ```
 conda env create -f {PATH_TO_LOTUS}/conda/environment.yml
