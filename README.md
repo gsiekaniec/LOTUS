@@ -49,6 +49,8 @@ results
   +-- merge
 ```
 
+Details of the output and input files for every module can be found in the [inputs_outputs_description](https://github.com/gsiekaniec/LOTUS/tree/main/inputs_outputs_description#description-of-the-inputoutput-files) directory.
+
 ---
 
 ## 🧬 Preliminary steps
