@@ -65,15 +65,17 @@ python3 -m py.test {PATH_TO_LOTUS}/tests
   - [warnings](https://docs.python.org/3/library/warnings.html)
   
 :file_folder: Required python packages to run LOTUS:
+> __Note__
+The packages version used when creating LOTUS is given in brackets. LOTUS works with these versions but it is possible to use older or newer versions of these packages in most cases.
   
-  - [matplotlib](https://matplotlib.org/)
-  - [more_itertools](https://more-itertools.readthedocs.io/en/stable/)
-  - [numpy](https://numpy.org/)
-  - [pandas](https://pandas.pydata.org/)
-  - [pyfastx](https://pyfastx.readthedocs.io/en/latest/)
-  - [pytest](https://docs.pytest.org/en/7.2.x/)
-  - [requests](https://requests.readthedocs.io/en/latest/)
-  - [tqdm](https://tqdm.github.io/)
-  - [uspsetplot](https://upsetplot.readthedocs.io/en/stable/)
+  - [matplotlib](https://matplotlib.org/) (v.3.6.1)
+  - [more_itertools](https://more-itertools.readthedocs.io/en/stable/) (v.9.0.0)
+  - [numpy](https://numpy.org/) (v.1.23.4)
+  - [pandas](https://pandas.pydata.org/) (v. 1.5.1)
+  - [pyfastx](https://pyfastx.readthedocs.io/en/latest/) (v. 0.8.4)
+  - [pytest](https://docs.pytest.org/en/7.2.x/) (v. 7.2.0)
+  - [requests](https://requests.readthedocs.io/en/latest/) (v.2.28.1)
+  - [tqdm](https://tqdm.github.io/) (v. 4.64.0)
+  - [UpSetPlot](https://upsetplot.readthedocs.io/en/stable/) (v. 0.6.1)
 
 <sub>:warning: These packages must be installed before you can use LOTUS.</sub>
