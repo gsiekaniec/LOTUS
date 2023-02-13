@@ -105,7 +105,7 @@ In addition to the graphical output the associated percentages and counts for ea
 
 #### Indel size profile files
 
-The indel size profile file is a graphical file representing the percentage of insertions/deletions plotted according to their size. As with the mutational profile, this graph is output in two image formats: *svg* and *png*. The default output for this graph is ```indel.svg|.png``` but the ```-i``` option allows you to change the name of the output.
+The indel size profile file is a graphical file representing the percentage of insertions/deletions plotted according to their size (in base pair). As with the mutational profile, this graph is output in two image formats: *svg* and *png*. The default output for this graph is ```indel.svg|.png``` but the ```-i``` option allows you to change the name of the output.
 
 In addition to the graphical output, the percentages and associated numbers for each indel size are also produced in two files separating insertions from deletions. These files are named like the graphical output but with the *.insertion.tsv* and *.deletion.tsv* suffix, i.e. ```indel.deletion.tsv``` and ```indel.insertion.tsv```.
 
@@ -287,7 +287,7 @@ The default value of this file is ```union.MutatedGenes.tsv|.xlsx``` by the **-o
 It contains the list of common impacted genes for all samples given in the configuration file. For each impacted gene a large amount of information can be found such as :
   - ```Gene```: Gene name ([HGNC](https://www.genenames.org/) symbol).
   - ```Chromosome```: Chromosome on which the gene is located.
-  - ```Gene position start```: Gene start position, extract from the reference genome annotation file (gff3).
+  - ```Gene position start```: Gene start position, extracted from the reference genome annotation file (gff3).
   - ```Gene position end```: Gene end position, extract from the reference genome annotation file (gff3).
   - ```Nb samples```: Number of samples in which the gene is impacted.
   - ```Sample names```: Name of the samples in which this gene is impacted.
