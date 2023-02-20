@@ -23,7 +23,7 @@ Except for the Funcotator annotations (7), these filters can be modified to filt
 
 ### Outputs
 
-It is advisable to use the **-o** option of LOTUS filter in order to choose a prefix corresponding to your samples, by default the output files will be named ```output.filtered.vcf``` and ```output.passed.vcf```
+It is advisable to use the ```-o``` option of LOTUS filter in order to choose a prefix corresponding to your samples, by default the output files will be named ```output.filtered.vcf``` and ```output.passed.vcf```
 
 #### Filtered vcf file
 
@@ -179,7 +179,7 @@ As for the genome fasta file in the *summarise* module, during the first run of 
 
 #### Mutated genes file
 
-The default value of this file is ```TPn_TPn+1_compared.MutatedGenes.tsv|.xlsx``` where TP*n* and TP*n+1* are the name of the first and second ```filtered.vcf``` file, e.g. if your vcf file for the first TP is ```file1.filtered.vcf``` and the name for the second TP vcf file is ```file2.filtered.vcf```, the final output will be ```file1_file2_compared.MutatedGenes.tsv|.xlsx```. However is possible to replace the ```compared``` part by using the **-o** option.
+The default value of this file is ```TPn_TPn+1_compared.MutatedGenes.tsv|.xlsx``` where TP*n* and TP*n+1* are the name of the first and second ```filtered.vcf``` file, e.g. if your vcf file for the first TP is ```file1.filtered.vcf``` and the name for the second TP vcf file is ```file2.filtered.vcf```, the final output will be ```file1_file2_compared.MutatedGenes.tsv|.xlsx```. However is possible to replace the ```compared``` part by using the ```-o``` option.
 
 This ```TPn_TPn+1_compared.MutatedGenes.tsv|.xlsx``` file contains the list of impacted genes specific to TP*n* or TP*n+1*. The details of the information provided for each gene are as follows:
   - ```Gene symbol```: Gene name ([HGNC](https://www.genenames.org/) symbol).
@@ -206,7 +206,9 @@ In addition to the above information, it is possible, by adding the ```--additio
   - ```TSGene 2.0```: Informations from the [Tumor suppressor gene database](https://bioinfo.uth.edu/TSGene/)[^6] database.
        
 > __Note__ Informations from these different databases is available in the [LOTUS_external_files](https://github.com/gsiekaniec/LOTUS/blob/main/LOTUS_external_files/Lotus_ExternalBases_202301.xlsx).
-       
+
+> __Warning__ Currently, for LOTUS to work, this file containing additional information must be named ```Lotus_ExternalBases_202301.xlsx``` and located in directory ```LOTUS_external_files```, it is however possible to add information (row for a new genes and column for a new source).  
+
 [^1]: [Matthew T. Chang *et al*. Accelerating Discovery of Functional Mutant Alleles in Cancer. Cancer Discov 1 February 2018; 8 (2): 174–183.](https://doi.org/10.1158/2159-8290.CD-17-0321)
 [^2]: [Griffith, M. *et al*. CIViC is a community knowledgebase for expert crowdsourcing the clinical interpretation of variants in cancer. Nat Genet 49, 170–174 (2017).](https://doi.org/10.1038/ng.3774)
 [^3]: [Sondka, Z. *et al*. The COSMIC Cancer Gene Census: describing genetic dysfunction across all human cancers. Nat Rev Cancer 18, 696–705 (2018).](https://doi.org/10.1038/s41568-018-0060-1)
@@ -238,7 +240,7 @@ This *percentage of weakness* (from 100% if all variants are weak to 0% if all v
 
 The comparison file of mutational SNP profiles between TP*n* and TP*n+1* is a graphical file created using the ```profile.tsv``` file from the *sumarise* module for TP*n* and TP*n+1*. As for the mutation profile of the *summarise* module, this graph is edited in two image formats: *svg* and *png*. 
 
-The default value of this file is ```profile_TPn_TPn+1.svg|.png``` where TP*n* and TP*n+1* are the name of the first and second ```filtered.vcf``` file, e.g. if your vcf file for the first TP is ```file1.filtered.vcf``` and the name for the second TP vcf file is ```file2.filtered.vcf```, the final output will be ```profile_file1_file2.svg|.png```. However is possible to replace the ```profile``` part by using the **-p** option.
+The default value of this file is ```profile_TPn_TPn+1.svg|.png``` where TP*n* and TP*n+1* are the name of the first and second ```filtered.vcf``` file, e.g. if your vcf file for the first TP is ```file1.filtered.vcf``` and the name for the second TP vcf file is ```file2.filtered.vcf```, the final output will be ```profile_file1_file2.svg|.png```. However is possible to replace the ```profile``` part by using the ```-p``` option.
 
 In addition this graphical comparison output, a concatenation of the percentages and associated numbers for each snp context from the two TPs is also saved in a file named like the graphical output but with the suffix *.tsv*, i.e. ```profile_TPn_TPn+1.tsv```.
 
@@ -273,17 +275,17 @@ sample3_TP1_TP2.MutatedGenes.tsv
 
 #### Cytoband file
 
-To create the graph showing the impacted genes on the cytoband maps of the chromosomes, the file containing the position of these cytobands must be provided, e.g. ```hg38_cytoband.tsv```. If this cytoband card file is not provided throught the **-cyto** option the ```chromosome.svg|.png``` plot will not be generated.
+To create the graph showing the impacted genes on the cytoband maps of the chromosomes, the file containing the position of these cytobands must be provided, e.g. ```hg38_cytoband.tsv```. If this cytoband card file is not provided throught the ```-cyto``` option the ```chromosome.svg|.png``` plot will not be generated.
 
 > __Note__ For the *hg38* version of the human genome, this file can be found [here](https://genome.ucsc.edu/cgi-bin/hgTables) or provided with [LOTUS](https://github.com/gsiekaniec/LOTUS/blob/main/LOTUS_external_files/hg38_cytoband.tsv). 
 
 ### Outputs
 
-> __Note__ The **--weakness_threshold** or **-w** option allows you to take a gene into account only if its average percentage of weakness over all samples is less than or equal to the threshold passed to the option. By default this threshold is set to *100* but lowering this threshold allows to obtain more robust results on the remaining genes. Therefore, this option impacts all the outputs of the merge module.
+> __Note__ The ```--weakness_threshold``` or ```-w``` option allows you to take a gene into account only if its average percentage of weakness over all samples is less than or equal to the threshold passed to the option. By default this threshold is set to *100* but lowering this threshold allows to obtain more robust results on the remaining genes. Therefore, this option impacts all the outputs of the merge module.
 
 #### Mutated genes file
 
-The default value of this file is ```union.MutatedGenes.tsv|.xlsx``` by the **-o** option allow to change this name.
+The default value of this file is ```union.MutatedGenes.tsv|.xlsx``` by the ```-o``` option allow to change this name.
 It contains the list of common impacted genes for all samples given in the configuration file. For each impacted gene a large amount of information can be found such as :
   - ```Gene```: Gene name ([HGNC](https://www.genenames.org/) symbol).
   - ```Chromosome```: Chromosome on which the gene is located.
@@ -312,13 +314,15 @@ As for the *compare* module, it is possible to use the ```--additional_gene_info
        
 > __Note__ Informations from these different databases is available in the [LOTUS_external_files](https://github.com/gsiekaniec/LOTUS/blob/main/LOTUS_external_files/Lotus_ExternalBases_202301.xlsx).
 
+> __Warning__ Currently, for LOTUS to work, this file containing additional information must be named ```Lotus_ExternalBases_202301.xlsx``` and located in directory ```LOTUS_external_files```, it is however possible to add information (row for a new genes and column for a new source).   
+
 #### Chromosomes plot
 
 The chromosomes plot represents the mutated genes on the cytoband maps of the chromosomes. The curves above the chromosomes refer to the number of variants along the chromosome (in $\color[RGB]{185,105,0}orange$ line for TP*n* and $\color[RGB]{0,0,0}black$ for TP*n+1*). The curve below the chromosome represents the number of samples (in $\color[RGB]{0,128,255}blue$ line). The scale on the left fits the maximum found on each chromosome.
 
 This graph is output in two image formats: *svg* and *png* and the default output for this graphic is ```chromosomes.svg|.png``` but it is possible to use the ```-co``` option to change this output name.
 
-In order to obtain the curves, *merge* LOTUS starts from a list of impacted genes associated with (1) their number of variants (specific to TP*n* or TP*n+1*) or (2) the number of samples with this impacted gene. This information is then linked to the positions of the different genes. Therefore, a sliding window is used to traverse the chromosomes positions and the height of the curve at a point corresponds to the set of counts (variants or samples) for the genes overlapping this sliding window. The step for the sliding window is $500 000$ by default but can be increased or decreased using the **-step** option to get a more or less precise overview of the impacted chromosome areas. The step of the slidding windows also determines the size of the observer window which is equal to $2*step$.
+In order to obtain the curves, *merge* LOTUS starts from a list of impacted genes associated with (1) their number of variants (specific to TP*n* or TP*n+1*) or (2) the number of samples with this impacted gene. This information is then linked to the positions of the different genes. Therefore, a sliding window is used to traverse the chromosomes positions and the height of the curve at a point corresponds to the set of counts (variants or samples) for the genes overlapping this sliding window. The step for the sliding window is $500 000$ by default but can be increased or decreased using the ```-step``` option to get a more or less precise overview of the impacted chromosome areas. The step of the slidding windows also determines the size of the observer window which is equal to $2*step$.
 
 > __Warning__ Using too large step number will result in a large loss of accuracy and too small step number will provide a more detailed but potentially less readable visualization and be much more complex to compute in terms of time and memory.   
 
