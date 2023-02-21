@@ -7,7 +7,7 @@
 
 # Installation
 
-Two ways to install LOTUS are presented [here](https://github.com/gsiekaniec/LOTUS/tree/main/conda#lotus-installation) the easiest way is the following:
+Two ways to install LOTUS are presented [here](https://github.com/gsiekaniec/LOTUS/tree/main/conda#lotus-installation), the easiest way is the following:
 ```
 conda create -p lotus_env
 conda activate lotus_env
