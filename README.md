@@ -15,7 +15,7 @@ conda install -c gsiekaniec -c conda-forge -c bioconda lotus
 ```
 
 > __Warning__
-In case the installation is done this way the external files will be missing and must be retrieved from the [LOTUS github](https://github.com/gsiekaniec/LOTUS/tree/main/LOTUS_external_files): [reference genome annotation file](https://github.com/gsiekaniec/LOTUS/tree/main/inputs_outputs_description#reference-genome-annotation-file)```Homo_sapiens.GRCh38.108.chr.gff3.gz```, [cytoband file](https://github.com/gsiekaniec/LOTUS/tree/main/inputs_outputs_description#cytoband-file) ```hg38_cytoband.tsv``` and [external databases file](https://github.com/gsiekaniec/LOTUS/tree/main/inputs_outputs_description#mutated-genes-file-1)```Lotus_ExternalBases_202301.xlsx```. 
+In case the installation is done this way the external files will be missing and must be retrieved from the [LOTUS github](https://github.com/gsiekaniec/LOTUS/tree/main/LOTUS_external_files): [reference genome annotation file](https://github.com/gsiekaniec/LOTUS/tree/main/inputs_outputs_description#reference-genome-annotation-file) ```Homo_sapiens.GRCh38.108.chr.gff3.gz```, [cytoband file](https://github.com/gsiekaniec/LOTUS/tree/main/inputs_outputs_description#cytoband-file) ```hg38_cytoband.tsv``` and [external databases file](https://github.com/gsiekaniec/LOTUS/tree/main/inputs_outputs_description#mutated-genes-file-1) ```Lotus_ExternalBases_202301.xlsx```. 
 
 ----
 
