@@ -14,6 +14,9 @@ conda activate lotus_env
 conda install -c gsiekaniec -c conda-forge -c bioconda lotus
 ```
 
+> __Warning__
+In case the installation is done this way the external files will be missing and must be retrieved from the [LOTUS github](https://github.com/gsiekaniec/LOTUS/tree/main/LOTUS_external_files): [reference genome annotation file](https://github.com/gsiekaniec/LOTUS/tree/main/inputs_outputs_description#reference-genome-annotation-file)```Homo_sapiens.GRCh38.108.chr.gff3.gz```, [cytoband file](https://github.com/gsiekaniec/LOTUS/tree/main/inputs_outputs_description#cytoband-file) ```hg38_cytoband.tsv``` and [external databases file](https://github.com/gsiekaniec/LOTUS/tree/main/inputs_outputs_description#mutated-genes-file-1)```Lotus_ExternalBases_202301.xlsx```. 
+
 ----
 
 # LOTUS informations
@@ -139,13 +142,17 @@ The *summarise* module provides information on the variants from the vcf files, 
 
 #### Basic
 ```
-lotus summarise -vp {FILTER_OUTPUT_PATH}/sample.passed.vcf -g ../hg38.fasta
+lotus summarise -vp {FILTER_OUTPUT_PATH}/sample.passed.vcf -g hg38.fasta
 ```
 
 #### Complete
 ```
 lotus summarise -vp {FILTER_OUTPUT_PATH}/sample.passed.vcf -v {FILTER_OUTPUT_PATH}/sample.filtered.vcf -s {SUMMARISE_OUTPUT_PATH}/sample.stats.txt -p {SUMMARISE_OUTPUT_PATH}/sample_profile.svg -i {SUMMARISE_OUTPUT_PATH}/sample_indel.svg -g ../hg38.fasta -genes {SUMMARISE_OUTPUT_PATH}/sample.tsv --enrichment
 ```
+
+> __Note__
+```hg38.fasta``` represents the [reference genome fasta file](https://github.com/gsiekaniec/LOTUS/tree/main/inputs_outputs_description#reference-genome-fasta-file).
+
 
 ----
 
