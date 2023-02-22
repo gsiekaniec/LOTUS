@@ -238,7 +238,7 @@ lotus merge -c config_merge.txt
 
 #### Complete
 ```
-lotus merge -c config_merge.txt -o {MERGE_OUTPUT_PATH}/union.xlsx -cyto LOTUS_external_files/hg38_cytoband.tsv -w 99 -co {COMPARE_OUTPUT_PATH}/chromosomes.svg -step 500000 --additional_gene_information --enrichment
+lotus merge -c config_merge.txt -o {MERGE_OUTPUT_PATH}/union.xlsx -cyto LOTUS_external_files/hg38_cytoband.tsv -w 99 -co {MERGE_OUTPUT_PATH}/chromosomes.svg -step 500000 --additional_gene_information --enrichment
 ```
 
 <details><summary>Future plot</summary>
