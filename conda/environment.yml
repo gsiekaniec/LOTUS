@@ -14,3 +14,4 @@ dependencies:
    - pyfastx
    - tqdm
    - upsetplot
+   - openpyxl

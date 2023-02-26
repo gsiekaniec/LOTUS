@@ -21,6 +21,7 @@ requirements:
       - pyfastx
       - tqdm
       - upsetplot
+      - openpyxl
 
 about:
    home: https://github.com/gsiekaniec/LOTUS

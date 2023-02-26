@@ -295,7 +295,7 @@ def graph_indel(deletion, insertion, name, vcf_name, logger):
 		df_del.to_csv(Path(name).with_suffix(".deletion.tsv"), sep='\t')
 	elif insert:
 		df_ins.columns = [str(Path(vcf_name).stem)]
-		df_ins.to_csv(Path(name).with_suffix(".insertion.tsv"), sep='\t')
+		df_ins.to_csv(Path(name).with_suffix(".insertion.tsv"), sep='\t')	
 
 
 def is_fasta(filename : str) -> bool:
@@ -306,7 +306,7 @@ def is_fasta(filename : str) -> bool:
 	'''
 	try:
 		fa = pyfastx.Fastx(filename)
-		fasta = [name for name,seq,comment in fa]
+		fasta = [name for name,seq in fa]
 		return any(fasta)
 	except RuntimeError as runerr:
 		return False
@@ -360,7 +360,7 @@ def get_genome_dict(genome_file, logger):
 		path = Path(genome_file).with_suffix('.pk')
 		fa = pyfastx.Fastx(genome_file)
 		print("chr", "length")
-		for name,seq,comment in fa:
+		for name,seq in fa:
 			genome[name] = seq
 			print(name, len(seq))
 
@@ -390,6 +390,9 @@ def add_snp (snp_count, ref, alt, triplet):
 	Input : SNP counter, the reference allele, the variant and the triplet containing the reference 
 	Output : SNP counter
 	'''
+	ref = ref.upper()
+	alt = alt.upper()
+	triplet = triplet.upper()
 	if TRANSLATE[str(ref + ">" + alt)] == str(ref + ">" + alt):
 		snp_count[str(ref + ">" + alt)][triplet] += 1
 	else:
@@ -712,8 +715,7 @@ def summary(vcf_file : str, vcf_file_pass : str, genome_file : str, out_stats : 
 	# Create snp mutation types plot and indel size plot
 
 	graph_snp(snp_count_pct, snp_count, out_profile, vcf_file_pass, logger)
-	if not graph_indel(counter_deletion_size, counter_insertion_size, out_indel, vcf_file_pass, logger):
-		logger.warning(f'No figures will be plotted !')
+	graph_indel(counter_deletion_size, counter_insertion_size, out_indel, vcf_file_pass, logger)
 
 
 def main(args):
