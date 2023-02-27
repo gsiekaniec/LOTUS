@@ -306,7 +306,7 @@ def is_fasta(filename : str) -> bool:
 	'''
 	try:
 		fa = pyfastx.Fastx(filename)
-		fasta = [name for name,seq in fa]
+		fasta = [content[0] for content in fa]
 		return any(fasta)
 	except RuntimeError as runerr:
 		return False
@@ -360,7 +360,9 @@ def get_genome_dict(genome_file, logger):
 		path = Path(genome_file).with_suffix('.pk')
 		fa = pyfastx.Fastx(genome_file)
 		print("chr", "length")
-		for name,seq in fa:
+		for content in fa:
+			name = content[0]
+			seq = content[1]
 			genome[name] = seq
 			print(name, len(seq))
 
